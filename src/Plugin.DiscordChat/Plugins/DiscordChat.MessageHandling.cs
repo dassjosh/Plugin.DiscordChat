@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 using DiscordChatPlugin.Enums;
-using DiscordChatPlugin.Localization;
 using DiscordChatPlugin.PluginHandlers;
 using Oxide.Core.Libraries.Covalence;
 using Oxide.Ext.Discord.Entities;
@@ -12,8 +11,6 @@ using Oxide.Ext.Discord.Entities.Guilds;
 using Oxide.Ext.Discord.Entities.Messages;
 using Oxide.Ext.Discord.Entities.Permissions;
 using Oxide.Ext.Discord.Entities.Users;
-using Oxide.Ext.Discord.Extensions;
-using Oxide.Ext.Discord.Pooling;
 
 namespace DiscordChatPlugin.Plugins
 {
@@ -48,13 +45,13 @@ namespace DiscordChatPlugin.Plugins
             {
                 foreach (KeyValuePair<Snowflake, DiscordUser> mention in message.Mentions)
                 {
-                    sb.Replace($"<@{mention.Key.ToString()}>", $"@{mention.Value.Username}");
+                    sb.Replace($"<@{mention.Key.ToString()}>", $"@{mention.Value.DisplayName}");
                 }
             
                 foreach (KeyValuePair<Snowflake, DiscordUser> mention in message.Mentions)
                 {
                     GuildMember member = Guild.Members[mention.Key];
-                    sb.Replace($"<@!{mention.Key.ToString()}>", $"@{member?.Nickname ?? mention.Value.Username}");
+                    sb.Replace($"<@!{mention.Key.ToString()}>", $"@{member?.Nickname ?? mention.Value.DisplayName}");
                 }
             }
             
