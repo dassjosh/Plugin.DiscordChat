@@ -11,7 +11,7 @@ using Oxide.Ext.Discord.Constants;
 using Oxide.Ext.Discord.Entities;
 using Oxide.Ext.Discord.Entities.Applications;
 using Oxide.Ext.Discord.Entities.Channels;
-using Oxide.Ext.Discord.Entities.Gatway.Events;
+using Oxide.Ext.Discord.Entities.Gateway.Events;
 using Oxide.Ext.Discord.Entities.Guilds;
 using Oxide.Ext.Discord.Entities.Messages;
 
@@ -27,7 +27,7 @@ namespace DiscordChatPlugin.Plugins
                 RegisterPlaceholders();
                 RegisterTemplates();
                 
-                _client.Connect(_discordSettings);
+                Client.Connect(_discordSettings);
             }
         }
         
@@ -57,10 +57,10 @@ namespace DiscordChatPlugin.Plugins
                 }
             }
 
-            DiscordApplication app = _client.Bot.Application;
+            DiscordApplication app = Client.Bot.Application;
             if (!app.HasApplicationFlag(ApplicationFlags.GatewayMessageContentLimited))
             {
-                PrintWarning($"You will need to enable \"Message Content Intent\" for {_client.Bot.BotUser.Username} @ https://discord.com/developers/applications\n by April 2022" +
+                PrintWarning($"You will need to enable \"Message Content Intent\" for {Client.Bot.BotUser.Username} @ https://discord.com/developers/applications\n by April 2022" +
                              $"{Name} will stop function correctly after that date until that is fixed. Once updated please reload {Name}.");
             }
 
@@ -157,12 +157,12 @@ namespace DiscordChatPlugin.Plugins
 
             if (callback != null)
             {
-                _subscriptions.AddChannelSubscription(this, id, callback);
+                _subscriptions.AddChannelSubscription(Client, id, callback);
             }
 
             if (wipeNonBotMessages)
             {
-                channel.GetChannelMessages(_client, new ChannelMessagesRequest{Limit = 100}, messages => OnGetChannelMessages(messages, channel));
+                channel.GetMessages(Client, new ChannelMessagesRequest{Limit = 100}).Then(messages => OnGetChannelMessages(messages, channel));
             }
 
             Sends[type] = new DiscordSendQueue(id, GetTemplateName(type), timer);
@@ -188,11 +188,11 @@ namespace DiscordChatPlugin.Plugins
 
             if (messagesToDelete.Length == 1)
             {
-                messagesToDelete[0]?.DeleteMessage(_client);
+                messagesToDelete[0]?.Delete(Client);
                 return;
             }
 
-            channel.BulkDeleteMessages(_client, messagesToDelete.Take(100).Select(m => m.Id).ToArray());
+            channel.BulkDeleteMessages(Client, messagesToDelete.Take(100).Select(m => m.Id).ToArray());
         }
 
         public void HandleDiscordChatMessage(DiscordMessage message)
@@ -207,7 +207,7 @@ namespace DiscordChatPlugin.Plugins
             
             if (_pluginConfig.ChatSettings.UseBotToDisplayChat)
             {
-                message.DeleteMessage(_client);
+                message.Delete(Client);
             }
         }
     }

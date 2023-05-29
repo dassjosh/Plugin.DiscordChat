@@ -40,7 +40,7 @@ namespace DiscordChatPlugin.PluginHandlers
             {
                 if (_settings.ReplaceWithBot)
                 {
-                    Chat.Timer.In(.25f, () => { sourceMessage.DeleteMessage(_client); });
+                    sourceMessage.Delete(_client);
                     Chat.Sends[source]?.QueueMessage(Chat.Lang(LangKeys.Discord.AdminChat.DiscordMessage, null, placeholders));
                 }
                     

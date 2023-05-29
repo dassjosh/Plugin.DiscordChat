@@ -48,7 +48,7 @@ namespace DiscordChatPlugin.Plugins
             switch (plugin.Name)
             {
                 case "AdminChat":
-                    _plugins.Add(new AdminChatHandler(_client, this, _pluginConfig.PluginSupport.AdminChat, plugin));
+                    _plugins.Add(new AdminChatHandler(Client, this, _pluginConfig.PluginSupport.AdminChat, plugin));
                     break;
                 
                 case "AdminDeepCover":

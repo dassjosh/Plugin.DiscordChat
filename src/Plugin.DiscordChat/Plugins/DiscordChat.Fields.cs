@@ -8,7 +8,7 @@ using Oxide.Core.Plugins;
 using Oxide.Ext.Discord;
 using Oxide.Ext.Discord.Attributes;
 using Oxide.Ext.Discord.Entities;
-using Oxide.Ext.Discord.Entities.Gatway;
+using Oxide.Ext.Discord.Entities.Gateway;
 using Oxide.Ext.Discord.Entities.Guilds;
 using Oxide.Ext.Discord.Entities.Messages.AllowedMentions;
 using Oxide.Ext.Discord.Libraries.Placeholders;
@@ -24,12 +24,9 @@ namespace DiscordChatPlugin.Plugins
     {
         [PluginReference]
         public Plugin BetterChat;
-
-        [DiscordClient]
-#pragma warning disable CS0649
-        private DiscordClient _client;
-#pragma warning restore CS0649
         
+        public DiscordClient Client { get; set; }
+
         private PluginConfig _pluginConfig;
         
         private readonly DiscordSettings _discordSettings = new DiscordSettings

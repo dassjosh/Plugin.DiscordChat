@@ -30,13 +30,13 @@ namespace DiscordChatPlugin.Plugins
             IPlayer player = message.Author.Player;
             if (player == null)
             {
-                message.ReplyWithGlobalTemplate(_client, this, TemplateKeys.Error.AdminChat.NotLinked, null, GetDefault().AddMessage(message));
+                message.ReplyWithGlobalTemplate(Client, this, TemplateKeys.Error.AdminChat.NotLinked, null, GetDefault().AddMessage(message));
                 return;
             }
 
             if (!CanPlayerAdminChat(player))
             {
-                message.ReplyWithGlobalTemplate(_client, this, TemplateKeys.Error.AdminChat.NoPermission, null, GetDefault().AddPlayer(player).AddMessage(message));
+                message.ReplyWithGlobalTemplate(Client, this, TemplateKeys.Error.AdminChat.NoPermission, null, GetDefault().AddPlayer(player).AddMessage(message));
                 return;
             }
 

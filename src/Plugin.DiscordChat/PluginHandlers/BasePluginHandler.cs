@@ -13,13 +13,13 @@ namespace DiscordChatPlugin.PluginHandlers
     {
         protected readonly DiscordChat Chat;
         protected readonly Plugin Plugin;
-        private readonly string PluginName;
+        private readonly string _pluginName;
 
         public BasePluginHandler(DiscordChat chat, Plugin plugin)
         {
             Chat = chat;
             Plugin = plugin;
-            PluginName = plugin.Name;
+            _pluginName = plugin.Name;
         }
 
         public virtual bool CanSendMessage(string message, IPlayer player, DiscordUser user, MessageSource source, DiscordMessage sourceMessage)
@@ -54,7 +54,7 @@ namespace DiscordChatPlugin.PluginHandlers
 
         public string GetPluginName()
         {
-            return PluginName;
+            return _pluginName;
         }
     }
 }
