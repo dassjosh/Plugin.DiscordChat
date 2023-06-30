@@ -84,13 +84,12 @@ namespace DiscordChatPlugin.Plugins
             };
         }
         
-        public void SendGlobalTemplateMessage(string templateName, Snowflake channelId, PlaceholderData placeholders = null)
+        public void SendGlobalTemplateMessage(string templateName, DiscordChannel channel, PlaceholderData placeholders = null)
         {
             MessageCreate create = new MessageCreate
             {
                 AllowedMentions = AllowedMentions.None
             };
-            DiscordChannel channel = Guild.Channels[channelId];
             channel?.CreateGlobalTemplateMessage(Client, templateName, create, placeholders);
         }
 

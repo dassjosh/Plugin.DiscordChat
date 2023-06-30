@@ -28,7 +28,7 @@ namespace DiscordChatPlugin.PluginHandlers
         {
             if (sourceMessage != null)
             {
-                if (_settings.Filter.IgnoreMessage(sourceMessage, Chat.Guild.Members[sourceMessage.Author.Id]))
+                if (_settings.Filter.IgnoreMessage(sourceMessage, Chat.Client.Bot.GetGuild(sourceMessage.GuildId).Members[sourceMessage.Author.Id]))
                 {
                     return false;
                 }
@@ -141,7 +141,7 @@ namespace DiscordChatPlugin.PluginHandlers
                 Chat.Sends[MessageSource.Server]?.QueueMessage(Chat.ProcessPlaceholders(LangKeys.Discord.Chat.UnlinkedMessage, Chat.GetDefault().AddMessage(sourceMessage).Add(PlaceholderKeys.Data.PlayerMessage, message)));
             }
 
-            string serverMessage = Chat.ProcessPlaceholders(LangKeys.Server.UnlinkedMessage, Chat.GetDefault().AddMessage(sourceMessage).AddGuildMember(Chat.Guild.Members[sourceMessage.Author.Id]).Add(PlaceholderKeys.Data.PlayerMessage, message));
+            string serverMessage = Chat.ProcessPlaceholders(LangKeys.Server.UnlinkedMessage, Chat.GetDefault().AddMessage(sourceMessage).AddGuildMember(Chat.Client.Bot.GetGuild(sourceMessage.GuildId).Members[sourceMessage.Author.Id]).Add(PlaceholderKeys.Data.PlayerMessage, message));
             _server.Broadcast(serverMessage);
             Chat.Puts(Formatter.ToPlaintext(serverMessage));
         }

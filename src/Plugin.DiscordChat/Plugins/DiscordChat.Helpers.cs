@@ -1,17 +1,15 @@
-﻿using System;
-using DiscordChatPlugin.Enums;
+﻿using DiscordChatPlugin.Enums;
 using Oxide.Core.Libraries.Covalence;
 using Oxide.Core.Plugins;
+using Oxide.Ext.Discord.Entities;
+using Oxide.Ext.Discord.Entities.Channels;
+using Oxide.Ext.Discord.Entities.Guilds;
+using Oxide.Ext.Discord.Entities.Permissions;
 
 namespace DiscordChatPlugin.Plugins
 {
     public partial class DiscordChat
     {
-        private DateTime GetServerTime()
-        {
-            return DateTime.Now + TimeSpan.FromHours(_pluginConfig.ChatSettings.ServerTimeOffset);
-        }
-
         public MessageSource GetSourceFromServerChannel(int channel)
         {
             switch (channel)
@@ -24,7 +22,7 @@ namespace DiscordChatPlugin.Plugins
             
             return MessageSource.Server;
         }
-        
+
         public bool IsPluginLoaded(Plugin plugin) => plugin != null && plugin.IsLoaded;
 
         public string GetBetterChatTag(IPlayer player)

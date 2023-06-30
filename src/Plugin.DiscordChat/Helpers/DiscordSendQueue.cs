@@ -3,6 +3,7 @@ using System.Text;
 using DiscordChatPlugin.Placeholders;
 using DiscordChatPlugin.Plugins;
 using Oxide.Ext.Discord.Entities;
+using Oxide.Ext.Discord.Entities.Channels;
 using Oxide.Ext.Discord.Libraries.Placeholders;
 using Oxide.Plugins;
 
@@ -12,14 +13,14 @@ namespace DiscordChatPlugin.Helpers
     {
         private readonly StringBuilder _message = new StringBuilder();
         private Timer _sendTimer;
-        private readonly Snowflake _channelId;
+        private readonly DiscordChannel _channel;
         private readonly string _templateId;
         private readonly Action _callback;
         private readonly PluginTimers _timer;
 
-        public DiscordSendQueue(Snowflake channelId, string templateId, PluginTimers timers)
+        public DiscordSendQueue(DiscordChannel channel, string templateId, PluginTimers timers)
         {
-            _channelId = channelId;
+            _channel = channel;
             _templateId = templateId;
             _callback = Send;
             _timer = timers;
@@ -47,7 +48,7 @@ namespace DiscordChatPlugin.Helpers
 
         public void SendTemplate(string templateId, PlaceholderData data)
         {
-            DiscordChat.Instance.SendGlobalTemplateMessage(templateId, _channelId, data);
+            DiscordChat.Instance.SendGlobalTemplateMessage(templateId, _channel, data);
         }
         
         public void Send()
@@ -59,7 +60,7 @@ namespace DiscordChatPlugin.Helpers
 
             PlaceholderData placeholders = DiscordChat.Instance.GetDefault().Add(PlaceholderKeys.Data.Message, _message.ToString());
             _message.Length = 0;
-            DiscordChat.Instance.SendGlobalTemplateMessage(_templateId, _channelId, placeholders);
+            DiscordChat.Instance.SendGlobalTemplateMessage(_templateId, _channel, placeholders);
             _sendTimer?.Destroy();
             _sendTimer = null;
         }

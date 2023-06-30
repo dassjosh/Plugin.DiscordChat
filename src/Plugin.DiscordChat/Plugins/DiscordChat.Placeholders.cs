@@ -17,7 +17,7 @@ namespace DiscordChatPlugin.Plugins
 
         public PlaceholderData GetDefault()
         {
-            return _placeholders.CreateData(this).AddGuild(Guild);
+            return _placeholders.CreateData(this);
         }
     }
 }

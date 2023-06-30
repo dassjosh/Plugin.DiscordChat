@@ -32,9 +32,6 @@ namespace DiscordChatPlugin.Plugins
             Intents = GatewayIntents.Guilds | GatewayIntents.GuildMembers | GatewayIntents.GuildMessages | GatewayIntents.MessageContent
         };
 
-        public DiscordGuild Guild;
-        private Snowflake _guildId;
-
         private readonly DiscordSubscriptions _subscriptions = GetLibrary<DiscordSubscriptions>();
         private readonly DiscordPlaceholders _placeholders = GetLibrary<DiscordPlaceholders>();
         private readonly DiscordMessageTemplates _templates = GetLibrary<DiscordMessageTemplates>();

@@ -42,6 +42,7 @@ namespace DiscordChatPlugin.Plugins
 
         public void ProcessMentions(DiscordMessage message, StringBuilder sb)
         {
+            DiscordGuild guild = Client.Bot.GetGuild(message.GuildId);
             if (message.Mentions != null)
             {
                 foreach (KeyValuePair<Snowflake, DiscordUser> mention in message.Mentions)
@@ -51,7 +52,7 @@ namespace DiscordChatPlugin.Plugins
             
                 foreach (KeyValuePair<Snowflake, DiscordUser> mention in message.Mentions)
                 {
-                    GuildMember member = Guild.Members[mention.Key];
+                    GuildMember member = guild.Members[mention.Key];
                     sb.Replace($"<@!{mention.Key.ToString()}>", $"@{member?.Nickname ?? mention.Value.DisplayName}");
                 }
             }
@@ -68,7 +69,7 @@ namespace DiscordChatPlugin.Plugins
             {
                 string value = match.Value;
                 Snowflake id = new Snowflake(value.Substring(2, value.Length - 3));
-                DiscordChannel channel = Guild.Channels[id];
+                DiscordChannel channel = guild.Channels[id];
                 if (channel != null)
                 {
                     sb.Replace(value, $"#{channel.Name}");
@@ -79,7 +80,7 @@ namespace DiscordChatPlugin.Plugins
             {
                 foreach (Snowflake roleId in message.MentionRoles)
                 {
-                    DiscordRole role = Guild.Roles[roleId];
+                    DiscordRole role = guild.Roles[roleId];
                     sb.Replace($"<@&{roleId.ToString()}>", $"@{role.Name ?? roleId}");
                 }
             }

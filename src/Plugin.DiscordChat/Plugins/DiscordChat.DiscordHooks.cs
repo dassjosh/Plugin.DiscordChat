@@ -40,61 +40,37 @@ namespace DiscordChatPlugin.Plugins
                 return;
             }
 
-            DiscordGuild guild = null;
-            if (ready.Guilds.Count == 1 && !_pluginConfig.GuildId.IsValid())
-            {
-                guild = ready.Guilds.Values.FirstOrDefault();
-            }
-
-            if (guild == null)
-            {
-                guild = ready.Guilds[_pluginConfig.GuildId];
-                if (guild == null)
-                {
-                    PrintError("Failed to find a matching guild for the Discord Server Id. " +
-                               "Please make sure your guild Id is correct and the bot is in the discord server.");
-                    return;
-                }
-            }
-
             DiscordApplication app = Client.Bot.Application;
             if (!app.HasApplicationFlag(ApplicationFlags.GatewayMessageContentLimited))
             {
                 PrintWarning($"You will need to enable \"Message Content Intent\" for {Client.Bot.BotUser.Username} @ https://discord.com/developers/applications\n by April 2022" +
                              $"{Name} will stop function correctly after that date until that is fixed. Once updated please reload {Name}.");
             }
-
-            _guildId = guild.Id;
+            
             Puts($"{Title} Ready");
         }
 
         [HookMethod(DiscordExtHooks.OnDiscordGuildCreated)]
         private void OnDiscordGuildCreated(DiscordGuild guild)
         {
-            if (guild.Id != _guildId)
-            {
-                return;
-            }
-
-            Guild = guild;
             if (_pluginConfig.ChatSettings.DiscordToServer)
             {
-                SetupChannel(MessageSource.Server, _pluginConfig.ChatSettings.ChatChannel, _pluginConfig.ChatSettings.UseBotToDisplayChat, HandleDiscordChatMessage);
+                SetupChannel(guild, MessageSource.Server, _pluginConfig.ChatSettings.ChatChannel, _pluginConfig.ChatSettings.UseBotToDisplayChat, HandleDiscordChatMessage);
             }
             else
             {
-                SetupChannel(MessageSource.Server, _pluginConfig.ChatSettings.ChatChannel, _pluginConfig.ChatSettings.UseBotToDisplayChat);
+                SetupChannel(guild, MessageSource.Server, _pluginConfig.ChatSettings.ChatChannel, _pluginConfig.ChatSettings.UseBotToDisplayChat);
             }
 
-            SetupChannel(MessageSource.PlayerState, _pluginConfig.PlayerStateSettings.PlayerStateChannel, false);
-            SetupChannel(MessageSource.ServerState, _pluginConfig.ServerStateSettings.ServerStateChannel, false);
-            SetupChannel(MessageSource.AdminChat, _pluginConfig.PluginSupport.AdminChat.ChatChannel, _pluginConfig.ChatSettings.UseBotToDisplayChat, HandleAdminChatDiscordMessage);
-            SetupChannel(MessageSource.ClanChat, _pluginConfig.PluginSupport.Clans.ClansChatChannel, _pluginConfig.ChatSettings.UseBotToDisplayChat);
-            SetupChannel(MessageSource.AllianceChat, _pluginConfig.PluginSupport.Clans.AllianceChatChannel, _pluginConfig.ChatSettings.UseBotToDisplayChat);
+            SetupChannel(guild, MessageSource.PlayerState, _pluginConfig.PlayerStateSettings.PlayerStateChannel, false);
+            SetupChannel(guild, MessageSource.ServerState, _pluginConfig.ServerStateSettings.ServerStateChannel, false);
+            SetupChannel(guild, MessageSource.AdminChat, _pluginConfig.PluginSupport.AdminChat.ChatChannel, _pluginConfig.ChatSettings.UseBotToDisplayChat, HandleAdminChatDiscordMessage);
+            SetupChannel(guild, MessageSource.ClanChat, _pluginConfig.PluginSupport.Clans.ClansChatChannel, _pluginConfig.ChatSettings.UseBotToDisplayChat);
+            SetupChannel(guild, MessageSource.AllianceChat, _pluginConfig.PluginSupport.Clans.AllianceChatChannel, _pluginConfig.ChatSettings.UseBotToDisplayChat);
 
 #if RUST
-            SetupChannel(MessageSource.Team, _pluginConfig.ChatSettings.TeamChannel, false);
-            SetupChannel(MessageSource.Cards, _pluginConfig.ChatSettings.CardsChannel, false);
+            SetupChannel(guild, MessageSource.Team, _pluginConfig.ChatSettings.TeamChannel, false);
+            SetupChannel(guild, MessageSource.Cards, _pluginConfig.ChatSettings.CardsChannel, false);
 #endif
 
             if (_pluginConfig.ChatSettings.ChatChannel.IsValid()
@@ -141,17 +117,17 @@ namespace DiscordChatPlugin.Plugins
             });
         }
 
-        public void SetupChannel(MessageSource type, Snowflake id, bool wipeNonBotMessages, Action<DiscordMessage> callback = null)
+        public void SetupChannel(DiscordGuild guild, MessageSource type, Snowflake id, bool wipeNonBotMessages, Action<DiscordMessage> callback = null)
         {
             if (!id.IsValid())
             {
                 return;
             }
 
-            DiscordChannel channel = Guild.Channels[id];
+            DiscordChannel channel = guild.Channels[id];
             if (channel == null)
             {
-                PrintWarning($"Channel with ID: '{id}' not found in guild");
+                //PrintWarning($"Channel with ID: '{id}' not found in guild");
                 return;
             }
 
@@ -165,7 +141,7 @@ namespace DiscordChatPlugin.Plugins
                 channel.GetMessages(Client, new ChannelMessagesRequest{Limit = 100}).Then(messages => OnGetChannelMessages(messages, channel));
             }
 
-            Sends[type] = new DiscordSendQueue(id, GetTemplateName(type), timer);
+            Sends[type] = new DiscordSendQueue(channel, GetTemplateName(type), timer);
 
             Puts($"Setup Channel {type} With ID: {id}");
         }

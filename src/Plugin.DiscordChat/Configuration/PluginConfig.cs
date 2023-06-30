@@ -2,7 +2,6 @@
 using DiscordChatPlugin.Configuration.Plugins;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using Oxide.Ext.Discord.Entities;
 using Oxide.Ext.Discord.Logging;
 
 namespace DiscordChatPlugin.Configuration
@@ -11,9 +10,6 @@ namespace DiscordChatPlugin.Configuration
     {
         [JsonProperty(PropertyName = "Discord Bot Token")]
         public string DiscordApiKey { get; set; } = string.Empty;
-
-        [JsonProperty(PropertyName = "Discord Server ID (Optional if bot only in 1 guild)")]
-        public Snowflake GuildId { get; set; }
 
         [JsonProperty("Chat Settings")]
         public ChatSettings ChatSettings { get; set; }
