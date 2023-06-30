@@ -1,10 +1,11 @@
 ﻿using DiscordChatPlugin.Configuration.Plugins;
 using DiscordChatPlugin.Enums;
 using DiscordChatPlugin.Localization;
+using DiscordChatPlugin.Placeholders;
 using DiscordChatPlugin.Plugins;
 using Oxide.Core.Libraries.Covalence;
 using Oxide.Core.Plugins;
-using Oxide.Ext.Discord;
+using Oxide.Ext.Discord.Clients;
 using Oxide.Ext.Discord.Entities.Messages;
 using Oxide.Ext.Discord.Entities.Users;
 using Oxide.Ext.Discord.Libraries.Placeholders;
@@ -34,21 +35,21 @@ namespace DiscordChatPlugin.PluginHandlers
                 return false;
             }
             
-            PlaceholderData placeholders = Chat.GetDefault().AddPlayer(player).Add(DiscordChat.PlayerMessagePlaceholder, message);
+            PlaceholderData placeholders = Chat.GetDefault().AddPlayer(player).Add(PlaceholderKeys.Data.PlayerMessage, message);
             
             if (sourceMessage != null)
             {
                 if (_settings.ReplaceWithBot)
                 {
                     sourceMessage.Delete(_client);
-                    Chat.Sends[source]?.QueueMessage(Chat.Lang(LangKeys.Discord.AdminChat.DiscordMessage, null, placeholders));
+                    Chat.Sends[source]?.QueueMessage(Chat.ProcessPlaceholders(LangKeys.Discord.AdminChat.DiscordMessage, placeholders));
                 }
                     
                 Plugin.Call("SendAdminMessage", player, message);
             }
             else
             {
-                Chat.Sends[source]?.QueueMessage(Chat.Lang(LangKeys.Discord.AdminChat.ServerMessage, null, placeholders));
+                Chat.Sends[source]?.QueueMessage(Chat.ProcessPlaceholders(LangKeys.Discord.AdminChat.ServerMessage, placeholders));
             }
 
             return true;

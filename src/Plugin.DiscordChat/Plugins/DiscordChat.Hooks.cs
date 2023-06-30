@@ -1,6 +1,7 @@
 ﻿using ConVar;
 using DiscordChatPlugin.Enums;
 using DiscordChatPlugin.Localization;
+using DiscordChatPlugin.Placeholders;
 using DiscordChatPlugin.PluginHandlers;
 using Oxide.Core;
 using Oxide.Core.Libraries.Covalence;
@@ -26,14 +27,14 @@ namespace DiscordChatPlugin.Plugins
         {
             if (_pluginConfig.PlayerStateSettings.ShowAdmins || !player.IsAdmin)
             {
-                PlaceholderData placeholders = GetDefault().AddPlayer(player).Add(DisconnectReasonPlaceholder, reason);
+                PlaceholderData placeholders = GetDefault().AddPlayer(player).Add(PlaceholderKeys.Data.DisconnectReason, reason);
                 ProcessPlayerState(LangKeys.Discord.Player.Disconnected, placeholders);
             }
         }
 
         public void ProcessPlayerState(string langKey, PlaceholderData data)
         {
-            Sends[MessageSource.PlayerState]?.QueueMessage(Lang(langKey, null, data));
+            Sends[MessageSource.PlayerState]?.QueueMessage(ProcessPlaceholders(langKey, data));
         }
 
         private void OnPluginLoaded(Plugin plugin)

@@ -2,11 +2,10 @@
 using DiscordChatPlugin.Configuration;
 using DiscordChatPlugin.Configuration.Plugins;
 using DiscordChatPlugin.Enums;
+using DiscordChatPlugin.PluginHandlers;
 using DiscordChatPlugin.Templates;
 using Oxide.Core;
 using Oxide.Core.Libraries.Covalence;
-
-using Oxide.Ext.Discord.Libraries.Pooling;
 
 namespace DiscordChatPlugin.Plugins
 {
@@ -32,8 +31,8 @@ namespace DiscordChatPlugin.Plugins
             Unsubscribe(nameof(OnServerShutdown));
             Unsubscribe(nameof(OnClanChat));
             Unsubscribe(nameof(OnAllianceChat));
-            
-            _pool  = GetLibrary<DiscordPool>().GetOrCreate(this);
+
+            _chatHandler = new DiscordChatHandler(this, _pluginConfig.ChatSettings, this, server);
         }
 
          protected override void LoadDefaultConfig()
@@ -67,7 +66,7 @@ namespace DiscordChatPlugin.Plugins
                     PrintWarning("Please update your version of BetterChat to version >= 5.2.7");
                 }
 
-                if (_pluginConfig.ChatSettings.EnableServerChatTag)
+                if (!string.IsNullOrEmpty(_pluginConfig.ChatSettings.DiscordTag))
                 {
                     BetterChat.Call("API_RegisterThirdPartyTitle", this, new Func<IPlayer, string>(GetBetterChatTag));
                 }

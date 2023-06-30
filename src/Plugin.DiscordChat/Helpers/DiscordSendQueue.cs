@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using DiscordChatPlugin.Placeholders;
 using DiscordChatPlugin.Plugins;
 using Oxide.Ext.Discord.Entities;
 using Oxide.Ext.Discord.Libraries.Placeholders;
@@ -56,7 +57,7 @@ namespace DiscordChatPlugin.Helpers
                 _message.Length = 2000;
             }
 
-            PlaceholderData placeholders = DiscordChat.Instance.GetDefault().Add(DiscordChat.ChatMessagePlaceholder, _message.ToString());
+            PlaceholderData placeholders = DiscordChat.Instance.GetDefault().Add(PlaceholderKeys.Data.Message, _message.ToString());
             _message.Length = 0;
             DiscordChat.Instance.SendGlobalTemplateMessage(_templateId, _channelId, placeholders);
             _sendTimer?.Destroy();

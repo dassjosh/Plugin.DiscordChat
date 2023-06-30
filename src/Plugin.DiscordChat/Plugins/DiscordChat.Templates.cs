@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
 using DiscordChatPlugin.Enums;
+using DiscordChatPlugin.Placeholders;
 using DiscordChatPlugin.Templates;
 using Oxide.Ext.Discord.Entities;
 using Oxide.Ext.Discord.Entities.Channels;
 using Oxide.Ext.Discord.Entities.Messages;
+using Oxide.Ext.Discord.Extensions;
 using Oxide.Ext.Discord.Libraries.Placeholders;
 using Oxide.Ext.Discord.Libraries.Templates;
 using Oxide.Ext.Discord.Libraries.Templates.Embeds;
@@ -15,44 +17,44 @@ namespace DiscordChatPlugin.Plugins
     {
         public void RegisterTemplates()
         {
-            DiscordMessageTemplate connected = CreateTemplateEmbed(":white_check_mark: ({discordchat.server.time:HH:mm}) **{discordchat.player.name}** has joined.", DiscordSuccess);
+            DiscordMessageTemplate connected = CreateTemplateEmbed($":white_check_mark: ({{timestamp.now.shorttime}}) **{{{PlaceholderKeys.PlayerName}}}** has joined.",  DiscordColor.Success);
             _templates.RegisterGlobalTemplateAsync(this, TemplateKeys.Player.StateChanged, connected, new TemplateVersion(1, 0, 0), new TemplateVersion(1, 0, 0));
 
-            DiscordMessageTemplate online = CreateTemplateEmbed(":green_circle: The server is now online", DiscordSuccess);
+            DiscordMessageTemplate online = CreateTemplateEmbed(":green_circle: The server is now online", DiscordColor.Success);
             _templates.RegisterGlobalTemplateAsync(this, TemplateKeys.Server.Online, online, new TemplateVersion(1, 0, 0), new TemplateVersion(1, 0, 0));
             
-            DiscordMessageTemplate shutdown = CreateTemplateEmbed(":red_circle: The server has shutdown", DiscordDanger);
+            DiscordMessageTemplate shutdown = CreateTemplateEmbed(":red_circle: The server has shutdown", DiscordColor.Danger);
             _templates.RegisterGlobalTemplateAsync(this, TemplateKeys.Server.Shutdown, shutdown, new TemplateVersion(1, 0, 0), new TemplateVersion(1, 0, 0));
             
-            DiscordMessageTemplate booting = CreateTemplateEmbed(":yellow_circle: The server is now booting", DiscordWarning);
+            DiscordMessageTemplate booting = CreateTemplateEmbed(":yellow_circle: The server is now booting", DiscordColor.Warning);
             _templates.RegisterGlobalTemplateAsync(this, TemplateKeys.Server.Booting, booting, new TemplateVersion(1, 0, 0), new TemplateVersion(1, 0, 0));
             
-            DiscordMessageTemplate serverChat = CreateTemplateEmbed("{discordchat.message}", DiscordBlurple);
+            DiscordMessageTemplate serverChat = CreateTemplateEmbed($"{{{PlaceholderKeys.Message}}}", DiscordColor.Blurple);
             _templates.RegisterGlobalTemplateAsync(this, TemplateKeys.Chat.General, serverChat, new TemplateVersion(1, 0, 0), new TemplateVersion(1, 0, 0));
             
-            DiscordMessageTemplate teamChat = CreateTemplateEmbed("{discordchat.message}", DiscordSuccess);
+            DiscordMessageTemplate teamChat = CreateTemplateEmbed($"{{{PlaceholderKeys.Message}}}", DiscordColor.Success);
             _templates.RegisterGlobalTemplateAsync(this, TemplateKeys.Chat.Teams, teamChat, new TemplateVersion(1, 0, 0), new TemplateVersion(1, 0, 0));
             
-            DiscordMessageTemplate cardsChat = CreateTemplateEmbed("{discordchat.message}", DiscordDanger);
+            DiscordMessageTemplate cardsChat = CreateTemplateEmbed($"{{{PlaceholderKeys.Message}}}", DiscordColor.Danger);
             _templates.RegisterGlobalTemplateAsync(this, TemplateKeys.Chat.Cards, cardsChat, new TemplateVersion(1, 0, 0), new TemplateVersion(1, 0, 0));
             
-            DiscordMessageTemplate clanChat = CreateTemplateEmbed("{discordchat.message}", "a1ff46");
+            DiscordMessageTemplate clanChat = CreateTemplateEmbed($"{{{PlaceholderKeys.Message}}}", new DiscordColor("a1ff46"));
             _templates.RegisterGlobalTemplateAsync(this, TemplateKeys.Chat.Clans.Clan, clanChat, new TemplateVersion(1, 0, 0), new TemplateVersion(1, 0, 0));
             
-            DiscordMessageTemplate allianceChat = CreateTemplateEmbed("{discordchat.message}", "a1ff46");
+            DiscordMessageTemplate allianceChat = CreateTemplateEmbed($"{{{PlaceholderKeys.Message}}}",  new DiscordColor("80cc38"));
             _templates.RegisterGlobalTemplateAsync(this, TemplateKeys.Chat.Clans.Alliance, allianceChat, new TemplateVersion(1, 0, 0), new TemplateVersion(1, 0, 0));
             
-            DiscordMessageTemplate errorNotLinked = CreatePrefixedTemplateEmbed("You're not allowed to chat with the server unless you are linked.", DiscordDanger);
+            DiscordMessageTemplate errorNotLinked = CreatePrefixedTemplateEmbed("You're not allowed to chat with the server unless you are linked.", DiscordColor.Danger);
             _templates.RegisterGlobalTemplateAsync(this, TemplateKeys.Error.NotLinked, errorNotLinked, new TemplateVersion(1, 0, 0), new TemplateVersion(1, 0, 0));
             
-            DiscordMessageTemplate errorAdminChatNotLinked = CreatePrefixedTemplateEmbed("You're not allowed to use admin chat because you have not linked your Discord and game server accounts", DiscordDanger);
+            DiscordMessageTemplate errorAdminChatNotLinked = CreatePrefixedTemplateEmbed("You're not allowed to use admin chat because you have not linked your Discord and game server accounts", DiscordColor.Danger);
             _templates.RegisterGlobalTemplateAsync(this, TemplateKeys.Error.AdminChat.NotLinked, errorAdminChatNotLinked, new TemplateVersion(1, 0, 0), new TemplateVersion(1, 0, 0));
             
-            DiscordMessageTemplate errorAdminChatNotPermission = CreatePrefixedTemplateEmbed(":no_entry: You're not allowed to use admin chat channel because you do not have permission.", DiscordDanger);
+            DiscordMessageTemplate errorAdminChatNotPermission = CreatePrefixedTemplateEmbed(":no_entry: You're not allowed to use admin chat channel because you do not have permission.", DiscordColor.Danger);
             _templates.RegisterGlobalTemplateAsync(this, TemplateKeys.Error.AdminChat.NoPermission, errorAdminChatNotPermission, new TemplateVersion(1, 0, 0), new TemplateVersion(1, 0, 0));
         }
         
-        public DiscordMessageTemplate CreateTemplateEmbed(string description, string color)
+        public DiscordMessageTemplate CreateTemplateEmbed(string description, DiscordColor color)
         {
             return new DiscordMessageTemplate
             {
@@ -61,13 +63,13 @@ namespace DiscordChatPlugin.Plugins
                     new DiscordEmbedTemplate
                     {
                         Description = description,
-                        Color = $"#{color}"
+                        Color = color.ToHex()
                     }
                 },
             };
         }
         
-        public DiscordMessageTemplate CreatePrefixedTemplateEmbed(string description, string color)
+        public DiscordMessageTemplate CreatePrefixedTemplateEmbed(string description, DiscordColor color)
         {
             return new DiscordMessageTemplate
             {
@@ -76,7 +78,7 @@ namespace DiscordChatPlugin.Plugins
                     new DiscordEmbedTemplate
                     {
                         Description = $"[{{plugin.title}}] {description}",
-                        Color = $"#{color}"
+                        Color = color.ToHex()
                     }
                 },
             };
@@ -86,10 +88,10 @@ namespace DiscordChatPlugin.Plugins
         {
             MessageCreate create = new MessageCreate
             {
-                AllowedMention = _allowedMention
+                AllowedMentions = AllowedMentions.None
             };
             DiscordChannel channel = Guild.Channels[channelId];
-            channel?.CreateGlobalTemplateMessage(Client, this, templateName, create, placeholders);
+            channel?.CreateGlobalTemplateMessage(Client, templateName, create, placeholders);
         }
 
         public string GetTemplateName(MessageSource type)

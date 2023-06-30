@@ -25,9 +25,9 @@ namespace DiscordChatPlugin.Configuration
 
         [JsonProperty("Send Messages From Discord Channel To Server Chat")]
         public bool DiscordToServer { get; set; }
-        
-        [JsonProperty("Enable Adding Discord Tag To In Game Messages When Sent From Discord")]
-        public bool EnableServerChatTag { get; set; } = true;
+
+        [JsonProperty("Add Discord Tag To In Game Messages When Sent From Discord")]
+        public string DiscordTag { get; set; }
         
         [JsonProperty("Allow plugins to process Discord to Server Chat Messages")]
         public bool AllowPluginProcessing { get; set; }
@@ -57,7 +57,7 @@ namespace DiscordChatPlugin.Configuration
             UseBotToDisplayChat = settings?.UseBotToDisplayChat ?? true;
             ServerToDiscord = settings?.ServerToDiscord ?? true;
             DiscordToServer = settings?.DiscordToServer ?? true;
-            EnableServerChatTag = settings?.EnableServerChatTag ?? true;
+            DiscordTag = settings?.DiscordTag ?? "[#5f79d6][Discord][/#]";
             AllowPluginProcessing = settings?.AllowPluginProcessing ?? true;
             ServerTimeOffset = settings?.ServerTimeOffset ?? 0f;
             MaxCharactersPerMessage = settings?.MaxCharactersPerMessage ?? 0;

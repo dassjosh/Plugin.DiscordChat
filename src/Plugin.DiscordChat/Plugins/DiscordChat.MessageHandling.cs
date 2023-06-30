@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 using DiscordChatPlugin.Enums;
+using DiscordChatPlugin.Localization;
 using DiscordChatPlugin.PluginHandlers;
 using Oxide.Core.Libraries.Covalence;
 using Oxide.Ext.Discord.Entities;
@@ -125,13 +126,14 @@ namespace DiscordChatPlugin.Plugins
 
         public string GetPlayerName(IPlayer player)
         {
-            StringBuilder name = _pool.GetStringBuilder(player.Name);
+            string name = ProcessPlaceholders(LangKeys.Discord.Chat.PlayerName, GetDefault().AddPlayer(player));
+            StringBuilder sb = _pool.GetStringBuilder(name);
             for (int index = 0; index < _plugins.Count; index++)
             {
-                _plugins[index].ProcessPlayerName(name, player);
+                _plugins[index].ProcessPlayerName(sb, player);
             }
 
-            return _pool.FreeStringBuilderToString(name);
+            return _pool.FreeStringBuilderToString(sb);
         }
         
         public void SendMessage(string message, IPlayer player, DiscordUser user, MessageSource source, DiscordMessage sourceMessage)

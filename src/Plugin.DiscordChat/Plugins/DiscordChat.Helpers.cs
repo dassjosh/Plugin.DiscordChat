@@ -1,6 +1,5 @@
 ﻿using System;
 using DiscordChatPlugin.Enums;
-using DiscordChatPlugin.Localization;
 using Oxide.Core.Libraries.Covalence;
 using Oxide.Core.Plugins;
 
@@ -30,7 +29,7 @@ namespace DiscordChatPlugin.Plugins
 
         public string GetBetterChatTag(IPlayer player)
         {
-            return player.IsConnected ? null : Lang(LangKeys.Server.DiscordTag, player);
+            return player.IsConnected ? null : _pluginConfig.ChatSettings.DiscordTag;
         }
 
         public new void Subscribe(string hook)

@@ -1,5 +1,6 @@
 ﻿using DiscordChatPlugin.Enums;
 using DiscordChatPlugin.Localization;
+using DiscordChatPlugin.Placeholders;
 using Oxide.Core.Libraries.Covalence;
 using Oxide.Ext.Discord.Libraries.Placeholders;
 
@@ -7,19 +8,19 @@ namespace DiscordChatPlugin.Plugins
 {
     public partial class DiscordChat
     {
-        private void OnClanChat(IPlayer player, string message, string tag)
+        private void OnClanChat(IPlayer player, string message)
         {
-            Sends[MessageSource.ClanChat]?.QueueMessage(Lang(LangKeys.Discord.Clans.ClanMessage, GetClanPlaceholders(player, message, tag)));
+            Sends[MessageSource.ClanChat]?.QueueMessage(ProcessPlaceholders(LangKeys.Discord.Clans.ClanMessage, GetClanPlaceholders(player, message)));
         }
         
-        private void OnAllianceChat(IPlayer player, string message, string tag)
+        private void OnAllianceChat(IPlayer player, string message)
         {
-            Sends[MessageSource.AllianceChat]?.QueueMessage(Lang(LangKeys.Discord.Clans.AllianceMessage, GetClanPlaceholders(player, message, tag)));
+            Sends[MessageSource.AllianceChat]?.QueueMessage(ProcessPlaceholders(LangKeys.Discord.Clans.AllianceMessage, GetClanPlaceholders(player, message)));
         }
 
-        public PlaceholderData GetClanPlaceholders(IPlayer player, string message, string tag)
+        public PlaceholderData GetClanPlaceholders(IPlayer player, string message)
         {
-            return GetDefault().AddPlayer(player).Add(PlayerMessagePlaceholder, message).Add(ClanTagPlaceholder, tag);
+            return GetDefault().AddPlayer(player).Add(PlaceholderKeys.Data.PlayerMessage, message);
         }
     }
 }

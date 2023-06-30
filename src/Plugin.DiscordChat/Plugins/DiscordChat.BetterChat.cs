@@ -17,26 +17,9 @@ namespace DiscordChatPlugin.Plugins
             return false;
         }
 
-        public void GetBetterChatMessage(IPlayer player, string message, out string playerInfo, out string messageInfo)
-        {
-            string bcMessage = GetBetterChatConsoleMessage(player, message);
-            int index = bcMessage.IndexOf(':');
-
-            if (index != -1)
-            {
-                playerInfo = bcMessage.Substring(0, index);
-                messageInfo = bcMessage.Substring(index + 2);
-            }
-            else
-            {
-                playerInfo = string.Empty;
-                messageInfo = bcMessage;
-            }
-        }
-
         public string GetBetterChatConsoleMessage(IPlayer player, string message)
         {
-            return BetterChat.Call<string>("API_GetFormattedMessage", player, message, true);
+            return BetterChat.Call<string>("API_GetFormattedMessage", player, message, _true);
         }
     }
 }
