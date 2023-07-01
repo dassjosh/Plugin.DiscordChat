@@ -61,6 +61,8 @@ namespace DiscordChatPlugin.Plugins
             {
                 SetupChannel(guild, MessageSource.Server, _pluginConfig.ChatSettings.ChatChannel, _pluginConfig.ChatSettings.UseBotToDisplayChat);
             }
+            
+            SetupChannel(guild, MessageSource.Discord, _pluginConfig.ChatSettings.ChatChannel, _pluginConfig.ChatSettings.UseBotToDisplayChat);
 
             SetupChannel(guild, MessageSource.PlayerState, _pluginConfig.PlayerStateSettings.PlayerStateChannel, false);
             SetupChannel(guild, MessageSource.ServerState, _pluginConfig.ServerStateSettings.ServerStateChannel, false);
@@ -141,7 +143,7 @@ namespace DiscordChatPlugin.Plugins
                 channel.GetMessages(Client, new ChannelMessagesRequest{Limit = 100}).Then(messages => OnGetChannelMessages(messages, channel));
             }
 
-            Sends[type] = new DiscordSendQueue(channel, GetTemplateName(type), timer);
+            Sends[type] = new DiscordSendQueue(channel, GetTemplateName(type), timer);;
 
             Puts($"Setup Channel {type} With ID: {id}");
         }
@@ -153,9 +155,10 @@ namespace DiscordChatPlugin.Plugins
                 return;
             }
 
-            DiscordMessage[] messagesToDelete = messages
-                                                .Where(m => !CanSendMessage(m.Content, m.Author.Player, m.Author, MessageSource.Server, m))
-                                                .ToArray();
+            Snowflake[] messagesToDelete = messages
+                                           .Where(m => !CanSendMessage(m.Content, m.Author.Player, m.Author, MessageSource.Server, m))
+                                           .Take(100).Select(m => m.Id)
+                                           .ToArray();
 
             if (messagesToDelete.Length == 0)
             {
@@ -164,11 +167,11 @@ namespace DiscordChatPlugin.Plugins
 
             if (messagesToDelete.Length == 1)
             {
-                messagesToDelete[0]?.Delete(Client);
+                new DiscordMessage { Id = messagesToDelete[0] }.Delete(Client);
                 return;
             }
 
-            channel.BulkDeleteMessages(Client, messagesToDelete.Take(100).Select(m => m.Id).ToArray());
+            channel.BulkDeleteMessages(Client, messagesToDelete);
         }
 
         public void HandleDiscordChatMessage(DiscordMessage message)

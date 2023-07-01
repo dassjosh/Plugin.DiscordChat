@@ -95,7 +95,7 @@ namespace DiscordChatPlugin.Plugins
                     return false;
                 }
             }
-
+            
             return true;
         }
 
@@ -125,23 +125,12 @@ namespace DiscordChatPlugin.Plugins
             }
         }
 
-        public string GetPlayerName(IPlayer player)
-        {
-            string name = ProcessPlaceholders(LangKeys.Discord.Chat.PlayerName, GetDefault().AddPlayer(player));
-            StringBuilder sb = _pool.GetStringBuilder(name);
-            for (int index = 0; index < _plugins.Count; index++)
-            {
-                _plugins[index].ProcessPlayerName(sb, player);
-            }
-
-            return _pool.FreeStringBuilderToString(sb);
-        }
-        
         public void SendMessage(string message, IPlayer player, DiscordUser user, MessageSource source, DiscordMessage sourceMessage)
         {
             for (int index = 0; index < _plugins.Count; index++)
             {
-                if (_plugins[index].SendMessage(message, player, user, source, sourceMessage))
+                IPluginHandler plugin = _plugins[index];
+                if (plugin.SendMessage(message, player, user, source, sourceMessage))
                 {
                     return;
                 }

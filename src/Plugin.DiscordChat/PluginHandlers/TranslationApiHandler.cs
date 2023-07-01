@@ -23,7 +23,7 @@ namespace DiscordChatPlugin.PluginHandlers
         {
             if (CanChatTranslatorSource(source))
             {
-                Plugin.Call("Translate", message, _settings.DiscordServerLanguage, "auto", new Action<string>(callback.Invoke));
+                Plugin.Call("Translate", message, _settings.DiscordServerLanguage, "auto", callback);
                 return;
             }
 

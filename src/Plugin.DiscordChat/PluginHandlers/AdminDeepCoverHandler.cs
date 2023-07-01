@@ -15,7 +15,7 @@ namespace DiscordChatPlugin.PluginHandlers
         {
             return player.Object != null
                    && (source == MessageSource.Discord || source == MessageSource.Server)
-                   && Plugin.Call<bool>("API_IsDeepCovered", player.Object);
+                   && !Plugin.Call<bool>("API_IsDeepCovered", player.Object);
         }
     }
 }

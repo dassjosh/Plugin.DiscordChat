@@ -1,10 +1,6 @@
 ﻿using DiscordChatPlugin.Enums;
 using Oxide.Core.Libraries.Covalence;
 using Oxide.Core.Plugins;
-using Oxide.Ext.Discord.Entities;
-using Oxide.Ext.Discord.Entities.Channels;
-using Oxide.Ext.Discord.Entities.Guilds;
-using Oxide.Ext.Discord.Entities.Permissions;
 
 namespace DiscordChatPlugin.Plugins
 {

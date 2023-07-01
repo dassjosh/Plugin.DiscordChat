@@ -23,9 +23,12 @@ namespace DiscordChatPlugin.PluginHandlers
             {
                 return;
             }
-            
+
+            string builtName = name.ToString();
+            builtName = Plugin.Call<string>("GetSpamFreeText", builtName);
+            builtName = Plugin.Call<string>("GetImpersonationFreeText", builtName);
             name.Length = 0;
-            name.Append(Plugin.Call<string>("GetClearName", player));
+            name.Append(builtName);
         }
 
         public override void ProcessMessage(StringBuilder message, IPlayer player, DiscordUser user, MessageSource source)

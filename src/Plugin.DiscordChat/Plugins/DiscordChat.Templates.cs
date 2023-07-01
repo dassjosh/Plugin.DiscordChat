@@ -17,8 +17,8 @@ namespace DiscordChatPlugin.Plugins
     {
         public void RegisterTemplates()
         {
-            DiscordMessageTemplate connected = CreateTemplateEmbed($":white_check_mark: ({{timestamp.now.shorttime}}) **{{{PlaceholderKeys.PlayerName}}}** has joined.",  DiscordColor.Success);
-            _templates.RegisterGlobalTemplateAsync(this, TemplateKeys.Player.StateChanged, connected, new TemplateVersion(1, 0, 0), new TemplateVersion(1, 0, 0));
+            DiscordMessageTemplate playerState = CreateTemplateEmbed($"{{{PlaceholderKeys.Message}}}",  DiscordColor.Success);
+            _templates.RegisterGlobalTemplateAsync(this, TemplateKeys.Player.StateChanged, playerState, new TemplateVersion(1, 0, 0), new TemplateVersion(1, 0, 0));
 
             DiscordMessageTemplate online = CreateTemplateEmbed(":green_circle: The server is now online", DiscordColor.Success);
             _templates.RegisterGlobalTemplateAsync(this, TemplateKeys.Server.Online, online, new TemplateVersion(1, 0, 0), new TemplateVersion(1, 0, 0));

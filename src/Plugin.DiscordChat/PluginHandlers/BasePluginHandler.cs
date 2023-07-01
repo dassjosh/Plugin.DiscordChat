@@ -15,46 +15,25 @@ namespace DiscordChatPlugin.PluginHandlers
         protected readonly Plugin Plugin;
         private readonly string _pluginName;
 
-        public BasePluginHandler(DiscordChat chat, Plugin plugin)
+        protected BasePluginHandler(DiscordChat chat, Plugin plugin)
         {
             Chat = chat;
             Plugin = plugin;
             _pluginName = plugin.Name;
         }
 
-        public virtual bool CanSendMessage(string message, IPlayer player, DiscordUser user, MessageSource source, DiscordMessage sourceMessage)
-        {
-            return true;
-        }
+        public virtual bool CanSendMessage(string message, IPlayer player, DiscordUser user, MessageSource source, DiscordMessage sourceMessage) => true;
 
-        public virtual void ProcessPlayerName(StringBuilder name, IPlayer player)
-        {
-            
-        }
+        public virtual void ProcessPlayerName(StringBuilder name, IPlayer player) { }
 
-        public virtual bool HasCallbackMessage()
-        {
-            return false;
-        }
+        public virtual bool HasCallbackMessage() => false;
 
-        public virtual void ProcessCallbackMessage(string message, IPlayer player, DiscordUser user, MessageSource source, Action<string> callback)
-        {
-            
-        }
+        public virtual void ProcessCallbackMessage(string message, IPlayer player, DiscordUser user, MessageSource source, Action<string> callback) { }
 
-        public virtual void ProcessMessage(StringBuilder message, IPlayer player, DiscordUser user, MessageSource source)
-        {
-            
-        }
+        public virtual void ProcessMessage(StringBuilder message, IPlayer player, DiscordUser user, MessageSource source) { }
 
-        public virtual bool SendMessage(string message, IPlayer player, DiscordUser user, MessageSource source, DiscordMessage sourceMessage)
-        {
-            return false;
-        }
+        public virtual bool SendMessage(string message, IPlayer player, DiscordUser user, MessageSource source, DiscordMessage sourceMessage) => false;
 
-        public string GetPluginName()
-        {
-            return _pluginName;
-        }
+        public string GetPluginName() => _pluginName;
     }
 }

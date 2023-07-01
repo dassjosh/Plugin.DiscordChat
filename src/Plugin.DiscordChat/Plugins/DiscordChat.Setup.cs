@@ -31,8 +31,8 @@ namespace DiscordChatPlugin.Plugins
             Unsubscribe(nameof(OnServerShutdown));
             Unsubscribe(nameof(OnClanChat));
             Unsubscribe(nameof(OnAllianceChat));
-
-            _chatHandler = new DiscordChatHandler(this, _pluginConfig.ChatSettings, this, server);
+            
+            _plugins.Add(new DiscordChatHandler(this, _pluginConfig.ChatSettings, this, server));
         }
 
          protected override void LoadDefaultConfig()

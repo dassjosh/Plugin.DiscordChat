@@ -1,4 +1,5 @@
 ﻿using ConVar;
+using DiscordChatPlugin.Configuration.Plugins;
 using DiscordChatPlugin.Enums;
 using DiscordChatPlugin.Localization;
 using DiscordChatPlugin.Placeholders;
@@ -34,7 +35,8 @@ namespace DiscordChatPlugin.Plugins
 
         public void ProcessPlayerState(string langKey, PlaceholderData data)
         {
-            Sends[MessageSource.PlayerState]?.QueueMessage(ProcessPlaceholders(langKey, data));
+            string message = ProcessPlaceholders(langKey, data);
+            Sends[MessageSource.PlayerState]?.QueueMessage(message);
         }
 
         private void OnPluginLoaded(Plugin plugin)
@@ -49,11 +51,11 @@ namespace DiscordChatPlugin.Plugins
             switch (plugin.Name)
             {
                 case "AdminChat":
-                    _plugins.Add(new AdminChatHandler(Client, this, _pluginConfig.PluginSupport.AdminChat, plugin));
+                    AddHandler(new AdminChatHandler(Client, this, _pluginConfig.PluginSupport.AdminChat, plugin));
                     break;
                 
                 case "AdminDeepCover":
-                    _plugins.Add(new AdminDeepCoverHandler(this, plugin));
+                    AddHandler(new AdminDeepCoverHandler(this, plugin));
                     break;
                 
                 case "AntiSpam":
@@ -63,30 +65,42 @@ namespace DiscordChatPlugin.Plugins
                         break;
                     }
                     
-                    _plugins.Add(new AntiSpamHandler(this, _pluginConfig.PluginSupport.AntiSpam, plugin));
+                    AddHandler(new AntiSpamHandler(this, _pluginConfig.PluginSupport.AntiSpam, plugin));
                     break;
 
                 case "BetterChatMute":
-                    _plugins.Add(new BetterChatMuteHandler(this, _pluginConfig.PluginSupport.BetterChatMute, plugin));
+                    BetterChatMuteSettings muteSettings = _pluginConfig.PluginSupport.BetterChatMute;
+                    if (muteSettings.IgnoreMuted)
+                    {
+                        AddHandler(new BetterChatMuteHandler(this, muteSettings, plugin));
+                    }
                     break;
                 
-                case "Clans":
-                    _plugins.Add(new ClansHandler(this, _pluginConfig.PluginSupport.Clans, plugin));
-                    break;
+                // case "Clans":
+                //     AddHandler(new ClansHandler(this, _pluginConfig.PluginSupport.Clans, plugin));
+                //     break;
 
                 case "TranslationAPI":
-                    _plugins.Add(new TranslationApiHandler(this, _pluginConfig.PluginSupport.ChatTranslator, plugin));
+                    AddHandler(new TranslationApiHandler(this, _pluginConfig.PluginSupport.ChatTranslator, plugin));
                     break;
                 
                 case "UFilter":
-                    _plugins.Add(new UFilterHandler(this, _pluginConfig.PluginSupport.UFilter, plugin));
+                    AddHandler(new UFilterHandler(this, _pluginConfig.PluginSupport.UFilter, plugin));
                     break;
             }
         }
 
+        public void AddHandler(IPluginHandler handler)
+        {
+            _plugins.Insert(_plugins.Count - 1, handler);
+        }
+
         private void OnPluginUnloaded(Plugin plugin)
         {
-            _plugins.RemoveAll(h => h.GetPluginName() == plugin.Name);
+            if (plugin.Name != Name)
+            {
+                _plugins.RemoveAll(h => h.GetPluginName() == plugin.Name);
+            }
         }
         
 #if RUST

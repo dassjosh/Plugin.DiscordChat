@@ -17,9 +17,9 @@ namespace DiscordChatPlugin.Plugins
             return false;
         }
 
-        public string GetBetterChatConsoleMessage(IPlayer player, string message)
-        {
-            return BetterChat.Call<string>("API_GetFormattedMessage", player, message, _true);
-        }
+        // public string GetBetterChatConsoleMessage(IPlayer player, string message)
+        // {
+        //     return BetterChat.Call<string>("API_GetFormattedMessage", player, message, _true);
+        // }
     }
 }
