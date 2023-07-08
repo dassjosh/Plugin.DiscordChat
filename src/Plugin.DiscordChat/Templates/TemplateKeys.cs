@@ -6,7 +6,9 @@
         {
             private const string Base = nameof(Player) + ".";
 
-            public const string StateChanged = Base + nameof(StateChanged);
+            public const string Connecting = Base + nameof(Connecting);
+            public const string Connected = Base + nameof(Connected);
+            public const string Disconnected = Base + nameof(Disconnected);
         }
 
         public static class Server

@@ -6,6 +6,7 @@ using Oxide.Core.Libraries.Covalence;
 using Oxide.Core.Plugins;
 using Oxide.Ext.Discord.Entities.Messages;
 using Oxide.Ext.Discord.Entities.Users;
+using MessageType = DiscordChatPlugin.Enums.MessageType;
 
 namespace DiscordChatPlugin.PluginHandlers
 {
@@ -22,17 +23,17 @@ namespace DiscordChatPlugin.PluginHandlers
             _pluginName = plugin.Name;
         }
 
-        public virtual bool CanSendMessage(string message, IPlayer player, DiscordUser user, MessageSource source, DiscordMessage sourceMessage) => true;
+        public virtual bool CanSendMessage(string message, IPlayer player, DiscordUser user, MessageType type, DiscordMessage sourceMessage) => true;
 
         public virtual void ProcessPlayerName(StringBuilder name, IPlayer player) { }
 
         public virtual bool HasCallbackMessage() => false;
 
-        public virtual void ProcessCallbackMessage(string message, IPlayer player, DiscordUser user, MessageSource source, Action<string> callback) { }
+        public virtual void ProcessCallbackMessage(string message, IPlayer player, DiscordUser user, MessageType type, Action<string> callback) { }
 
-        public virtual void ProcessMessage(StringBuilder message, IPlayer player, DiscordUser user, MessageSource source) { }
+        public virtual void ProcessMessage(StringBuilder message, IPlayer player, DiscordUser user, MessageType type) { }
 
-        public virtual bool SendMessage(string message, IPlayer player, DiscordUser user, MessageSource source, DiscordMessage sourceMessage) => false;
+        public virtual bool SendMessage(string message, IPlayer player, DiscordUser user, MessageType type, DiscordMessage sourceMessage) => false;
 
         public string GetPluginName() => _pluginName;
     }

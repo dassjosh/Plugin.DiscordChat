@@ -10,11 +10,7 @@ namespace DiscordChatPlugin.Plugins
         public string Lang(string key, PlaceholderData data)
         {
             string message = lang.GetMessage(key, this);
-            if (data != null)
-            {
-                message = _placeholders.ProcessPlaceholders(message, data);
-            }
-            
+            message = _placeholders.ProcessPlaceholders(message, data);
             return message;
         }
         

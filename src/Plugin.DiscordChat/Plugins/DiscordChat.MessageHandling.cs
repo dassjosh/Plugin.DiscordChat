@@ -12,6 +12,7 @@ using Oxide.Ext.Discord.Entities.Guilds;
 using Oxide.Ext.Discord.Entities.Messages;
 using Oxide.Ext.Discord.Entities.Permissions;
 using Oxide.Ext.Discord.Entities.Users;
+using MessageType = DiscordChatPlugin.Enums.MessageType;
 
 namespace DiscordChatPlugin.Plugins
 {
@@ -19,14 +20,14 @@ namespace DiscordChatPlugin.Plugins
     {
         private readonly Regex _channelMention = new Regex(@"(<#\d+>)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
         
-        public void HandleMessage(string content, IPlayer player, DiscordUser user, MessageSource source, DiscordMessage sourceMessage)
+        public void HandleMessage(string content, IPlayer player, DiscordUser user, MessageType type, DiscordMessage sourceMessage)
         {
-            if (!CanSendMessage(content, player, user, source, sourceMessage))
+            if (!CanSendMessage(content, player, user, type, sourceMessage))
             {
                 return;
             }
 
-            ProcessCallbackMessages(content, player, user, source, processedMessage =>
+            ProcessCallbackMessages(content, player, user, type, processedMessage =>
             {
                 StringBuilder messageBuilder = _pool.GetStringBuilder(processedMessage);
 
@@ -35,8 +36,8 @@ namespace DiscordChatPlugin.Plugins
                     ProcessMentions(sourceMessage, messageBuilder);
                 }
                 
-                ProcessMessage(messageBuilder, player, user, source);
-                SendMessage(_pool.FreeStringBuilderToString(messageBuilder), player, user, source, sourceMessage);
+                ProcessMessage(messageBuilder, player, user, type);
+                SendMessage(_pool.FreeStringBuilderToString(messageBuilder), player, user, type, sourceMessage);
             });
         }
 
@@ -86,11 +87,11 @@ namespace DiscordChatPlugin.Plugins
             }
         }
 
-        public bool CanSendMessage(string message, IPlayer player, DiscordUser user, MessageSource source, DiscordMessage sourceMessage)
+        public bool CanSendMessage(string message, IPlayer player, DiscordUser user, MessageType type, DiscordMessage sourceMessage)
         {
             for (int index = 0; index < _plugins.Count; index++)
             {
-                if (!_plugins[index].CanSendMessage(message, player, user, source, sourceMessage))
+                if (!_plugins[index].CanSendMessage(message, player, user, type, sourceMessage))
                 {
                     return false;
                 }
@@ -99,16 +100,16 @@ namespace DiscordChatPlugin.Plugins
             return true;
         }
 
-        public void ProcessCallbackMessages(string message, IPlayer player, DiscordUser user, MessageSource source, Action<string> completed, int index = 0)
+        public void ProcessCallbackMessages(string message, IPlayer player, DiscordUser user, MessageType type, Action<string> completed, int index = 0)
         {
             for (; index < _plugins.Count; index++)
             {
                 IPluginHandler handler = _plugins[index];
                 if (handler.HasCallbackMessage())
                 {
-                    handler.ProcessCallbackMessage(message, player, user, source, callbackMessage =>
+                    handler.ProcessCallbackMessage(message, player, user, type, callbackMessage =>
                     {
-                        ProcessCallbackMessages(callbackMessage, player, user, source, completed, index + 1);
+                        ProcessCallbackMessages(callbackMessage, player, user, type, completed, index + 1);
                     });
                     return;
                 }
@@ -117,20 +118,20 @@ namespace DiscordChatPlugin.Plugins
             completed.Invoke(message);
         }
         
-        public void ProcessMessage(StringBuilder message, IPlayer player, DiscordUser user, MessageSource source)
+        public void ProcessMessage(StringBuilder message, IPlayer player, DiscordUser user, MessageType type)
         {
             for (int index = 0; index < _plugins.Count; index++)
             {
-                _plugins[index].ProcessMessage(message, player, user, source);
+                _plugins[index].ProcessMessage(message, player, user, type);
             }
         }
 
-        public void SendMessage(string message, IPlayer player, DiscordUser user, MessageSource source, DiscordMessage sourceMessage)
+        public void SendMessage(string message, IPlayer player, DiscordUser user, MessageType type, DiscordMessage sourceMessage)
         {
             for (int index = 0; index < _plugins.Count; index++)
             {
                 IPluginHandler plugin = _plugins[index];
-                if (plugin.SendMessage(message, player, user, source, sourceMessage))
+                if (plugin.SendMessage(message, player, user, type, sourceMessage))
                 {
                     return;
                 }

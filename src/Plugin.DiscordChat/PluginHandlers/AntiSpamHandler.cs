@@ -31,9 +31,9 @@ namespace DiscordChatPlugin.PluginHandlers
             name.Append(builtName);
         }
 
-        public override void ProcessMessage(StringBuilder message, IPlayer player, DiscordUser user, MessageSource source)
+        public override void ProcessMessage(StringBuilder message, IPlayer player, DiscordUser user, MessageType type)
         {
-            if (CanFilterMessage(source))
+            if (CanFilterMessage(type))
             {
                 string clearMessage = Plugin.Call<string>("GetSpamFreeText", message.ToString());
                 message.Length = 0;
@@ -41,20 +41,20 @@ namespace DiscordChatPlugin.PluginHandlers
             }
         }
         
-        private bool CanFilterMessage(MessageSource source)
+        private bool CanFilterMessage(MessageType type)
         {
-            switch (source)
+            switch (type)
             {
-                case MessageSource.Discord:
+                case MessageType.Discord:
                     return _settings.DiscordMessage;
-                case MessageSource.Server:
+                case MessageType.Server:
                     return _settings.ServerMessage;
-                case MessageSource.Team:
+                case MessageType.Team:
                     return _settings.TeamMessage;
-                case MessageSource.Cards:
+                case MessageType.Cards:
                     return _settings.CardMessages;
-                case MessageSource.ClanChat:
-                case MessageSource.AllianceChat:
+                case MessageType.Clan:
+                case MessageType.Alliance:
                     return _settings.PluginMessage;
             }
 

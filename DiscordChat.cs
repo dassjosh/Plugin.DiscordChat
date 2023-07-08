@@ -35,6 +35,9 @@ using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 
+using MessageType = DiscordChatPlugin.Enums.MessageType;
+using MessageType = Oxide.Ext.Discord.Entities.Messages.MessageType;
+
 //DiscordChat created with PluginMerge v(1.0.5.0) by MJSU @ https://github.com/dassjosh/Plugin.Merge
 namespace Oxide.Plugins
 {
@@ -53,7 +56,7 @@ namespace Oxide.Plugins
         {
             if (IsAdminChatEnabled())
             {
-                HandleMessage(message, player, player.GetDiscordUser(), MessageSource.AdminChat, null);
+                HandleMessage(message, player, player.GetDiscordUser(), MessageType.AdminChat, null);
             }
         }
         
@@ -73,11 +76,11 @@ namespace Oxide.Plugins
                 return;
             }
             
-            HandleMessage(message.Content, player, player.GetDiscordUser(), MessageSource.AdminChat, message);
+            HandleMessage(message.Content, player, player.GetDiscordUser(), MessageType.AdminChat, message);
         }
         
-        public bool IsAdminChatEnabled() => _adminChatSettings.Enabled && Sends.ContainsKey(MessageSource.AdminChat);
-        public bool CanPlayerAdminChat(IPlayer player) => _adminChatSettings.Enabled && player.HasPermission(AdminChatPermission);
+        public bool IsAdminChatEnabled() => _adminChatSettings.Enabled && Sends.ContainsKey(MessageType.AdminChat);
+        public bool CanPlayerAdminChat(IPlayer player) => player != null && _adminChatSettings.Enabled && player.HasPermission(AdminChatPermission);
         #endregion
 
         #region Plugins\DiscordChat.BetterChat.cs
@@ -102,12 +105,12 @@ namespace Oxide.Plugins
         #region Plugins\DiscordChat.Clans.cs
         private void OnClanChat(IPlayer player, string message)
         {
-            Sends[MessageSource.ClanChat]?.QueueMessage(ProcessPlaceholders(LangKeys.Discord.Clans.ClanMessage, GetClanPlaceholders(player, message)));
+            Sends[MessageType.Clan]?.QueueMessage(Lang(LangKeys.Discord.Clans.ClanMessage, GetClanPlaceholders(player, message)));
         }
         
         private void OnAllianceChat(IPlayer player, string message)
         {
-            Sends[MessageSource.AllianceChat]?.QueueMessage(ProcessPlaceholders(LangKeys.Discord.Clans.AllianceMessage, GetClanPlaceholders(player, message)));
+            Sends[MessageType.Alliance]?.QueueMessage(Lang(LangKeys.Discord.Clans.AllianceMessage, GetClanPlaceholders(player, message)));
         }
         
         public PlaceholderData GetClanPlaceholders(IPlayer player, string message)
@@ -153,24 +156,28 @@ namespace Oxide.Plugins
         {
             if (_pluginConfig.ChatSettings.DiscordToServer)
             {
-                SetupChannel(guild, MessageSource.Server, _pluginConfig.ChatSettings.ChatChannel, _pluginConfig.ChatSettings.UseBotToDisplayChat, HandleDiscordChatMessage);
+                SetupChannel(guild, MessageType.Server, _pluginConfig.ChatSettings.ChatChannel, _pluginConfig.ChatSettings.UseBotToDisplayChat, HandleDiscordChatMessage);
             }
             else
             {
-                SetupChannel(guild, MessageSource.Server, _pluginConfig.ChatSettings.ChatChannel, _pluginConfig.ChatSettings.UseBotToDisplayChat);
+                SetupChannel(guild, MessageType.Server, _pluginConfig.ChatSettings.ChatChannel, _pluginConfig.ChatSettings.UseBotToDisplayChat);
             }
             
-            SetupChannel(guild, MessageSource.Discord, _pluginConfig.ChatSettings.ChatChannel, _pluginConfig.ChatSettings.UseBotToDisplayChat);
+            SetupChannel(guild, MessageType.Discord, _pluginConfig.ChatSettings.ChatChannel, _pluginConfig.ChatSettings.UseBotToDisplayChat);
             
-            SetupChannel(guild, MessageSource.PlayerState, _pluginConfig.PlayerStateSettings.PlayerStateChannel, false);
-            SetupChannel(guild, MessageSource.ServerState, _pluginConfig.ServerStateSettings.ServerStateChannel, false);
-            SetupChannel(guild, MessageSource.AdminChat, _pluginConfig.PluginSupport.AdminChat.ChatChannel, _pluginConfig.ChatSettings.UseBotToDisplayChat, HandleAdminChatDiscordMessage);
-            SetupChannel(guild, MessageSource.ClanChat, _pluginConfig.PluginSupport.Clans.ClansChatChannel, _pluginConfig.ChatSettings.UseBotToDisplayChat);
-            SetupChannel(guild, MessageSource.AllianceChat, _pluginConfig.PluginSupport.Clans.AllianceChatChannel, _pluginConfig.ChatSettings.UseBotToDisplayChat);
+            SetupChannel(guild, MessageType.Connecting, _pluginConfig.PlayerStateSettings.PlayerStateChannel, false);
+            SetupChannel(guild, MessageType.Connected, _pluginConfig.PlayerStateSettings.PlayerStateChannel, false);
+            SetupChannel(guild, MessageType.Disconnected, _pluginConfig.PlayerStateSettings.PlayerStateChannel, false);
+            SetupChannel(guild, MessageType.ServerBooting, _pluginConfig.ServerStateSettings.ServerStateChannel, false);
+            SetupChannel(guild, MessageType.ServerOnline, _pluginConfig.ServerStateSettings.ServerStateChannel, false);
+            SetupChannel(guild, MessageType.ServerShutdown, _pluginConfig.ServerStateSettings.ServerStateChannel, false);
+            SetupChannel(guild, MessageType.AdminChat, _pluginConfig.PluginSupport.AdminChat.ChatChannel, _pluginConfig.ChatSettings.UseBotToDisplayChat, HandleAdminChatDiscordMessage);
+            SetupChannel(guild, MessageType.Clan, _pluginConfig.PluginSupport.Clans.ClansChatChannel, _pluginConfig.ChatSettings.UseBotToDisplayChat);
+            SetupChannel(guild, MessageType.Alliance, _pluginConfig.PluginSupport.Clans.AllianceChatChannel, _pluginConfig.ChatSettings.UseBotToDisplayChat);
             
             #if RUST
-            SetupChannel(guild, MessageSource.Team, _pluginConfig.ChatSettings.TeamChannel, false);
-            SetupChannel(guild, MessageSource.Cards, _pluginConfig.ChatSettings.CardsChannel, false);
+            SetupChannel(guild, MessageType.Team, _pluginConfig.ChatSettings.TeamChannel, false);
+            SetupChannel(guild, MessageType.Cards, _pluginConfig.ChatSettings.CardsChannel, false);
             #endif
             
             if (_pluginConfig.ChatSettings.ChatChannel.IsValid()
@@ -212,12 +219,12 @@ namespace Oxide.Plugins
             {
                 if (!_serverInitCalled)
                 {
-                    Sends[MessageSource.ServerState]?.SendTemplate(TemplateKeys.Server.Booting, GetDefault());
+                    Sends[MessageType.ServerBooting]?.SendTemplate(TemplateKeys.Server.Booting, GetDefault());
                 }
             });
         }
         
-        public void SetupChannel(DiscordGuild guild, MessageSource type, Snowflake id, bool wipeNonBotMessages, Action<DiscordMessage> callback = null)
+        public void SetupChannel(DiscordGuild guild, MessageType type, Snowflake id, bool wipeNonBotMessages, Action<DiscordMessage> callback = null)
         {
             if (!id.IsValid())
             {
@@ -242,7 +249,6 @@ namespace Oxide.Plugins
             }
             
             Sends[type] = new DiscordSendQueue(channel, GetTemplateName(type), timer);;
-            
             Puts($"Setup Channel {type} With ID: {id}");
         }
         
@@ -254,7 +260,7 @@ namespace Oxide.Plugins
             }
             
             Snowflake[] messagesToDelete = messages
-            .Where(m => !CanSendMessage(m.Content, m.Author.Player, m.Author, MessageSource.Server, m))
+            .Where(m => !CanSendMessage(m.Content, m.Author.Player, m.Author, MessageType.Server, m))
             .Take(100).Select(m => m.Id)
             .ToArray();
             
@@ -280,7 +286,7 @@ namespace Oxide.Plugins
                 return;
             }
             
-            HandleMessage(message.Content, player, message.Author, MessageSource.Discord, message);
+            HandleMessage(message.Content, player, message.Author, MessageType.Discord, message);
             
             if (_pluginConfig.ChatSettings.UseBotToDisplayChat)
             {
@@ -291,7 +297,7 @@ namespace Oxide.Plugins
 
         #region Plugins\DiscordChat.Fields.cs
         [PluginReference]
-        private Plugin BetterChat, PlaceholderAPI;
+        private Plugin BetterChat;
         
         public DiscordClient Client { get; set; }
         
@@ -311,7 +317,7 @@ namespace Oxide.Plugins
         
         private bool _serverInitCalled;
         
-        public readonly Hash<MessageSource, DiscordSendQueue> Sends = new Hash<MessageSource, DiscordSendQueue>();
+        public readonly Hash<MessageType, DiscordSendQueue> Sends = new Hash<MessageType, DiscordSendQueue>();
         private readonly Hash<string, string> _flagCache = new Hash<string, string>();
         private readonly List<IPluginHandler> _plugins = new List<IPluginHandler>();
         
@@ -321,17 +327,17 @@ namespace Oxide.Plugins
         #endregion
 
         #region Plugins\DiscordChat.Helpers.cs
-        public MessageSource GetSourceFromServerChannel(int channel)
+        public MessageType GetSourceFromServerChannel(int channel)
         {
             switch (channel)
             {
                 case 1:
-                return MessageSource.Team;
+                return MessageType.Team;
                 case 3:
-                return MessageSource.Cards;
+                return MessageType.Cards;
             }
             
-            return MessageSource.Server;
+            return MessageType.Server;
         }
         
         public bool IsPluginLoaded(Plugin plugin) => plugin != null && plugin.IsLoaded;
@@ -364,7 +370,7 @@ namespace Oxide.Plugins
             if (_pluginConfig.PlayerStateSettings.ShowAdmins || !player.IsAdmin)
             {
                 PlaceholderData placeholders = GetDefault().AddPlayer(player);
-                ProcessPlayerState(LangKeys.Discord.Player.Connecting, placeholders);
+                ProcessPlayerState(MessageType.Connecting, LangKeys.Discord.Player.Connecting, placeholders);
             }
         }
         
@@ -373,7 +379,7 @@ namespace Oxide.Plugins
             if (_pluginConfig.PlayerStateSettings.ShowAdmins || !player.IsAdmin)
             {
                 PlaceholderData placeholders = GetDefault().AddPlayer(player);
-                ProcessPlayerState(LangKeys.Discord.Player.Connected, placeholders);
+                ProcessPlayerState(MessageType.Connected, LangKeys.Discord.Player.Connected, placeholders);
             }
         }
         
@@ -382,14 +388,14 @@ namespace Oxide.Plugins
             if (_pluginConfig.PlayerStateSettings.ShowAdmins || !player.IsAdmin)
             {
                 PlaceholderData placeholders = GetDefault().AddPlayer(player).Add(PlaceholderKeys.Data.DisconnectReason, reason);
-                ProcessPlayerState(LangKeys.Discord.Player.Disconnected, placeholders);
+                ProcessPlayerState(MessageType.Disconnected, LangKeys.Discord.Player.Disconnected, placeholders);
             }
         }
         
-        public void ProcessPlayerState(string langKey, PlaceholderData data)
+        public void ProcessPlayerState(MessageType type, string langKey, PlaceholderData data)
         {
-            string message = ProcessPlaceholders(langKey, data);
-            Sends[MessageSource.PlayerState]?.QueueMessage(message);
+            string message = Lang(langKey, data);
+            Sends[type]?.QueueMessage(message);
         }
         
         private void OnPluginLoaded(Plugin plugin)
@@ -471,28 +477,22 @@ namespace Oxide.Plugins
         public void HandleChat(IPlayer player, string message, int channel)
         {
             DiscordUser user = player.GetDiscordUser();
-            MessageSource source = GetSourceFromServerChannel(channel);
+            MessageType type = GetSourceFromServerChannel(channel);
             
-            if (!Sends.ContainsKey(source))
+            if (!Sends.ContainsKey(type))
             {
                 return;
             }
             
-            HandleMessage(message, player, user, source, null);
+            HandleMessage(message, player, user, type, null);
         }
         #endregion
 
         #region Plugins\DiscordChat.Lang.cs
-        public string Lang(string key) => lang.GetMessage(key, this);
-        
-        public string ProcessPlaceholders(string key, PlaceholderData data)
+        public string Lang(string key, PlaceholderData data)
         {
-            string message = Lang(key);
-            if (data != null)
-            {
-                message = _placeholders.ProcessPlaceholders(message, data);
-            }
-            
+            string message = lang.GetMessage(key, this);
+            message = _placeholders.ProcessPlaceholders(message, data);
             return message;
         }
         
@@ -522,14 +522,14 @@ namespace Oxide.Plugins
         #region Plugins\DiscordChat.MessageHandling.cs
         private readonly Regex _channelMention = new Regex(@"(<#\d+>)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
         
-        public void HandleMessage(string content, IPlayer player, DiscordUser user, MessageSource source, DiscordMessage sourceMessage)
+        public void HandleMessage(string content, IPlayer player, DiscordUser user, MessageType type, DiscordMessage sourceMessage)
         {
-            if (!CanSendMessage(content, player, user, source, sourceMessage))
+            if (!CanSendMessage(content, player, user, type, sourceMessage))
             {
                 return;
             }
             
-            ProcessCallbackMessages(content, player, user, source, processedMessage =>
+            ProcessCallbackMessages(content, player, user, type, processedMessage =>
             {
                 StringBuilder messageBuilder = _pool.GetStringBuilder(processedMessage);
                 
@@ -538,8 +538,8 @@ namespace Oxide.Plugins
                     ProcessMentions(sourceMessage, messageBuilder);
                 }
                 
-                ProcessMessage(messageBuilder, player, user, source);
-                SendMessage(_pool.FreeStringBuilderToString(messageBuilder), player, user, source, sourceMessage);
+                ProcessMessage(messageBuilder, player, user, type);
+                SendMessage(_pool.FreeStringBuilderToString(messageBuilder), player, user, type, sourceMessage);
             });
         }
         
@@ -589,11 +589,11 @@ namespace Oxide.Plugins
             }
         }
         
-        public bool CanSendMessage(string message, IPlayer player, DiscordUser user, MessageSource source, DiscordMessage sourceMessage)
+        public bool CanSendMessage(string message, IPlayer player, DiscordUser user, MessageType type, DiscordMessage sourceMessage)
         {
             for (int index = 0; index < _plugins.Count; index++)
             {
-                if (!_plugins[index].CanSendMessage(message, player, user, source, sourceMessage))
+                if (!_plugins[index].CanSendMessage(message, player, user, type, sourceMessage))
                 {
                     return false;
                 }
@@ -602,16 +602,16 @@ namespace Oxide.Plugins
             return true;
         }
         
-        public void ProcessCallbackMessages(string message, IPlayer player, DiscordUser user, MessageSource source, Action<string> completed, int index = 0)
+        public void ProcessCallbackMessages(string message, IPlayer player, DiscordUser user, MessageType type, Action<string> completed, int index = 0)
         {
             for (; index < _plugins.Count; index++)
             {
                 IPluginHandler handler = _plugins[index];
                 if (handler.HasCallbackMessage())
                 {
-                    handler.ProcessCallbackMessage(message, player, user, source, callbackMessage =>
+                    handler.ProcessCallbackMessage(message, player, user, type, callbackMessage =>
                     {
-                        ProcessCallbackMessages(callbackMessage, player, user, source, completed, index + 1);
+                        ProcessCallbackMessages(callbackMessage, player, user, type, completed, index + 1);
                     });
                     return;
                 }
@@ -620,20 +620,20 @@ namespace Oxide.Plugins
             completed.Invoke(message);
         }
         
-        public void ProcessMessage(StringBuilder message, IPlayer player, DiscordUser user, MessageSource source)
+        public void ProcessMessage(StringBuilder message, IPlayer player, DiscordUser user, MessageType type)
         {
             for (int index = 0; index < _plugins.Count; index++)
             {
-                _plugins[index].ProcessMessage(message, player, user, source);
+                _plugins[index].ProcessMessage(message, player, user, type);
             }
         }
         
-        public void SendMessage(string message, IPlayer player, DiscordUser user, MessageSource source, DiscordMessage sourceMessage)
+        public void SendMessage(string message, IPlayer player, DiscordUser user, MessageType type, DiscordMessage sourceMessage)
         {
             for (int index = 0; index < _plugins.Count; index++)
             {
                 IPluginHandler plugin = _plugins[index];
-                if (plugin.SendMessage(message, player, user, source, sourceMessage))
+                if (plugin.SendMessage(message, player, user, type, sourceMessage))
                 {
                     return;
                 }
@@ -653,7 +653,7 @@ namespace Oxide.Plugins
         
         public string GetPlayerName(IPlayer player)
         {
-            string name = ProcessPlaceholders(LangKeys.Discord.Chat.PlayerName, GetDefault().AddPlayer(player));
+            string name = Lang(LangKeys.Discord.Chat.PlayerName, GetDefault().AddPlayer(player));
             StringBuilder sb = _pool.GetStringBuilder(name);
             for (int index = 0; index < _plugins.Count; index++)
             {
@@ -661,33 +661,6 @@ namespace Oxide.Plugins
             }
             
             return _pool.FreeStringBuilderToString(sb);
-        }
-        
-        public string GetCountryFlag(IPlayer player)
-        {
-            Action<IPlayer, StringBuilder, bool> process = PlaceholderAPI.Call("GetProcessPlaceholders", 1) as Action<IPlayer, StringBuilder, bool>;
-            StringBuilder sb = new StringBuilder("{player.address.data!country.code:lower}");
-            process(player, sb, true);
-            
-            string country = sb.ToString();
-            string flag;
-            if (_flagCache.TryGetValue(country, out flag))
-            {
-                return country;
-            }
-            
-            IPAddress address;
-            if (string.IsNullOrEmpty(country) || IPAddress.TryParse(country, out address))
-            {
-                flag = ":signal_strength:";
-            }
-            else
-            {
-                flag =  $":flag_{country}:";
-            }
-            
-            _flagCache[country] = flag;
-            return flag;
         }
         
         public PlaceholderData GetDefault()
@@ -774,13 +747,13 @@ namespace Oxide.Plugins
             
             if (startup)
             {
-                Sends[MessageSource.ServerState]?.SendTemplate(TemplateKeys.Server.Online, GetDefault());
+                Sends[MessageType.ServerOnline]?.SendTemplate(TemplateKeys.Server.Online, GetDefault());
             }
         }
         
         private void OnServerShutdown()
         {
-            Sends[MessageSource.ServerState]?.SendTemplate(TemplateKeys.Server.Shutdown, GetDefault());
+            Sends[MessageType.ServerShutdown]?.SendTemplate(TemplateKeys.Server.Shutdown, GetDefault());
         }
         
         private void Unload()
@@ -792,8 +765,14 @@ namespace Oxide.Plugins
         #region Plugins\DiscordChat.Templates.cs
         public void RegisterTemplates()
         {
-            DiscordMessageTemplate playerState = CreateTemplateEmbed($"{{{PlaceholderKeys.Message}}}",  DiscordColor.Success);
-            _templates.RegisterGlobalTemplateAsync(this, TemplateKeys.Player.StateChanged, playerState, new TemplateVersion(1, 0, 0), new TemplateVersion(1, 0, 0));
+            DiscordMessageTemplate connecting = CreateTemplateEmbed($"{{{PlaceholderKeys.Message}}}",  DiscordColor.Warning);
+            _templates.RegisterGlobalTemplateAsync(this, TemplateKeys.Player.Connecting, connecting, new TemplateVersion(1, 0, 0), new TemplateVersion(1, 0, 0));
+            
+            DiscordMessageTemplate connected = CreateTemplateEmbed($"{{{PlaceholderKeys.Message}}}",  DiscordColor.Success);
+            _templates.RegisterGlobalTemplateAsync(this, TemplateKeys.Player.Connected, connected, new TemplateVersion(1, 0, 0), new TemplateVersion(1, 0, 0));
+            
+            DiscordMessageTemplate disconnected = CreateTemplateEmbed($"{{{PlaceholderKeys.Message}}}",  DiscordColor.Danger);
+            _templates.RegisterGlobalTemplateAsync(this, TemplateKeys.Player.Disconnected, disconnected, new TemplateVersion(1, 0, 0), new TemplateVersion(1, 0, 0));
             
             DiscordMessageTemplate online = CreateTemplateEmbed(":green_circle: The server is now online", DiscordColor.Success);
             _templates.RegisterGlobalTemplateAsync(this, TemplateKeys.Server.Online, online, new TemplateVersion(1, 0, 0), new TemplateVersion(1, 0, 0));
@@ -868,24 +847,28 @@ namespace Oxide.Plugins
             channel?.CreateGlobalTemplateMessage(Client, templateName, create, placeholders);
         }
         
-        public string GetTemplateName(MessageSource type)
+        public string GetTemplateName(MessageType type)
         {
             switch (type)
             {
-                case MessageSource.Discord:
-                case MessageSource.Server:
+                case MessageType.Discord:
+                case MessageType.Server:
                 return TemplateKeys.Chat.General;
-                case MessageSource.Team:
+                case MessageType.Team:
                 return TemplateKeys.Chat.Teams;
-                case MessageSource.Cards:
+                case MessageType.Cards:
                 return TemplateKeys.Chat.Cards;
-                case MessageSource.PlayerState:
-                return TemplateKeys.Player.StateChanged;
-                case MessageSource.AdminChat:
+                case MessageType.Connecting:
+                return TemplateKeys.Player.Connecting;
+                case MessageType.Connected:
+                return TemplateKeys.Player.Connected;
+                case MessageType.Disconnected:
+                return TemplateKeys.Player.Disconnected;
+                case MessageType.AdminChat:
                 return TemplateKeys.Chat.AdminChat.Message;
-                case MessageSource.ClanChat:
+                case MessageType.Clan:
                 return TemplateKeys.Chat.Clans.Clan;
-                case MessageSource.AllianceChat:
+                case MessageType.Alliance:
                 return TemplateKeys.Chat.Clans.Alliance;
             }
             
@@ -922,12 +905,6 @@ namespace Oxide.Plugins
             [JsonProperty("Allow plugins to process Discord to Server Chat Messages")]
             public bool AllowPluginProcessing { get; set; }
             
-            [JsonProperty("Discord Message Server Time Offset (Hours)")]
-            public float ServerTimeOffset { get; set; }
-            
-            [JsonProperty("Max Characters Before Sending Message")]
-            public int MaxCharactersPerMessage { get; set; }
-            
             [JsonProperty("Text Replacements")]
             public Hash<string, string> TextReplacements { get; set; }
             
@@ -949,12 +926,6 @@ namespace Oxide.Plugins
                 DiscordToServer = settings?.DiscordToServer ?? true;
                 DiscordTag = settings?.DiscordTag ?? "[#5f79d6][Discord][/#]";
                 AllowPluginProcessing = settings?.AllowPluginProcessing ?? true;
-                ServerTimeOffset = settings?.ServerTimeOffset ?? 0f;
-                MaxCharactersPerMessage = settings?.MaxCharactersPerMessage ?? 0;
-                if (MaxCharactersPerMessage == 0)
-                {
-                    MaxCharactersPerMessage = 2000;
-                }
                 TextReplacements = settings?.TextReplacements ?? new Hash<string, string> { ["TextToBeReplaced"] = "ReplacedText" };
                 UnlinkedSettings = new UnlinkedSettings(settings?.UnlinkedSettings);
                 Filter = new MessageFilterSettings(settings?.Filter);
@@ -1107,18 +1078,22 @@ namespace Oxide.Plugins
         }
         #endregion
 
-        #region Enums\MessageSource.cs
-        public enum MessageSource
+        #region Enums\MessageType.cs
+        public enum MessageType : byte
         {
-            Discord,
+            Connecting,
+            Connected,
+            Disconnected,
+            ServerBooting,
+            ServerOnline,
+            ServerShutdown,
             Server,
-            ServerState,
-            PlayerState,
+            Discord,
             Team,
             Cards,
-            AdminChat,
-            ClanChat,
-            AllianceChat
+            Clan,
+            Alliance,
+            AdminChat
         }
         #endregion
 
@@ -1280,14 +1255,14 @@ namespace Oxide.Plugins
                 _settings = settings;
             }
             
-            public override bool CanSendMessage(string message, IPlayer player, DiscordUser user, MessageSource source, DiscordMessage sourceMessage)
+            public override bool CanSendMessage(string message, IPlayer player, DiscordUser user, Enums.MessageType type, DiscordMessage sourceMessage)
             {
-                return source == MessageSource.AdminChat ? !_settings.Enabled : !IsAdminChatMessage(player, message);
+                return type == Enums.MessageType.AdminChat ? !_settings.Enabled : !IsAdminChatMessage(player, message);
             }
             
-            public override bool SendMessage(string message, IPlayer player, DiscordUser user, MessageSource source, DiscordMessage sourceMessage)
+            public override bool SendMessage(string message, IPlayer player, DiscordUser user, Enums.MessageType type, DiscordMessage sourceMessage)
             {
-                if (source != MessageSource.AdminChat)
+                if (type != Enums.MessageType.AdminChat)
                 {
                     return false;
                 }
@@ -1299,14 +1274,14 @@ namespace Oxide.Plugins
                     if (_settings.ReplaceWithBot)
                     {
                         sourceMessage.Delete(_client);
-                        Chat.Sends[source]?.QueueMessage(Chat.ProcessPlaceholders(LangKeys.Discord.AdminChat.DiscordMessage, placeholders));
+                        Chat.Sends[type]?.QueueMessage(Chat.Lang(LangKeys.Discord.AdminChat.DiscordMessage, placeholders));
                     }
                     
                     Plugin.Call("SendAdminMessage", player, message);
                 }
                 else
                 {
-                    Chat.Sends[source]?.QueueMessage(Chat.ProcessPlaceholders(LangKeys.Discord.AdminChat.ServerMessage, placeholders));
+                    Chat.Sends[type]?.QueueMessage(Chat.Lang(LangKeys.Discord.AdminChat.ServerMessage, placeholders));
                 }
                 
                 return true;
@@ -1321,10 +1296,10 @@ namespace Oxide.Plugins
         {
             public AdminDeepCoverHandler(DiscordChat chat, Plugin plugin) : base(chat, plugin) { }
             
-            public override bool CanSendMessage(string message, IPlayer player, DiscordUser user, MessageSource source, DiscordMessage sourceMessage)
+            public override bool CanSendMessage(string message, IPlayer player, DiscordUser user, MessageType type, DiscordMessage sourceMessage)
             {
-                return player.Object != null
-                && (source == MessageSource.Discord || source == MessageSource.Server)
+                return player?.Object != null
+                && (type == MessageType.Discord || type == MessageType.Server)
                 && !Plugin.Call<bool>("API_IsDeepCovered", player.Object);
             }
         }
@@ -1354,9 +1329,9 @@ namespace Oxide.Plugins
                 name.Append(builtName);
             }
             
-            public override void ProcessMessage(StringBuilder message, IPlayer player, DiscordUser user, MessageSource source)
+            public override void ProcessMessage(StringBuilder message, IPlayer player, DiscordUser user, MessageType type)
             {
-                if (CanFilterMessage(source))
+                if (CanFilterMessage(type))
                 {
                     string clearMessage = Plugin.Call<string>("GetSpamFreeText", message.ToString());
                     message.Length = 0;
@@ -1364,20 +1339,20 @@ namespace Oxide.Plugins
                 }
             }
             
-            private bool CanFilterMessage(MessageSource source)
+            private bool CanFilterMessage(MessageType type)
             {
-                switch (source)
+                switch (type)
                 {
-                    case MessageSource.Discord:
+                    case MessageType.Discord:
                     return _settings.DiscordMessage;
-                    case MessageSource.Server:
+                    case MessageType.Server:
                     return _settings.ServerMessage;
-                    case MessageSource.Team:
+                    case MessageType.Team:
                     return _settings.TeamMessage;
-                    case MessageSource.Cards:
+                    case MessageType.Cards:
                     return _settings.CardMessages;
-                    case MessageSource.ClanChat:
-                    case MessageSource.AllianceChat:
+                    case MessageType.Clan:
+                    case MessageType.Alliance:
                     return _settings.PluginMessage;
                 }
                 
@@ -1400,17 +1375,17 @@ namespace Oxide.Plugins
                 _pluginName = plugin.Name;
             }
             
-            public virtual bool CanSendMessage(string message, IPlayer player, DiscordUser user, MessageSource source, DiscordMessage sourceMessage) => true;
+            public virtual bool CanSendMessage(string message, IPlayer player, DiscordUser user, MessageType type, DiscordMessage sourceMessage) => true;
             
             public virtual void ProcessPlayerName(StringBuilder name, IPlayer player) { }
             
             public virtual bool HasCallbackMessage() => false;
             
-            public virtual void ProcessCallbackMessage(string message, IPlayer player, DiscordUser user, MessageSource source, Action<string> callback) { }
+            public virtual void ProcessCallbackMessage(string message, IPlayer player, DiscordUser user, MessageType type, Action<string> callback) { }
             
-            public virtual void ProcessMessage(StringBuilder message, IPlayer player, DiscordUser user, MessageSource source) { }
+            public virtual void ProcessMessage(StringBuilder message, IPlayer player, DiscordUser user, MessageType type) { }
             
-            public virtual bool SendMessage(string message, IPlayer player, DiscordUser user, MessageSource source, DiscordMessage sourceMessage) => false;
+            public virtual bool SendMessage(string message, IPlayer player, DiscordUser user, MessageType type, DiscordMessage sourceMessage) => false;
             
             public string GetPluginName() => _pluginName;
         }
@@ -1426,36 +1401,10 @@ namespace Oxide.Plugins
                 _settings = settings;
             }
             
-            public override bool CanSendMessage(string message, IPlayer player, DiscordUser user, MessageSource source, DiscordMessage sourceMessage)
+            public override bool CanSendMessage(string message, IPlayer player, DiscordUser user, MessageType type, DiscordMessage sourceMessage)
             {
-                return !Plugin.Call<bool>("API_IsMuted", player);
+                return player != null && !Plugin.Call<bool>("API_IsMuted", player);
             }
-        }
-        #endregion
-
-        #region PluginHandlers\ClansHandler.cs
-        public class ClansHandler : BasePluginHandler
-        {
-            private readonly ClansSettings _settings;
-            
-            public ClansHandler(DiscordChat chat, ClansSettings settings, Plugin plugin) : base(chat, plugin)
-            {
-                _settings = settings;
-            }
-            
-            // public override void ProcessPlayerName(StringBuilder name, IPlayer player)
-            // {
-                //     if (player == null)
-                //     {
-                    //         return;
-                //     }
-                //
-                //     string clanTag = Plugin.Call<string>("GetClanOf", player.Id);
-                //     if (!string.IsNullOrEmpty(clanTag))
-                //     {
-                    //         name.Insert(0, DiscordChat.Instance.Lang(LangKeys.Server.ClanTag, player, clanTag));
-                //     }
-            // }
         }
         #endregion
 
@@ -1473,7 +1422,7 @@ namespace Oxide.Plugins
                 _unlinkedArgs[0] = settings.UnlinkedSettings.SteamIcon;
             }
             
-            public override bool CanSendMessage(string message, IPlayer player, DiscordUser user, MessageSource source, DiscordMessage sourceMessage)
+            public override bool CanSendMessage(string message, IPlayer player, DiscordUser user, MessageType type, DiscordMessage sourceMessage)
             {
                 if (sourceMessage != null)
                 {
@@ -1483,32 +1432,32 @@ namespace Oxide.Plugins
                     }
                 }
                 
-                switch (source)
+                switch (type)
                 {
-                    case MessageSource.Discord:
-                    return _settings.DiscordToServer && (_settings.UnlinkedSettings.AllowedUnlinked || player.IsLinked());
+                    case MessageType.Discord:
+                    return _settings.DiscordToServer && (_settings.UnlinkedSettings.AllowedUnlinked || (player != null && player.IsLinked()));
                     
-                    case MessageSource.Server:
+                    case MessageType.Server:
                     return _settings.ServerToDiscord;
                 }
                 
                 return true;
             }
             
-            public override bool SendMessage(string message, IPlayer player, DiscordUser user, MessageSource source, DiscordMessage sourceMessage)
+            public override bool SendMessage(string message, IPlayer player, DiscordUser user, MessageType type, DiscordMessage sourceMessage)
             {
-                switch (source)
+                switch (type)
                 {
-                    case MessageSource.Discord:
+                    case MessageType.Discord:
                     if (_settings.UseBotToDisplayChat)
                     {
                         if (player.IsLinked())
                         {
-                            Chat.Sends[MessageSource.Discord]?.QueueMessage(Chat.ProcessPlaceholders(LangKeys.Discord.Chat.LinkedMessage, GetPlaceholders(message, player, user, sourceMessage)));
+                            Chat.Sends[MessageType.Discord]?.QueueMessage(Chat.Lang(LangKeys.Discord.Chat.LinkedMessage, GetPlaceholders(message, player, user, sourceMessage)));
                         }
                         else
                         {
-                            Chat.Sends[MessageSource.Discord]?.QueueMessage(Chat.ProcessPlaceholders(LangKeys.Discord.Chat.UnlinkedMessage, GetPlaceholders(message, player, user, sourceMessage)));
+                            Chat.Sends[MessageType.Discord]?.QueueMessage(Chat.Lang(LangKeys.Discord.Chat.UnlinkedMessage, GetPlaceholders(message, player, user, sourceMessage)));
                         }
                     }
                     
@@ -1523,23 +1472,23 @@ namespace Oxide.Plugins
                     
                     return true;
                     
-                    case MessageSource.Server:
-                    Chat.Sends[MessageSource.Discord]?.QueueMessage(Chat.ProcessPlaceholders(LangKeys.Discord.Chat.Server, GetPlaceholders(message, player, user, sourceMessage)));
+                    case MessageType.Server:
+                    Chat.Sends[MessageType.Discord]?.QueueMessage(Chat.Lang(LangKeys.Discord.Chat.Server, GetPlaceholders(message, player, user, sourceMessage)));
                     return true;
-                    case MessageSource.Team:
-                    Chat.Sends[MessageSource.Team]?.QueueMessage(Chat.ProcessPlaceholders(LangKeys.Discord.Team.Message, GetPlaceholders(message, player, user, sourceMessage)));
+                    case MessageType.Team:
+                    Chat.Sends[MessageType.Team]?.QueueMessage(Chat.Lang(LangKeys.Discord.Team.Message, GetPlaceholders(message, player, user, sourceMessage)));
                     return true;
-                    case MessageSource.Cards:
-                    Chat.Sends[MessageSource.Cards]?.QueueMessage(Chat.ProcessPlaceholders(LangKeys.Discord.Cards.Message, GetPlaceholders(message, player, user, sourceMessage)));
+                    case MessageType.Cards:
+                    Chat.Sends[MessageType.Cards]?.QueueMessage(Chat.Lang(LangKeys.Discord.Cards.Message, GetPlaceholders(message, player, user, sourceMessage)));
                     return true;
-                    case MessageSource.AdminChat:
-                    Chat.Sends[MessageSource.AdminChat]?.QueueMessage(Chat.ProcessPlaceholders(LangKeys.Discord.AdminChat.DiscordMessage, GetPlaceholders(message, player, user, sourceMessage)));
+                    case MessageType.AdminChat:
+                    Chat.Sends[MessageType.AdminChat]?.QueueMessage(Chat.Lang(LangKeys.Discord.AdminChat.DiscordMessage, GetPlaceholders(message, player, user, sourceMessage)));
                     return true;
-                    case MessageSource.ClanChat:
-                    Chat.Sends[MessageSource.ClanChat]?.QueueMessage(Chat.ProcessPlaceholders(LangKeys.Discord.Clans.ClanMessage, GetPlaceholders(message, player, user, sourceMessage)));
+                    case MessageType.Clan:
+                    Chat.Sends[MessageType.Clan]?.QueueMessage(Chat.Lang(LangKeys.Discord.Clans.ClanMessage, GetPlaceholders(message, player, user, sourceMessage)));
                     return true;
-                    case MessageSource.AllianceChat:
-                    Chat.Sends[MessageSource.AllianceChat]?.QueueMessage(Chat.ProcessPlaceholders(LangKeys.Discord.Clans.AllianceMessage, GetPlaceholders(message, player, user, sourceMessage)));
+                    case MessageType.Alliance:
+                    Chat.Sends[MessageType.Alliance]?.QueueMessage(Chat.Lang(LangKeys.Discord.Clans.AllianceMessage, GetPlaceholders(message, player, user, sourceMessage)));
                     return true;
                 }
                 
@@ -1578,7 +1527,7 @@ namespace Oxide.Plugins
                 }
                 
                 PlaceholderData data = Chat.GetDefault().AddPlayer(player).AddMessage(source).Add(PlaceholderKeys.Data.PlayerMessage, message);
-                message = Chat.ProcessPlaceholders(LangKeys.Server.LinkedMessage, data);
+                message = Chat.Lang(LangKeys.Server.LinkedMessage, data);
                 _server.Broadcast(message);
                 Chat.Puts(Formatter.ToPlaintext(message));
             }
@@ -1587,10 +1536,10 @@ namespace Oxide.Plugins
             {
                 if (_settings.UseBotToDisplayChat)
                 {
-                    Chat.Sends[MessageSource.Server]?.QueueMessage(Chat.ProcessPlaceholders(LangKeys.Discord.Chat.UnlinkedMessage, Chat.GetDefault().AddMessage(sourceMessage).Add(PlaceholderKeys.Data.PlayerMessage, message)));
+                    Chat.Sends[MessageType.Server]?.QueueMessage(Chat.Lang(LangKeys.Discord.Chat.UnlinkedMessage, Chat.GetDefault().AddMessage(sourceMessage).Add(PlaceholderKeys.Data.PlayerMessage, message)));
                 }
                 
-                string serverMessage = Chat.ProcessPlaceholders(LangKeys.Server.UnlinkedMessage, Chat.GetDefault().AddMessage(sourceMessage).AddGuildMember(Chat.Client.Bot.GetGuild(sourceMessage.GuildId).Members[sourceMessage.Author.Id]).Add(PlaceholderKeys.Data.PlayerMessage, message));
+                string serverMessage = Chat.Lang(LangKeys.Server.UnlinkedMessage, Chat.GetDefault().AddMessage(sourceMessage).AddGuildMember(Chat.Client.Bot.GetGuild(sourceMessage.GuildId).Members[sourceMessage.Author.Id]).Add(PlaceholderKeys.Data.PlayerMessage, message));
                 #if RUST
                 _unlinkedArgs[1] = serverMessage;
                 ConsoleNetwork.BroadcastToAllClients("chat.add", _unlinkedArgs);
@@ -1605,18 +1554,26 @@ namespace Oxide.Plugins
             {
                 return Chat.GetDefault().AddPlayer(player).AddUser(user).AddMessage(sourceMessage).Add(PlaceholderKeys.Data.PlayerMessage, message);
             }
+            
+            public override void ProcessMessage(StringBuilder message, IPlayer player, DiscordUser user, MessageType type)
+            {
+                foreach (KeyValuePair<string,string> replacement in _settings.TextReplacements)
+                {
+                    message.Replace(replacement.Key, replacement.Value);
+                }
+            }
         }
         #endregion
 
         #region PluginHandlers\IPluginHandler.cs
         public interface IPluginHandler
         {
-            bool CanSendMessage(string message, IPlayer player, DiscordUser user, MessageSource source, DiscordMessage sourceMessage);
+            bool CanSendMessage(string message, IPlayer player, DiscordUser user, MessageType type, DiscordMessage sourceMessage);
             void ProcessPlayerName(StringBuilder name, IPlayer player);
             bool HasCallbackMessage();
-            void ProcessCallbackMessage(string message, IPlayer player, DiscordUser user, MessageSource source, Action<string> callback);
-            void ProcessMessage(StringBuilder message, IPlayer player, DiscordUser user, MessageSource source);
-            bool SendMessage(string message, IPlayer player, DiscordUser user, MessageSource source, DiscordMessage sourceMessage);
+            void ProcessCallbackMessage(string message, IPlayer player, DiscordUser user, MessageType type, Action<string> callback);
+            void ProcessMessage(StringBuilder message, IPlayer player, DiscordUser user, MessageType type);
+            bool SendMessage(string message, IPlayer player, DiscordUser user, MessageType type, DiscordMessage sourceMessage);
             string GetPluginName();
         }
         #endregion
@@ -1633,9 +1590,9 @@ namespace Oxide.Plugins
             
             public override bool HasCallbackMessage() => true;
             
-            public override void ProcessCallbackMessage(string message, IPlayer player, DiscordUser user, MessageSource source, Action<string> callback)
+            public override void ProcessCallbackMessage(string message, IPlayer player, DiscordUser user, MessageType type, Action<string> callback)
             {
-                if (CanChatTranslatorSource(source))
+                if (CanChatTranslatorSource(type))
                 {
                     Plugin.Call("Translate", message, _settings.DiscordServerLanguage, "auto", callback);
                     return;
@@ -1644,7 +1601,7 @@ namespace Oxide.Plugins
                 callback.Invoke(message);
             }
             
-            public bool CanChatTranslatorSource(MessageSource type)
+            public bool CanChatTranslatorSource(MessageType type)
             {
                 if (!_settings.Enabled)
                 {
@@ -1653,21 +1610,21 @@ namespace Oxide.Plugins
                 
                 switch (type)
                 {
-                    case MessageSource.Server:
+                    case MessageType.Server:
                     return _settings.ServerMessage;
                     
-                    case MessageSource.Discord:
+                    case MessageType.Discord:
                     return _settings.DiscordMessage;
                     
-                    case MessageSource.ClanChat:
-                    case MessageSource.AllianceChat:
+                    case MessageType.Clan:
+                    case MessageType.Alliance:
                     return _settings.PluginMessage;
                     
                     #if RUST
-                    case MessageSource.Team:
+                    case MessageType.Team:
                     return _settings.TeamMessage;
                     
-                    case MessageSource.Cards:
+                    case MessageType.Cards:
                     return _settings.CardMessages;
                     #endif
                 }
@@ -1695,28 +1652,28 @@ namespace Oxide.Plugins
                 }
             }
             
-            public override void ProcessMessage(StringBuilder message, IPlayer player, DiscordUser user, MessageSource source)
+            public override void ProcessMessage(StringBuilder message, IPlayer player, DiscordUser user, MessageType type)
             {
-                if (CanFilterMessage(source))
+                if (CanFilterMessage(type))
                 {
                     UFilterText(message);
                 }
             }
             
-            private bool CanFilterMessage(MessageSource source)
+            private bool CanFilterMessage(MessageType type)
             {
-                switch (source)
+                switch (type)
                 {
-                    case MessageSource.Discord:
+                    case MessageType.Discord:
                     return _settings.DiscordMessages;
-                    case MessageSource.Server:
+                    case MessageType.Server:
                     return _settings.ServerMessage;
-                    case MessageSource.Team:
+                    case MessageType.Team:
                     return _settings.TeamMessage;
-                    case MessageSource.Cards:
+                    case MessageType.Cards:
                     return _settings.CardMessage;
-                    case MessageSource.ClanChat:
-                    case MessageSource.AllianceChat:
+                    case MessageType.Clan:
+                    case MessageType.Alliance:
                     return _settings.PluginMessages;
                 }
                 
@@ -1742,7 +1699,9 @@ namespace Oxide.Plugins
             {
                 private const string Base = nameof(Player) + ".";
                 
-                public const string StateChanged = Base + nameof(StateChanged);
+                public const string Connecting = Base + nameof(Connecting);
+                public const string Connected = Base + nameof(Connected);
+                public const string Disconnected = Base + nameof(Disconnected);
             }
             
             public static class Server

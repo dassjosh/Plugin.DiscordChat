@@ -10,6 +10,7 @@ using Oxide.Ext.Discord.Libraries.Placeholders;
 using Oxide.Ext.Discord.Libraries.Templates;
 using Oxide.Ext.Discord.Libraries.Templates.Embeds;
 using Oxide.Ext.Discord.Libraries.Templates.Messages;
+using MessageType = DiscordChatPlugin.Enums.MessageType;
 
 namespace DiscordChatPlugin.Plugins
 {
@@ -17,8 +18,14 @@ namespace DiscordChatPlugin.Plugins
     {
         public void RegisterTemplates()
         {
-            DiscordMessageTemplate playerState = CreateTemplateEmbed($"{{{PlaceholderKeys.Message}}}",  DiscordColor.Success);
-            _templates.RegisterGlobalTemplateAsync(this, TemplateKeys.Player.StateChanged, playerState, new TemplateVersion(1, 0, 0), new TemplateVersion(1, 0, 0));
+            DiscordMessageTemplate connecting = CreateTemplateEmbed($"{{{PlaceholderKeys.Message}}}",  DiscordColor.Warning);
+            _templates.RegisterGlobalTemplateAsync(this, TemplateKeys.Player.Connecting, connecting, new TemplateVersion(1, 0, 0), new TemplateVersion(1, 0, 0));
+            
+            DiscordMessageTemplate connected = CreateTemplateEmbed($"{{{PlaceholderKeys.Message}}}",  DiscordColor.Success);
+            _templates.RegisterGlobalTemplateAsync(this, TemplateKeys.Player.Connected, connected, new TemplateVersion(1, 0, 0), new TemplateVersion(1, 0, 0));
+            
+            DiscordMessageTemplate disconnected = CreateTemplateEmbed($"{{{PlaceholderKeys.Message}}}",  DiscordColor.Danger);
+            _templates.RegisterGlobalTemplateAsync(this, TemplateKeys.Player.Disconnected, disconnected, new TemplateVersion(1, 0, 0), new TemplateVersion(1, 0, 0));
 
             DiscordMessageTemplate online = CreateTemplateEmbed(":green_circle: The server is now online", DiscordColor.Success);
             _templates.RegisterGlobalTemplateAsync(this, TemplateKeys.Server.Online, online, new TemplateVersion(1, 0, 0), new TemplateVersion(1, 0, 0));
@@ -93,24 +100,28 @@ namespace DiscordChatPlugin.Plugins
             channel?.CreateGlobalTemplateMessage(Client, templateName, create, placeholders);
         }
 
-        public string GetTemplateName(MessageSource type)
+        public string GetTemplateName(MessageType type)
         {
             switch (type)
             {
-                case MessageSource.Discord:
-                case MessageSource.Server:
+                case MessageType.Discord:
+                case MessageType.Server:
                     return TemplateKeys.Chat.General;
-                case MessageSource.Team:
+                case MessageType.Team:
                     return TemplateKeys.Chat.Teams;
-                case MessageSource.Cards:
+                case MessageType.Cards:
                     return TemplateKeys.Chat.Cards;
-                case MessageSource.PlayerState:
-                    return TemplateKeys.Player.StateChanged;
-                case MessageSource.AdminChat:
+                case MessageType.Connecting:
+                    return TemplateKeys.Player.Connecting;
+                case MessageType.Connected:
+                    return TemplateKeys.Player.Connected;
+                case MessageType.Disconnected:
+                    return TemplateKeys.Player.Disconnected;
+                case MessageType.AdminChat:
                     return TemplateKeys.Chat.AdminChat.Message;
-                case MessageSource.ClanChat:
+                case MessageType.Clan:
                     return TemplateKeys.Chat.Clans.Clan;
-                case MessageSource.AllianceChat:
+                case MessageType.Alliance:
                     return TemplateKeys.Chat.Clans.Alliance;
             }
 
