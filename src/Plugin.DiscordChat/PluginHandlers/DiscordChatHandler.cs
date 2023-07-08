@@ -1,4 +1,6 @@
-﻿using DiscordChatPlugin.Configuration;
+﻿using System.Collections.Generic;
+using System.Text;
+using DiscordChatPlugin.Configuration;
 using DiscordChatPlugin.Enums;
 using DiscordChatPlugin.Localization;
 using DiscordChatPlugin.Placeholders;
@@ -39,7 +41,7 @@ namespace DiscordChatPlugin.PluginHandlers
             switch (source)
             {
                 case MessageSource.Discord:
-                    return _settings.DiscordToServer && (!_settings.UnlinkedSettings.AllowedUnlinked || player.IsLinked());
+                    return _settings.DiscordToServer && (_settings.UnlinkedSettings.AllowedUnlinked || player.IsLinked());
  
                 case MessageSource.Server:
                     return _settings.ServerToDiscord;
@@ -57,11 +59,11 @@ namespace DiscordChatPlugin.PluginHandlers
                     {
                         if (player.IsLinked())
                         {
-                            Chat.Sends[MessageSource.Discord]?.QueueMessage(Chat.ProcessPlaceholders(LangKeys.Discord.Chat.LinkedMessage, GetPlaceholders(message, player, user, sourceMessage)));
+                            Chat.Sends[MessageSource.Discord]?.QueueMessage(Chat.Lang(LangKeys.Discord.Chat.LinkedMessage, GetPlaceholders(message, player, user, sourceMessage)));
                         }
                         else
                         {
-                            Chat.Sends[MessageSource.Discord]?.QueueMessage(Chat.ProcessPlaceholders(LangKeys.Discord.Chat.UnlinkedMessage, GetPlaceholders(message, player, user, sourceMessage)));
+                            Chat.Sends[MessageSource.Discord]?.QueueMessage(Chat.Lang(LangKeys.Discord.Chat.UnlinkedMessage, GetPlaceholders(message, player, user, sourceMessage)));
                         }
                     }
 
@@ -77,22 +79,22 @@ namespace DiscordChatPlugin.PluginHandlers
                     return true;
                 
                 case MessageSource.Server:
-                    Chat.Sends[MessageSource.Discord]?.QueueMessage(Chat.ProcessPlaceholders(LangKeys.Discord.Chat.Server, GetPlaceholders(message, player, user, sourceMessage)));
+                    Chat.Sends[MessageSource.Discord]?.QueueMessage(Chat.Lang(LangKeys.Discord.Chat.Server, GetPlaceholders(message, player, user, sourceMessage)));
                     return true;
                 case MessageSource.Team:
-                    Chat.Sends[MessageSource.Team]?.QueueMessage(Chat.ProcessPlaceholders(LangKeys.Discord.Team.Message, GetPlaceholders(message, player, user, sourceMessage)));
+                    Chat.Sends[MessageSource.Team]?.QueueMessage(Chat.Lang(LangKeys.Discord.Team.Message, GetPlaceholders(message, player, user, sourceMessage)));
                     return true;
                 case MessageSource.Cards:
-                    Chat.Sends[MessageSource.Cards]?.QueueMessage(Chat.ProcessPlaceholders(LangKeys.Discord.Cards.Message, GetPlaceholders(message, player, user, sourceMessage)));
+                    Chat.Sends[MessageSource.Cards]?.QueueMessage(Chat.Lang(LangKeys.Discord.Cards.Message, GetPlaceholders(message, player, user, sourceMessage)));
                     return true;
                 case MessageSource.AdminChat:
-                    Chat.Sends[MessageSource.AdminChat]?.QueueMessage(Chat.ProcessPlaceholders(LangKeys.Discord.AdminChat.DiscordMessage, GetPlaceholders(message, player, user, sourceMessage)));
+                    Chat.Sends[MessageSource.AdminChat]?.QueueMessage(Chat.Lang(LangKeys.Discord.AdminChat.DiscordMessage, GetPlaceholders(message, player, user, sourceMessage)));
                     return true;
                 case MessageSource.ClanChat:
-                    Chat.Sends[MessageSource.ClanChat]?.QueueMessage(Chat.ProcessPlaceholders(LangKeys.Discord.Clans.ClanMessage, GetPlaceholders(message, player, user, sourceMessage)));
+                    Chat.Sends[MessageSource.ClanChat]?.QueueMessage(Chat.Lang(LangKeys.Discord.Clans.ClanMessage, GetPlaceholders(message, player, user, sourceMessage)));
                     return true;
                 case MessageSource.AllianceChat:
-                    Chat.Sends[MessageSource.AllianceChat]?.QueueMessage(Chat.ProcessPlaceholders(LangKeys.Discord.Clans.AllianceMessage, GetPlaceholders(message, player, user, sourceMessage)));
+                    Chat.Sends[MessageSource.AllianceChat]?.QueueMessage(Chat.Lang(LangKeys.Discord.Clans.AllianceMessage, GetPlaceholders(message, player, user, sourceMessage)));
                     return true;
             }
 
@@ -131,7 +133,7 @@ namespace DiscordChatPlugin.PluginHandlers
             }
 
             PlaceholderData data = Chat.GetDefault().AddPlayer(player).AddMessage(source).Add(PlaceholderKeys.Data.PlayerMessage, message);
-            message = Chat.ProcessPlaceholders(LangKeys.Server.LinkedMessage, data);
+            message = Chat.Lang(LangKeys.Server.LinkedMessage, data);
             _server.Broadcast(message);
             Chat.Puts(Formatter.ToPlaintext(message));
         }
@@ -140,10 +142,10 @@ namespace DiscordChatPlugin.PluginHandlers
         {
             if (_settings.UseBotToDisplayChat)
             {
-                Chat.Sends[MessageSource.Server]?.QueueMessage(Chat.ProcessPlaceholders(LangKeys.Discord.Chat.UnlinkedMessage, Chat.GetDefault().AddMessage(sourceMessage).Add(PlaceholderKeys.Data.PlayerMessage, message)));
+                Chat.Sends[MessageSource.Server]?.QueueMessage(Chat.Lang(LangKeys.Discord.Chat.UnlinkedMessage, Chat.GetDefault().AddMessage(sourceMessage).Add(PlaceholderKeys.Data.PlayerMessage, message)));
             }
 
-            string serverMessage = Chat.ProcessPlaceholders(LangKeys.Server.UnlinkedMessage, Chat.GetDefault().AddMessage(sourceMessage).AddGuildMember(Chat.Client.Bot.GetGuild(sourceMessage.GuildId).Members[sourceMessage.Author.Id]).Add(PlaceholderKeys.Data.PlayerMessage, message));
+            string serverMessage = Chat.Lang(LangKeys.Server.UnlinkedMessage, Chat.GetDefault().AddMessage(sourceMessage).AddGuildMember(Chat.Client.Bot.GetGuild(sourceMessage.GuildId).Members[sourceMessage.Author.Id]).Add(PlaceholderKeys.Data.PlayerMessage, message));
 #if RUST
             _unlinkedArgs[1] = serverMessage;
             ConsoleNetwork.BroadcastToAllClients("chat.add", _unlinkedArgs);
@@ -157,6 +159,14 @@ namespace DiscordChatPlugin.PluginHandlers
         private PlaceholderData GetPlaceholders(string message, IPlayer player, DiscordUser user, DiscordMessage sourceMessage)
         {
             return Chat.GetDefault().AddPlayer(player).AddUser(user).AddMessage(sourceMessage).Add(PlaceholderKeys.Data.PlayerMessage, message);
+        }
+
+        public override void ProcessMessage(StringBuilder message, IPlayer player, DiscordUser user, MessageSource source)
+        {
+            foreach (KeyValuePair<string,string> replacement in _settings.TextReplacements)
+            {
+                message.Replace(replacement.Key, replacement.Value);
+            }
         }
     }
 }

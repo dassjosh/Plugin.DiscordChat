@@ -42,14 +42,14 @@ namespace DiscordChatPlugin.PluginHandlers
                 if (_settings.ReplaceWithBot)
                 {
                     sourceMessage.Delete(_client);
-                    Chat.Sends[source]?.QueueMessage(Chat.ProcessPlaceholders(LangKeys.Discord.AdminChat.DiscordMessage, placeholders));
+                    Chat.Sends[source]?.QueueMessage(Chat.Lang(LangKeys.Discord.AdminChat.DiscordMessage, placeholders));
                 }
                     
                 Plugin.Call("SendAdminMessage", player, message);
             }
             else
             {
-                Chat.Sends[source]?.QueueMessage(Chat.ProcessPlaceholders(LangKeys.Discord.AdminChat.ServerMessage, placeholders));
+                Chat.Sends[source]?.QueueMessage(Chat.Lang(LangKeys.Discord.AdminChat.ServerMessage, placeholders));
             }
 
             return true;

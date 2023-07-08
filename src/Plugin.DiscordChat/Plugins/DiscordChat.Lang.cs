@@ -7,11 +7,9 @@ namespace DiscordChatPlugin.Plugins
 {
     public partial class DiscordChat
     {
-        public string Lang(string key) => lang.GetMessage(key, this);
-
-        public string ProcessPlaceholders(string key, PlaceholderData data)
+        public string Lang(string key, PlaceholderData data)
         {
-            string message = Lang(key);
+            string message = lang.GetMessage(key, this);
             if (data != null)
             {
                 message = _placeholders.ProcessPlaceholders(message, data);
@@ -24,7 +22,8 @@ namespace DiscordChatPlugin.Plugins
         {
             lang.RegisterMessages(new Dictionary<string, string>
             {
-                [LangKeys.Discord.Player.Connected] = $":white_check_mark: {{timestamp.now.shorttime}} **{{{PlaceholderKeys.PlayerName}}}** :flag_{{player.address:country.code}}: has joined.",
+                [LangKeys.Discord.Player.Connecting] = $":yellow_circle: {{timestamp.now.shorttime}} **{{{PlaceholderKeys.PlayerName}}}** is connecting",
+                [LangKeys.Discord.Player.Connected] = $":white_check_mark: {{timestamp.now.shorttime}} **{{{PlaceholderKeys.PlayerName}}}** {{player.country.emoji}} has joined.",
                 [LangKeys.Discord.Player.Disconnected] = $":x: {{timestamp.now.shorttime}} **{{{PlaceholderKeys.PlayerName}}}** has disconnected. ({{{PlaceholderKeys.DisconnectReason}}})",
                 [LangKeys.Discord.Chat.Server] = $":desktop: {{timestamp.now.shorttime}} **{{{PlaceholderKeys.PlayerName}}}**: {{{PlaceholderKeys.PlayerMessage}}}",
                 [LangKeys.Discord.Chat.LinkedMessage] = $":speech_left: {{timestamp.now.shorttime}} **{{{PlaceholderKeys.PlayerName}}}**: {{{PlaceholderKeys.PlayerMessage}}}",

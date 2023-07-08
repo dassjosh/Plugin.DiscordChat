@@ -291,7 +291,7 @@ namespace Oxide.Plugins
 
         #region Plugins\DiscordChat.Fields.cs
         [PluginReference]
-        public Plugin BetterChat;
+        private Plugin BetterChat, PlaceholderAPI;
         
         public DiscordClient Client { get; set; }
         
@@ -358,6 +358,16 @@ namespace Oxide.Plugins
         #endregion
 
         #region Plugins\DiscordChat.Hooks.cs
+        private void OnUserApproved(string name, string id, string ip)
+        {
+            IPlayer player = players.FindPlayerById(id) ?? PlayerExt.CreateDummyPlayer(id, name, ip);
+            if (_pluginConfig.PlayerStateSettings.ShowAdmins || !player.IsAdmin)
+            {
+                PlaceholderData placeholders = GetDefault().AddPlayer(player);
+                ProcessPlayerState(LangKeys.Discord.Player.Connecting, placeholders);
+            }
+        }
+        
         private void OnUserConnected(IPlayer player)
         {
             if (_pluginConfig.PlayerStateSettings.ShowAdmins || !player.IsAdmin)
@@ -412,12 +422,16 @@ namespace Oxide.Plugins
                 break;
                 
                 case "BetterChatMute":
-                AddHandler(new BetterChatMuteHandler(this, _pluginConfig.PluginSupport.BetterChatMute, plugin));
+                BetterChatMuteSettings muteSettings = _pluginConfig.PluginSupport.BetterChatMute;
+                if (muteSettings.IgnoreMuted)
+                {
+                    AddHandler(new BetterChatMuteHandler(this, muteSettings, plugin));
+                }
                 break;
                 
-                case "Clans":
-                AddHandler(new ClansHandler(this, _pluginConfig.PluginSupport.Clans, plugin));
-                break;
+                // case "Clans":
+                //     AddHandler(new ClansHandler(this, _pluginConfig.PluginSupport.Clans, plugin));
+                //     break;
                 
                 case "TranslationAPI":
                 AddHandler(new TranslationApiHandler(this, _pluginConfig.PluginSupport.ChatTranslator, plugin));
@@ -486,7 +500,8 @@ namespace Oxide.Plugins
         {
             lang.RegisterMessages(new Dictionary<string, string>
             {
-                [LangKeys.Discord.Player.Connected] = $":white_check_mark: {{timestamp.now.shorttime}} **{{{PlaceholderKeys.PlayerName}}}** :flag_{{player.address:country.code}}: has joined.",
+                [LangKeys.Discord.Player.Connecting] = $":yellow_circle: {{timestamp.now.shorttime}} **{{{PlaceholderKeys.PlayerName}}}** is connecting",
+                [LangKeys.Discord.Player.Connected] = $":white_check_mark: {{timestamp.now.shorttime}} **{{{PlaceholderKeys.PlayerName}}}** {{player.country.emoji}} has joined.",
                 [LangKeys.Discord.Player.Disconnected] = $":x: {{timestamp.now.shorttime}} **{{{PlaceholderKeys.PlayerName}}}** has disconnected. ({{{PlaceholderKeys.DisconnectReason}}})",
                 [LangKeys.Discord.Chat.Server] = $":desktop: {{timestamp.now.shorttime}} **{{{PlaceholderKeys.PlayerName}}}**: {{{PlaceholderKeys.PlayerMessage}}}",
                 [LangKeys.Discord.Chat.LinkedMessage] = $":speech_left: {{timestamp.now.shorttime}} **{{{PlaceholderKeys.PlayerName}}}**: {{{PlaceholderKeys.PlayerMessage}}}",
@@ -634,7 +649,6 @@ namespace Oxide.Plugins
             _placeholders.RegisterPlaceholder<string>(this, PlaceholderKeys.DisconnectReason, PlaceholderKeys.Data.DisconnectReason);
             _placeholders.RegisterPlaceholder<IPlayer, string>(this, PlaceholderKeys.PlayerName, GetPlayerName);
             _placeholders.RegisterPlaceholder(this, PlaceholderKeys.DiscordTag, _pluginConfig.ChatSettings.DiscordTag);
-            _placeholders.RegisterPlaceholder<IPlayer, string>(this, PlaceholderKeys.CountryLower, GetCountryFlag);
         }
         
         public string GetPlayerName(IPlayer player)
@@ -651,7 +665,11 @@ namespace Oxide.Plugins
         
         public string GetCountryFlag(IPlayer player)
         {
-            string country = _placeholders.ProcessPlaceholders("{player.address.data!country.code}", GetDefault().AddPlayer(player));
+            Action<IPlayer, StringBuilder, bool> process = PlaceholderAPI.Call("GetProcessPlaceholders", 1) as Action<IPlayer, StringBuilder, bool>;
+            StringBuilder sb = new StringBuilder("{player.address.data!country.code:lower}");
+            process(player, sb, true);
+            
+            string country = sb.ToString();
             string flag;
             if (_flagCache.TryGetValue(country, out flag))
             {
@@ -665,7 +683,7 @@ namespace Oxide.Plugins
             }
             else
             {
-                flag =  $":flag_{country.ToLower()}:";
+                flag =  $":flag_{country}:";
             }
             
             _flagCache[country] = flag;
@@ -1200,6 +1218,7 @@ namespace Oxide.Plugins
                 {
                     private const string Base = Discord.Base + nameof(Player) + ".";
                     
+                    public const string Connecting = Base + nameof(Connecting);
                     public const string Connected = Base + nameof(Connected);
                     public const string Disconnected = Base + nameof(Disconnected);
                 }
@@ -1239,7 +1258,6 @@ namespace Oxide.Plugins
             public const string DisconnectReason = "discordchat.disconnect.reason";
             public const string PlayerName = "discordchat.player.name";
             public const string DiscordTag = "discordchat.discord.tag";
-            public const string CountryLower = "discordchat.player.country.flag";
             
             public class Data
             {
@@ -1307,7 +1325,7 @@ namespace Oxide.Plugins
             {
                 return player.Object != null
                 && (source == MessageSource.Discord || source == MessageSource.Server)
-                && Plugin.Call<bool>("API_IsDeepCovered", player.Object);
+                && !Plugin.Call<bool>("API_IsDeepCovered", player.Object);
             }
         }
         #endregion
@@ -1329,8 +1347,11 @@ namespace Oxide.Plugins
                     return;
                 }
                 
+                string builtName = name.ToString();
+                builtName = Plugin.Call<string>("GetSpamFreeText", builtName);
+                builtName = Plugin.Call<string>("GetImpersonationFreeText", builtName);
                 name.Length = 0;
-                name.Append(Plugin.Call<string>("GetClearName", player));
+                name.Append(builtName);
             }
             
             public override void ProcessMessage(StringBuilder message, IPlayer player, DiscordUser user, MessageSource source)
@@ -1372,7 +1393,7 @@ namespace Oxide.Plugins
             protected readonly Plugin Plugin;
             private readonly string _pluginName;
             
-            public BasePluginHandler(DiscordChat chat, Plugin plugin)
+            protected BasePluginHandler(DiscordChat chat, Plugin plugin)
             {
                 Chat = chat;
                 Plugin = plugin;
@@ -1407,7 +1428,7 @@ namespace Oxide.Plugins
             
             public override bool CanSendMessage(string message, IPlayer player, DiscordUser user, MessageSource source, DiscordMessage sourceMessage)
             {
-                return !_settings.IgnoreMuted || !Plugin.Call<bool>("API_IsMuted", player);
+                return !Plugin.Call<bool>("API_IsMuted", player);
             }
         }
         #endregion
@@ -1443,11 +1464,13 @@ namespace Oxide.Plugins
         {
             private readonly ChatSettings _settings;
             private readonly IServer _server;
+            private readonly object[] _unlinkedArgs = new object[2];
             
             public DiscordChatHandler(DiscordChat chat, ChatSettings settings, Plugin plugin, IServer server) : base(chat, plugin)
             {
                 _settings = settings;
                 _server = server;
+                _unlinkedArgs[0] = settings.UnlinkedSettings.SteamIcon;
             }
             
             public override bool CanSendMessage(string message, IPlayer player, DiscordUser user, MessageSource source, DiscordMessage sourceMessage)
@@ -1463,7 +1486,7 @@ namespace Oxide.Plugins
                 switch (source)
                 {
                     case MessageSource.Discord:
-                    return _settings.DiscordToServer && (!_settings.UnlinkedSettings.AllowedUnlinked || player.IsLinked());
+                    return _settings.DiscordToServer && (_settings.UnlinkedSettings.AllowedUnlinked || player.IsLinked());
                     
                     case MessageSource.Server:
                     return _settings.ServerToDiscord;
@@ -1568,7 +1591,13 @@ namespace Oxide.Plugins
                 }
                 
                 string serverMessage = Chat.ProcessPlaceholders(LangKeys.Server.UnlinkedMessage, Chat.GetDefault().AddMessage(sourceMessage).AddGuildMember(Chat.Client.Bot.GetGuild(sourceMessage.GuildId).Members[sourceMessage.Author.Id]).Add(PlaceholderKeys.Data.PlayerMessage, message));
+                #if RUST
+                _unlinkedArgs[1] = serverMessage;
+                ConsoleNetwork.BroadcastToAllClients("chat.add", _unlinkedArgs);
+                #else
                 _server.Broadcast(serverMessage);
+                #endif
+                
                 Chat.Puts(Formatter.ToPlaintext(serverMessage));
             }
             
@@ -1608,7 +1637,7 @@ namespace Oxide.Plugins
             {
                 if (CanChatTranslatorSource(source))
                 {
-                    Plugin.Call("Translate", message, _settings.DiscordServerLanguage, "auto", new Action<string>(callback.Invoke));
+                    Plugin.Call("Translate", message, _settings.DiscordServerLanguage, "auto", callback);
                     return;
                 }
                 
@@ -1823,17 +1852,6 @@ namespace Oxide.Plugins
                 #if RUST
                 TeamMessage = settings?.TeamMessage ?? false;
                 CardMessages = settings?.CardMessages ?? false;
-                #endif
-            }
-            
-            public void Disable()
-            {
-                PlayerName = false;
-                ServerMessage = false;
-                DiscordMessage = false;
-                #if RUST
-                TeamMessage = false;
-                CardMessages = false;
                 #endif
             }
         }

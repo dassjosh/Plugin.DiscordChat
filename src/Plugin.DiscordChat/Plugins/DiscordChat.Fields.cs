@@ -20,7 +20,7 @@ namespace DiscordChatPlugin.Plugins
     public partial class DiscordChat
     {
         [PluginReference]
-        public Plugin BetterChat;
+        private Plugin BetterChat;
         
         public DiscordClient Client { get; set; }
 

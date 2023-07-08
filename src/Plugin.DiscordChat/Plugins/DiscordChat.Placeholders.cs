@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Text;
 using DiscordChatPlugin.Localization;
 using DiscordChatPlugin.Placeholders;
@@ -16,12 +17,11 @@ namespace DiscordChatPlugin.Plugins
             _placeholders.RegisterPlaceholder<string>(this, PlaceholderKeys.DisconnectReason, PlaceholderKeys.Data.DisconnectReason);
             _placeholders.RegisterPlaceholder<IPlayer, string>(this, PlaceholderKeys.PlayerName, GetPlayerName);
             _placeholders.RegisterPlaceholder(this, PlaceholderKeys.DiscordTag, _pluginConfig.ChatSettings.DiscordTag);
-            _placeholders.RegisterPlaceholder<IPlayer, string>(this, PlaceholderKeys.CountryLower, GetCountryFlag);
         }
         
         public string GetPlayerName(IPlayer player)
         {
-            string name = ProcessPlaceholders(LangKeys.Discord.Chat.PlayerName, GetDefault().AddPlayer(player));
+            string name = Lang(LangKeys.Discord.Chat.PlayerName, GetDefault().AddPlayer(player));
             StringBuilder sb = _pool.GetStringBuilder(name);
             for (int index = 0; index < _plugins.Count; index++)
             {
@@ -29,29 +29,6 @@ namespace DiscordChatPlugin.Plugins
             }
 
             return _pool.FreeStringBuilderToString(sb);
-        }
-
-        public string GetCountryFlag(IPlayer player)
-        {
-            string country = _placeholders.ProcessPlaceholders("{player.address.data!country.code}", GetDefault().AddPlayer(player));
-            string flag;
-            if (_flagCache.TryGetValue(country, out flag))
-            {
-                return country;
-            }
-            
-            IPAddress address;
-            if (string.IsNullOrEmpty(country) || IPAddress.TryParse(country, out address))
-            {
-                flag = ":signal_strength:";
-            }
-            else
-            {
-                flag =  $":flag_{country.ToLower()}:";
-            }
-
-            _flagCache[country] = flag;
-            return flag;
         }
 
         public PlaceholderData GetDefault()

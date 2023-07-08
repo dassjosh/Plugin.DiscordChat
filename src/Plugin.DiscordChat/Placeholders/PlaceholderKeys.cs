@@ -7,8 +7,7 @@
         public const string DisconnectReason = "discordchat.disconnect.reason";
         public const string PlayerName = "discordchat.player.name";
         public const string DiscordTag = "discordchat.discord.tag";
-        public const string CountryLower = "discordchat.player.country.flag";
-        
+
         public class Data
         {
             public const string Message = "message";

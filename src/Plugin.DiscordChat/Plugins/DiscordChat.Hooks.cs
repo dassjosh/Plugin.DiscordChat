@@ -15,6 +15,16 @@ namespace DiscordChatPlugin.Plugins
 {
     public partial class DiscordChat
     {
+        private void OnUserApproved(string name, string id, string ip)
+        {
+            IPlayer player = players.FindPlayerById(id) ?? PlayerExt.CreateDummyPlayer(id, name, ip);
+            if (_pluginConfig.PlayerStateSettings.ShowAdmins || !player.IsAdmin)
+            {
+                PlaceholderData placeholders = GetDefault().AddPlayer(player);
+                ProcessPlayerState(LangKeys.Discord.Player.Connecting, placeholders);
+            }
+        }
+        
         private void OnUserConnected(IPlayer player)
         {
             if (_pluginConfig.PlayerStateSettings.ShowAdmins || !player.IsAdmin)
@@ -35,7 +45,7 @@ namespace DiscordChatPlugin.Plugins
 
         public void ProcessPlayerState(string langKey, PlaceholderData data)
         {
-            string message = ProcessPlaceholders(langKey, data);
+            string message = Lang(langKey, data);
             Sends[MessageSource.PlayerState]?.QueueMessage(message);
         }
 

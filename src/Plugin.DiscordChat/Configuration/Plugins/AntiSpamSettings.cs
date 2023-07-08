@@ -35,16 +35,5 @@ namespace DiscordChatPlugin.Configuration.Plugins
             CardMessages = settings?.CardMessages ?? false;
 #endif
         }
-
-        public void Disable()
-        {
-            PlayerName = false;
-            ServerMessage = false;
-            DiscordMessage = false;
-#if RUST
-            TeamMessage = false;
-            CardMessages = false;
-#endif
-        }
     }
 }

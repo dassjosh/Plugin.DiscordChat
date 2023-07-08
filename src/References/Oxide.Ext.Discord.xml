@@ -16623,7 +16623,23 @@
             Exception thrown when Server Locale is not found
             </summary>
         </member>
-        <member name="T:Oxide.Ext.Discord.Exceptions.Libraries.DiscordTemplateException">
+        <member name="T:Oxide.Ext.Discord.Exceptions.Libraries.Promise.PromiseCancelledException">
+            <summary>
+            Exception when a promised is cancelled
+            </summary>
+        </member>
+        <member name="M:Oxide.Ext.Discord.Exceptions.Libraries.Promise.PromiseCancelledException.#ctor(System.String)">
+            <summary>
+            Create the exception with description
+            </summary>
+            <param name="message">Exception description</param>
+        </member>
+        <member name="T:Oxide.Ext.Discord.Exceptions.Libraries.Promise.PromiseException">
+            <summary>
+            Exceptions for promises
+            </summary>
+        </member>
+        <member name="T:Oxide.Ext.Discord.Exceptions.Libraries.Templates.DiscordTemplateException">
             <summary>
             Exception for Discord Templates
             </summary>
@@ -16631,22 +16647,6 @@
         <member name="T:Oxide.Ext.Discord.Exceptions.Pooling.InvalidPoolException">
             <summary>
             An exception when something is invalid with a pool
-            </summary>
-        </member>
-        <member name="T:Oxide.Ext.Discord.Exceptions.Promise.PromiseCancelledException">
-            <summary>
-            Exception when a promised is cancelled
-            </summary>
-        </member>
-        <member name="M:Oxide.Ext.Discord.Exceptions.Promise.PromiseCancelledException.#ctor(System.String)">
-            <summary>
-            Create the exception with description
-            </summary>
-            <param name="message">Exception description</param>
-        </member>
-        <member name="T:Oxide.Ext.Discord.Exceptions.Promise.PromiseException">
-            <summary>
-            Exceptions for promises
             </summary>
         </member>
         <member name="T:Oxide.Ext.Discord.Exceptions.TokenMismatchException">
@@ -19508,6 +19508,20 @@
         <member name="M:Oxide.Ext.Discord.Libraries.Placeholders.Default.PlayerPlaceholders.Groups(Oxide.Core.Libraries.Covalence.IPlayer)">
             <summary>
             Player Groups Placeholder
+            </summary>
+            <param name="player"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Oxide.Ext.Discord.Libraries.Placeholders.Default.PlayerPlaceholders.Country(Oxide.Core.Libraries.Covalence.IPlayer)">
+            <summary>
+            Player Country Placeholder
+            </summary>
+            <param name="player"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Oxide.Ext.Discord.Libraries.Placeholders.Default.PlayerPlaceholders.CountryEmoji(Oxide.Core.Libraries.Covalence.IPlayer)">
+            <summary>
+            Player Flag Placeholder
             </summary>
             <param name="player"></param>
             <returns></returns>
@@ -23058,7 +23072,7 @@
         </member>
         <member name="M:Oxide.Ext.Discord.Rest.Buckets.Bucket.QueueRequest(Oxide.Ext.Discord.Rest.Requests.RequestHandler)">
             <summary>
-            Queues a new request for the buck
+            Queues a new request for the bucket
             </summary>
             <param name="handler"><see cref="T:Oxide.Ext.Discord.Rest.Requests.RequestHandler"/> to be queued</param>
         </member>

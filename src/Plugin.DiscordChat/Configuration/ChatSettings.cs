@@ -32,12 +32,6 @@ namespace DiscordChatPlugin.Configuration
         [JsonProperty("Allow plugins to process Discord to Server Chat Messages")]
         public bool AllowPluginProcessing { get; set; }
 
-        [JsonProperty("Discord Message Server Time Offset (Hours)")]
-        public float ServerTimeOffset { get; set; }
-        
-        [JsonProperty("Max Characters Before Sending Message")]
-        public int MaxCharactersPerMessage { get; set; }
-
         [JsonProperty("Text Replacements")]
         public Hash<string, string> TextReplacements { get; set; }
 
@@ -59,12 +53,6 @@ namespace DiscordChatPlugin.Configuration
             DiscordToServer = settings?.DiscordToServer ?? true;
             DiscordTag = settings?.DiscordTag ?? "[#5f79d6][Discord][/#]";
             AllowPluginProcessing = settings?.AllowPluginProcessing ?? true;
-            ServerTimeOffset = settings?.ServerTimeOffset ?? 0f;
-            MaxCharactersPerMessage = settings?.MaxCharactersPerMessage ?? 0;
-            if (MaxCharactersPerMessage == 0)
-            {
-                MaxCharactersPerMessage = 2000;
-            }
             TextReplacements = settings?.TextReplacements ?? new Hash<string, string> { ["TextToBeReplaced"] = "ReplacedText" };
             UnlinkedSettings = new UnlinkedSettings(settings?.UnlinkedSettings);
             Filter = new MessageFilterSettings(settings?.Filter);
