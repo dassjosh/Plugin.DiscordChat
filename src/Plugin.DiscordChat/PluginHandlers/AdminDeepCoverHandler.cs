@@ -13,7 +13,7 @@ namespace DiscordChatPlugin.PluginHandlers
 
         public override bool CanSendMessage(string message, IPlayer player, DiscordUser user, MessageSource source, DiscordMessage sourceMessage)
         {
-            return player.Object != null
+            return player?.Object != null
                    && (source == MessageSource.Discord || source == MessageSource.Server)
                    && !Plugin.Call<bool>("API_IsDeepCovered", player.Object);
         }

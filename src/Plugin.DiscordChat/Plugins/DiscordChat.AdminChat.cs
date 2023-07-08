@@ -44,7 +44,7 @@ namespace DiscordChatPlugin.Plugins
         }
 
         public bool IsAdminChatEnabled() => _adminChatSettings.Enabled && Sends.ContainsKey(MessageSource.AdminChat);
-        public bool CanPlayerAdminChat(IPlayer player) => _adminChatSettings.Enabled && player.HasPermission(AdminChatPermission);
+        public bool CanPlayerAdminChat(IPlayer player) => player != null && _adminChatSettings.Enabled && player.HasPermission(AdminChatPermission);
 
     }
 }

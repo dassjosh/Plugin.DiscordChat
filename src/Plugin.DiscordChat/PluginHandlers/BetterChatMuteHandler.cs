@@ -19,7 +19,7 @@ namespace DiscordChatPlugin.PluginHandlers
 
         public override bool CanSendMessage(string message, IPlayer player, DiscordUser user, MessageSource source, DiscordMessage sourceMessage)
         {
-            return !Plugin.Call<bool>("API_IsMuted", player);
+            return player != null && !Plugin.Call<bool>("API_IsMuted", player);
         }
     }
 }

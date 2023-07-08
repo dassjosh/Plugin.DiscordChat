@@ -41,7 +41,7 @@ namespace DiscordChatPlugin.PluginHandlers
             switch (source)
             {
                 case MessageSource.Discord:
-                    return _settings.DiscordToServer && (_settings.UnlinkedSettings.AllowedUnlinked || player.IsLinked());
+                    return _settings.DiscordToServer && (_settings.UnlinkedSettings.AllowedUnlinked || (player != null && player.IsLinked()));
  
                 case MessageSource.Server:
                     return _settings.ServerToDiscord;
