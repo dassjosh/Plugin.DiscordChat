@@ -14,7 +14,6 @@ using Oxide.Ext.Discord.Entities.Channels;
 using Oxide.Ext.Discord.Entities.Gateway.Events;
 using Oxide.Ext.Discord.Entities.Guilds;
 using Oxide.Ext.Discord.Entities.Messages;
-using MessageType = DiscordChatPlugin.Enums.MessageType;
 
 namespace DiscordChatPlugin.Plugins
 {
@@ -56,28 +55,28 @@ namespace DiscordChatPlugin.Plugins
         {
             if (_pluginConfig.ChatSettings.DiscordToServer)
             {
-                SetupChannel(guild, MessageType.Server, _pluginConfig.ChatSettings.ChatChannel, _pluginConfig.ChatSettings.UseBotToDisplayChat, HandleDiscordChatMessage);
+                SetupChannel(guild, MessageSource.Server, _pluginConfig.ChatSettings.ChatChannel, _pluginConfig.ChatSettings.UseBotToDisplayChat, HandleDiscordChatMessage);
             }
             else
             {
-                SetupChannel(guild, MessageType.Server, _pluginConfig.ChatSettings.ChatChannel, _pluginConfig.ChatSettings.UseBotToDisplayChat);
+                SetupChannel(guild, MessageSource.Server, _pluginConfig.ChatSettings.ChatChannel, _pluginConfig.ChatSettings.UseBotToDisplayChat);
             }
             
-            SetupChannel(guild, MessageType.Discord, _pluginConfig.ChatSettings.ChatChannel, _pluginConfig.ChatSettings.UseBotToDisplayChat);
+            SetupChannel(guild, MessageSource.Discord, _pluginConfig.ChatSettings.ChatChannel, _pluginConfig.ChatSettings.UseBotToDisplayChat);
 
-            SetupChannel(guild, MessageType.Connecting, _pluginConfig.PlayerStateSettings.PlayerStateChannel, false);
-            SetupChannel(guild, MessageType.Connected, _pluginConfig.PlayerStateSettings.PlayerStateChannel, false);
-            SetupChannel(guild, MessageType.Disconnected, _pluginConfig.PlayerStateSettings.PlayerStateChannel, false);
-            SetupChannel(guild, MessageType.ServerBooting, _pluginConfig.ServerStateSettings.ServerStateChannel, false);
-            SetupChannel(guild, MessageType.ServerOnline, _pluginConfig.ServerStateSettings.ServerStateChannel, false);
-            SetupChannel(guild, MessageType.ServerShutdown, _pluginConfig.ServerStateSettings.ServerStateChannel, false);
-            SetupChannel(guild, MessageType.AdminChat, _pluginConfig.PluginSupport.AdminChat.ChatChannel, _pluginConfig.ChatSettings.UseBotToDisplayChat, HandleAdminChatDiscordMessage);
-            SetupChannel(guild, MessageType.Clan, _pluginConfig.PluginSupport.Clans.ClansChatChannel, _pluginConfig.ChatSettings.UseBotToDisplayChat);
-            SetupChannel(guild, MessageType.Alliance, _pluginConfig.PluginSupport.Clans.AllianceChatChannel, _pluginConfig.ChatSettings.UseBotToDisplayChat);
+            SetupChannel(guild, MessageSource.Connecting, _pluginConfig.PlayerStateSettings.PlayerStateChannel, false);
+            SetupChannel(guild, MessageSource.Connected, _pluginConfig.PlayerStateSettings.PlayerStateChannel, false);
+            SetupChannel(guild, MessageSource.Disconnected, _pluginConfig.PlayerStateSettings.PlayerStateChannel, false);
+            SetupChannel(guild, MessageSource.ServerBooting, _pluginConfig.ServerStateSettings.ServerStateChannel, false);
+            SetupChannel(guild, MessageSource.ServerOnline, _pluginConfig.ServerStateSettings.ServerStateChannel, false);
+            SetupChannel(guild, MessageSource.ServerShutdown, _pluginConfig.ServerStateSettings.ServerStateChannel, false);
+            SetupChannel(guild, MessageSource.AdminChat, _pluginConfig.PluginSupport.AdminChat.ChatChannel, _pluginConfig.ChatSettings.UseBotToDisplayChat, HandleAdminChatDiscordMessage);
+            SetupChannel(guild, MessageSource.Clan, _pluginConfig.PluginSupport.Clans.ClansChatChannel, _pluginConfig.ChatSettings.UseBotToDisplayChat);
+            SetupChannel(guild, MessageSource.Alliance, _pluginConfig.PluginSupport.Clans.AllianceChatChannel, _pluginConfig.ChatSettings.UseBotToDisplayChat);
 
 #if RUST
-            SetupChannel(guild, MessageType.Team, _pluginConfig.ChatSettings.TeamChannel, false);
-            SetupChannel(guild, MessageType.Cards, _pluginConfig.ChatSettings.CardsChannel, false);
+            SetupChannel(guild, MessageSource.Team, _pluginConfig.ChatSettings.TeamChannel, false);
+            SetupChannel(guild, MessageSource.Cards, _pluginConfig.ChatSettings.CardsChannel, false);
 #endif
 
             if (_pluginConfig.ChatSettings.ChatChannel.IsValid()
@@ -119,12 +118,12 @@ namespace DiscordChatPlugin.Plugins
             {
                 if (!_serverInitCalled)
                 {
-                    Sends[MessageType.ServerBooting]?.SendTemplate(TemplateKeys.Server.Booting, GetDefault());
+                    Sends[MessageSource.ServerBooting]?.SendTemplate(TemplateKeys.Server.Booting, GetDefault());
                 }
             });
         }
 
-        public void SetupChannel(DiscordGuild guild, MessageType type, Snowflake id, bool wipeNonBotMessages, Action<DiscordMessage> callback = null)
+        public void SetupChannel(DiscordGuild guild, MessageSource source, Snowflake id, bool wipeNonBotMessages, Action<DiscordMessage> callback = null)
         {
             if (!id.IsValid())
             {
@@ -148,8 +147,8 @@ namespace DiscordChatPlugin.Plugins
                 channel.GetMessages(Client, new ChannelMessagesRequest{Limit = 100}).Then(messages => OnGetChannelMessages(messages, channel));
             }
 
-            Sends[type] = new DiscordSendQueue(channel, GetTemplateName(type), timer);;
-            Puts($"Setup Channel {type} With ID: {id}");
+            Sends[source] = new DiscordSendQueue(channel, GetTemplateName(source), timer);;
+            Puts($"Setup Channel {source} With ID: {id}");
         }
 
         private void OnGetChannelMessages(List<DiscordMessage> messages, DiscordChannel channel)
@@ -160,7 +159,7 @@ namespace DiscordChatPlugin.Plugins
             }
 
             Snowflake[] messagesToDelete = messages
-                                           .Where(m => !CanSendMessage(m.Content, m.Author.Player, m.Author, MessageType.Server, m))
+                                           .Where(m => !CanSendMessage(m.Content, m.Author.Player, m.Author, MessageSource.Server, m))
                                            .Take(100).Select(m => m.Id)
                                            .ToArray();
 
@@ -186,7 +185,7 @@ namespace DiscordChatPlugin.Plugins
                 return;
             }
             
-            HandleMessage(message.Content, player, message.Author, MessageType.Discord, message);
+            HandleMessage(message.Content, player, message.Author, MessageSource.Discord, message);
             
             if (_pluginConfig.ChatSettings.UseBotToDisplayChat)
             {

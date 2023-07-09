@@ -6,17 +6,17 @@ namespace DiscordChatPlugin.Plugins
 {
     public partial class DiscordChat
     {
-        public MessageType GetSourceFromServerChannel(int channel)
+        public MessageSource GetSourceFromServerChannel(int channel)
         {
             switch (channel)
             {
                 case 1:
-                    return MessageType.Team;
+                    return MessageSource.Team;
                 case 3:
-                    return MessageType.Cards;
+                    return MessageSource.Cards;
             }
             
-            return MessageType.Server;
+            return MessageSource.Server;
         }
 
         public bool IsPluginLoaded(Plugin plugin) => plugin != null && plugin.IsLoaded;

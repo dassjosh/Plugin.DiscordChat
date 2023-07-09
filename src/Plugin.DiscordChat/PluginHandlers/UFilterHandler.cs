@@ -25,28 +25,28 @@ namespace DiscordChatPlugin.PluginHandlers
             }
         }
 
-        public override void ProcessMessage(StringBuilder message, IPlayer player, DiscordUser user, MessageType type)
+        public override void ProcessMessage(StringBuilder message, IPlayer player, DiscordUser user, MessageSource source)
         {
-            if (CanFilterMessage(type))
+            if (CanFilterMessage(source))
             {
                 UFilterText(message);
             }
         }
 
-        private bool CanFilterMessage(MessageType type)
+        private bool CanFilterMessage(MessageSource source)
         {
-            switch (type)
+            switch (source)
             {
-                case MessageType.Discord:
+                case MessageSource.Discord:
                     return _settings.DiscordMessages;
-                case MessageType.Server:
+                case MessageSource.Server:
                     return _settings.ServerMessage;
-                case MessageType.Team:
+                case MessageSource.Team:
                     return _settings.TeamMessage;
-                case MessageType.Cards:
+                case MessageSource.Cards:
                     return _settings.CardMessage;
-                case MessageType.Clan:
-                case MessageType.Alliance:
+                case MessageSource.Clan:
+                case MessageSource.Alliance:
                     return _settings.PluginMessages;
             }
 

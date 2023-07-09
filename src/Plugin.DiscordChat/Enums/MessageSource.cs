@@ -1,6 +1,6 @@
 ﻿namespace DiscordChatPlugin.Enums
 {
-    public enum MessageType : byte
+    public enum MessageSource : byte
     {
         Connecting,
         Connected,

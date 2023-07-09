@@ -4,7 +4,6 @@ using Oxide.Core.Libraries.Covalence;
 using Oxide.Core.Plugins;
 using Oxide.Ext.Discord.Entities.Messages;
 using Oxide.Ext.Discord.Entities.Users;
-using MessageType = DiscordChatPlugin.Enums.MessageType;
 
 namespace DiscordChatPlugin.PluginHandlers
 {
@@ -12,10 +11,10 @@ namespace DiscordChatPlugin.PluginHandlers
     {
         public AdminDeepCoverHandler(DiscordChat chat, Plugin plugin) : base(chat, plugin) { }
 
-        public override bool CanSendMessage(string message, IPlayer player, DiscordUser user, MessageType type, DiscordMessage sourceMessage)
+        public override bool CanSendMessage(string message, IPlayer player, DiscordUser user, MessageSource type, DiscordMessage sourceMessage)
         {
             return player?.Object != null
-                   && (type == MessageType.Discord || type == MessageType.Server)
+                   && (type == MessageSource.Discord || type == MessageSource.Server)
                    && !Plugin.Call<bool>("API_IsDeepCovered", player.Object);
         }
     }

@@ -7,7 +7,6 @@ using Oxide.Core.Plugins;
 using Oxide.Ext.Discord.Attributes.Pooling;
 using Oxide.Ext.Discord.Clients;
 using Oxide.Ext.Discord.Connections;
-using Oxide.Ext.Discord.Entities;
 using Oxide.Ext.Discord.Entities.Gateway;
 using Oxide.Ext.Discord.Libraries.Placeholders;
 using Oxide.Ext.Discord.Libraries.Subscription;
@@ -40,7 +39,7 @@ namespace DiscordChatPlugin.Plugins
 
         private bool _serverInitCalled;
         
-        public readonly Hash<MessageType, DiscordSendQueue> Sends = new Hash<MessageType, DiscordSendQueue>();
+        public readonly Hash<MessageSource, DiscordSendQueue> Sends = new Hash<MessageSource, DiscordSendQueue>();
         private readonly Hash<string, string> _flagCache = new Hash<string, string>();
         private readonly List<IPluginHandler> _plugins = new List<IPluginHandler>();
 

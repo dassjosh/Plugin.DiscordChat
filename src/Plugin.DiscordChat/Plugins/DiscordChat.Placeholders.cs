@@ -1,6 +1,4 @@
-﻿using System;
-using System.Net;
-using System.Text;
+﻿using System.Text;
 using DiscordChatPlugin.Localization;
 using DiscordChatPlugin.Placeholders;
 using Oxide.Core.Libraries.Covalence;

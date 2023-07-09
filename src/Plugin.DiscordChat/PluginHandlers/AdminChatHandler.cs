@@ -1,5 +1,4 @@
 ﻿using DiscordChatPlugin.Configuration.Plugins;
-using DiscordChatPlugin.Enums;
 using DiscordChatPlugin.Localization;
 using DiscordChatPlugin.Placeholders;
 using DiscordChatPlugin.Plugins;
@@ -9,7 +8,6 @@ using Oxide.Ext.Discord.Clients;
 using Oxide.Ext.Discord.Entities.Messages;
 using Oxide.Ext.Discord.Entities.Users;
 using Oxide.Ext.Discord.Libraries.Placeholders;
-using MessageType = Oxide.Ext.Discord.Entities.Messages.MessageType;
 
 namespace DiscordChatPlugin.PluginHandlers
 {
@@ -24,14 +22,14 @@ namespace DiscordChatPlugin.PluginHandlers
             _settings = settings;
         }
 
-        public override bool CanSendMessage(string message, IPlayer player, DiscordUser user, Enums.MessageType type, DiscordMessage sourceMessage)
+        public override bool CanSendMessage(string message, IPlayer player, DiscordUser user, Enums.MessageSource source, DiscordMessage sourceMessage)
         {
-            return type == Enums.MessageType.AdminChat ? !_settings.Enabled : !IsAdminChatMessage(player, message);
+            return source == Enums.MessageSource.AdminChat ? !_settings.Enabled : !IsAdminChatMessage(player, message);
         }
 
-        public override bool SendMessage(string message, IPlayer player, DiscordUser user, Enums.MessageType type, DiscordMessage sourceMessage)
+        public override bool SendMessage(string message, IPlayer player, DiscordUser user, Enums.MessageSource source, DiscordMessage sourceMessage)
         {
-            if (type != Enums.MessageType.AdminChat)
+            if (source != Enums.MessageSource.AdminChat)
             {
                 return false;
             }
@@ -43,14 +41,14 @@ namespace DiscordChatPlugin.PluginHandlers
                 if (_settings.ReplaceWithBot)
                 {
                     sourceMessage.Delete(_client);
-                    Chat.Sends[type]?.QueueMessage(Chat.Lang(LangKeys.Discord.AdminChat.DiscordMessage, placeholders));
+                    Chat.Sends[source]?.QueueMessage(Chat.Lang(LangKeys.Discord.AdminChat.DiscordMessage, placeholders));
                 }
                     
                 Plugin.Call("SendAdminMessage", player, message);
             }
             else
             {
-                Chat.Sends[type]?.QueueMessage(Chat.Lang(LangKeys.Discord.AdminChat.ServerMessage, placeholders));
+                Chat.Sends[source]?.QueueMessage(Chat.Lang(LangKeys.Discord.AdminChat.ServerMessage, placeholders));
             }
 
             return true;

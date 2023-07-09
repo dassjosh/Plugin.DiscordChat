@@ -10,12 +10,12 @@ namespace DiscordChatPlugin.Plugins
     {
         private void OnClanChat(IPlayer player, string message)
         {
-            Sends[MessageType.Clan]?.QueueMessage(Lang(LangKeys.Discord.Clans.ClanMessage, GetClanPlaceholders(player, message)));
+            Sends[MessageSource.Clan]?.QueueMessage(Lang(LangKeys.Discord.Clans.ClanMessage, GetClanPlaceholders(player, message)));
         }
         
         private void OnAllianceChat(IPlayer player, string message)
         {
-            Sends[MessageType.Alliance]?.QueueMessage(Lang(LangKeys.Discord.Clans.AllianceMessage, GetClanPlaceholders(player, message)));
+            Sends[MessageSource.Alliance]?.QueueMessage(Lang(LangKeys.Discord.Clans.AllianceMessage, GetClanPlaceholders(player, message)));
         }
 
         public PlaceholderData GetClanPlaceholders(IPlayer player, string message)

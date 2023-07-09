@@ -19,9 +19,9 @@ namespace DiscordChatPlugin.PluginHandlers
 
         public override bool HasCallbackMessage() => true;
 
-        public override void ProcessCallbackMessage(string message, IPlayer player, DiscordUser user, MessageType type, Action<string> callback)
+        public override void ProcessCallbackMessage(string message, IPlayer player, DiscordUser user, MessageSource source, Action<string> callback)
         {
-            if (CanChatTranslatorSource(type))
+            if (CanChatTranslatorSource(source))
             {
                 Plugin.Call("Translate", message, _settings.DiscordServerLanguage, "auto", callback);
                 return;
@@ -30,30 +30,30 @@ namespace DiscordChatPlugin.PluginHandlers
             callback.Invoke(message);
         }
 
-        public bool CanChatTranslatorSource(MessageType type)
+        public bool CanChatTranslatorSource(MessageSource source)
         {
             if (!_settings.Enabled)
             {
                 return false;
             }
             
-            switch (type)
+            switch (source)
             {
-                case MessageType.Server:
+                case MessageSource.Server:
                     return _settings.ServerMessage;
 
-                case MessageType.Discord:
+                case MessageSource.Discord:
                     return _settings.DiscordMessage;
                 
-                case MessageType.Clan:
-                case MessageType.Alliance:
+                case MessageSource.Clan:
+                case MessageSource.Alliance:
                     return _settings.PluginMessage;
 
 #if RUST
-                case MessageType.Team:
+                case MessageSource.Team:
                     return _settings.TeamMessage;
 
-                case MessageType.Cards:
+                case MessageSource.Cards:
                     return _settings.CardMessages;
 #endif
             }

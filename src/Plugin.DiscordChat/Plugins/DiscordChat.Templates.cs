@@ -10,7 +10,6 @@ using Oxide.Ext.Discord.Libraries.Placeholders;
 using Oxide.Ext.Discord.Libraries.Templates;
 using Oxide.Ext.Discord.Libraries.Templates.Embeds;
 using Oxide.Ext.Discord.Libraries.Templates.Messages;
-using MessageType = DiscordChatPlugin.Enums.MessageType;
 
 namespace DiscordChatPlugin.Plugins
 {
@@ -100,28 +99,28 @@ namespace DiscordChatPlugin.Plugins
             channel?.CreateGlobalTemplateMessage(Client, templateName, create, placeholders);
         }
 
-        public string GetTemplateName(MessageType type)
+        public string GetTemplateName(MessageSource source)
         {
-            switch (type)
+            switch (source)
             {
-                case MessageType.Discord:
-                case MessageType.Server:
+                case MessageSource.Discord:
+                case MessageSource.Server:
                     return TemplateKeys.Chat.General;
-                case MessageType.Team:
+                case MessageSource.Team:
                     return TemplateKeys.Chat.Teams;
-                case MessageType.Cards:
+                case MessageSource.Cards:
                     return TemplateKeys.Chat.Cards;
-                case MessageType.Connecting:
+                case MessageSource.Connecting:
                     return TemplateKeys.Player.Connecting;
-                case MessageType.Connected:
+                case MessageSource.Connected:
                     return TemplateKeys.Player.Connected;
-                case MessageType.Disconnected:
+                case MessageSource.Disconnected:
                     return TemplateKeys.Player.Disconnected;
-                case MessageType.AdminChat:
+                case MessageSource.AdminChat:
                     return TemplateKeys.Chat.AdminChat.Message;
-                case MessageType.Clan:
+                case MessageSource.Clan:
                     return TemplateKeys.Chat.Clans.Clan;
-                case MessageType.Alliance:
+                case MessageSource.Alliance:
                     return TemplateKeys.Chat.Clans.Alliance;
             }
 

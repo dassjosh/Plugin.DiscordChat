@@ -5,7 +5,6 @@ using Oxide.Core.Libraries.Covalence;
 using Oxide.Core.Plugins;
 using Oxide.Ext.Discord.Entities.Messages;
 using Oxide.Ext.Discord.Extensions;
-using MessageType = DiscordChatPlugin.Enums.MessageType;
 
 namespace DiscordChatPlugin.Plugins
 {
@@ -21,7 +20,7 @@ namespace DiscordChatPlugin.Plugins
         {
             if (IsAdminChatEnabled())
             {
-                HandleMessage(message, player, player.GetDiscordUser(), MessageType.AdminChat, null);
+                HandleMessage(message, player, player.GetDiscordUser(), MessageSource.AdminChat, null);
             }
         }
         
@@ -41,10 +40,10 @@ namespace DiscordChatPlugin.Plugins
                 return;
             }
 
-            HandleMessage(message.Content, player, player.GetDiscordUser(), MessageType.AdminChat, message);
+            HandleMessage(message.Content, player, player.GetDiscordUser(), MessageSource.AdminChat, message);
         }
 
-        public bool IsAdminChatEnabled() => _adminChatSettings.Enabled && Sends.ContainsKey(MessageType.AdminChat);
+        public bool IsAdminChatEnabled() => _adminChatSettings.Enabled && Sends.ContainsKey(MessageSource.AdminChat);
         public bool CanPlayerAdminChat(IPlayer player) => player != null && _adminChatSettings.Enabled && player.HasPermission(AdminChatPermission);
 
     }

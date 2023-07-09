@@ -21,7 +21,7 @@ namespace DiscordChatPlugin.Plugins
             if (_pluginConfig.PlayerStateSettings.ShowAdmins || !player.IsAdmin)
             {
                 PlaceholderData placeholders = GetDefault().AddPlayer(player);
-                ProcessPlayerState(MessageType.Connecting, LangKeys.Discord.Player.Connecting, placeholders);
+                ProcessPlayerState(MessageSource.Connecting, LangKeys.Discord.Player.Connecting, placeholders);
             }
         }
         
@@ -30,7 +30,7 @@ namespace DiscordChatPlugin.Plugins
             if (_pluginConfig.PlayerStateSettings.ShowAdmins || !player.IsAdmin)
             {
                 PlaceholderData placeholders = GetDefault().AddPlayer(player);
-                ProcessPlayerState(MessageType.Connected, LangKeys.Discord.Player.Connected, placeholders);
+                ProcessPlayerState(MessageSource.Connected, LangKeys.Discord.Player.Connected, placeholders);
             }
         }
 
@@ -39,14 +39,14 @@ namespace DiscordChatPlugin.Plugins
             if (_pluginConfig.PlayerStateSettings.ShowAdmins || !player.IsAdmin)
             {
                 PlaceholderData placeholders = GetDefault().AddPlayer(player).Add(PlaceholderKeys.Data.DisconnectReason, reason);
-                ProcessPlayerState(MessageType.Disconnected, LangKeys.Discord.Player.Disconnected, placeholders);
+                ProcessPlayerState(MessageSource.Disconnected, LangKeys.Discord.Player.Disconnected, placeholders);
             }
         }
 
-        public void ProcessPlayerState(MessageType type, string langKey, PlaceholderData data)
+        public void ProcessPlayerState(MessageSource source, string langKey, PlaceholderData data)
         {
             string message = Lang(langKey, data);
-            Sends[type]?.QueueMessage(message);
+            Sends[source]?.QueueMessage(message);
         }
 
         private void OnPluginLoaded(Plugin plugin)
@@ -128,14 +128,14 @@ namespace DiscordChatPlugin.Plugins
         public void HandleChat(IPlayer player, string message, int channel)
         {
             DiscordUser user = player.GetDiscordUser();
-            MessageType type = GetSourceFromServerChannel(channel);
+            MessageSource source = GetSourceFromServerChannel(channel);
 
-            if (!Sends.ContainsKey(type))
+            if (!Sends.ContainsKey(source))
             {
                 return;
             }
             
-            HandleMessage(message, player, user, type, null);
+            HandleMessage(message, player, user, source, null);
         }
     }
 }

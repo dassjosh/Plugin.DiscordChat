@@ -5,7 +5,6 @@ using Oxide.Core.Libraries.Covalence;
 using Oxide.Core.Plugins;
 using Oxide.Ext.Discord.Entities.Messages;
 using Oxide.Ext.Discord.Entities.Users;
-using MessageType = DiscordChatPlugin.Enums.MessageType;
 
 namespace DiscordChatPlugin.PluginHandlers
 {
@@ -18,7 +17,7 @@ namespace DiscordChatPlugin.PluginHandlers
             _settings = settings;
         }
 
-        public override bool CanSendMessage(string message, IPlayer player, DiscordUser user, MessageType type, DiscordMessage sourceMessage)
+        public override bool CanSendMessage(string message, IPlayer player, DiscordUser user, MessageSource source, DiscordMessage sourceMessage)
         {
             return player != null && !Plugin.Call<bool>("API_IsMuted", player);
         }
