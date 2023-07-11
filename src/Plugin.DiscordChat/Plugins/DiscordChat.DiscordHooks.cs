@@ -91,8 +91,20 @@ namespace DiscordChatPlugin.Plugins
 
             if (_pluginConfig.PlayerStateSettings.PlayerStateChannel.IsValid())
             {
-                Subscribe(nameof(OnUserConnected));
-                Subscribe(nameof(OnUserDisconnected));
+                if (_pluginConfig.PlayerStateSettings.SendConnectingMessage)
+                {
+                    Subscribe(nameof(OnUserApproved));
+                }
+                
+                if (_pluginConfig.PlayerStateSettings.SendConnectedMessage)
+                {
+                    Subscribe(nameof(OnUserConnected));
+                }
+
+                if (_pluginConfig.PlayerStateSettings.SendDisconnectedMessage)
+                {
+                    Subscribe(nameof(OnUserDisconnected));
+                }
             }
 
             if (_pluginConfig.ServerStateSettings.ServerStateChannel.IsValid())
@@ -112,7 +124,7 @@ namespace DiscordChatPlugin.Plugins
 
             timer.In(0.1f, () =>
             {
-                if (!_serverInitCalled)
+                if (!_serverInitCalled && _pluginConfig.ServerStateSettings.SendBootingMessage)
                 {
                     SendGlobalTemplateMessage(TemplateKeys.Server.Booting, FindChannel(_pluginConfig.ServerStateSettings.ServerStateChannel));
                 }

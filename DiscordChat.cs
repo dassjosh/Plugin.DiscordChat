@@ -188,8 +188,20 @@ namespace Oxide.Plugins
             
             if (_pluginConfig.PlayerStateSettings.PlayerStateChannel.IsValid())
             {
-                Subscribe(nameof(OnUserConnected));
-                Subscribe(nameof(OnUserDisconnected));
+                if (_pluginConfig.PlayerStateSettings.SendConnectingMessage)
+                {
+                    Subscribe(nameof(OnUserApproved));
+                }
+                
+                if (_pluginConfig.PlayerStateSettings.SendConnectedMessage)
+                {
+                    Subscribe(nameof(OnUserConnected));
+                }
+                
+                if (_pluginConfig.PlayerStateSettings.SendDisconnectedMessage)
+                {
+                    Subscribe(nameof(OnUserDisconnected));
+                }
             }
             
             if (_pluginConfig.ServerStateSettings.ServerStateChannel.IsValid())
@@ -209,7 +221,7 @@ namespace Oxide.Plugins
             
             timer.In(0.1f, () =>
             {
-                if (!_serverInitCalled)
+                if (!_serverInitCalled && _pluginConfig.ServerStateSettings.SendBootingMessage)
                 {
                     SendGlobalTemplateMessage(TemplateKeys.Server.Booting, FindChannel(_pluginConfig.ServerStateSettings.ServerStateChannel));
                 }
@@ -695,6 +707,7 @@ namespace Oxide.Plugins
             Unsubscribe(nameof(OnUserChat));
             #endif
             
+            Unsubscribe(nameof(OnUserApproved));
             Unsubscribe(nameof(OnUserConnected));
             Unsubscribe(nameof(OnUserDisconnected));
             Unsubscribe(nameof(OnServerShutdown));
@@ -755,7 +768,7 @@ namespace Oxide.Plugins
             OnPluginLoaded(plugins.Find("TranslationAPI"));
             OnPluginLoaded(plugins.Find("UFilter"));
             
-            if (startup)
+            if (startup && _pluginConfig.ServerStateSettings.SendOnlineMessage)
             {
                 SendGlobalTemplateMessage(TemplateKeys.Server.Online, FindChannel(_pluginConfig.ServerStateSettings.ServerStateChannel));
             }
@@ -763,7 +776,10 @@ namespace Oxide.Plugins
         
         private void OnServerShutdown()
         {
-            SendGlobalTemplateMessage(TemplateKeys.Server.Shutdown, FindChannel(_pluginConfig.ServerStateSettings.ServerStateChannel));
+            if(_pluginConfig.ServerStateSettings.SendShutdownMessage)
+            {
+                SendGlobalTemplateMessage(TemplateKeys.Server.Shutdown, FindChannel(_pluginConfig.ServerStateSettings.ServerStateChannel));
+            }
         }
         
         private void Unload()
@@ -1026,10 +1042,22 @@ namespace Oxide.Plugins
             [JsonProperty("Show Admins")]
             public bool ShowAdmins { get; set; }
             
+            [JsonProperty("Send Connecting Message")]
+            public bool SendConnectingMessage { get; set; }
+            
+            [JsonProperty("Send Connected Message")]
+            public bool SendConnectedMessage { get; set; }
+            
+            [JsonProperty("Send Disconnected Message")]
+            public bool SendDisconnectedMessage { get; set; }
+            
             public PlayerStateSettings(PlayerStateSettings settings)
             {
                 PlayerStateChannel = settings?.PlayerStateChannel ?? default(Snowflake);
                 ShowAdmins = settings?.ShowAdmins ?? true;
+                SendConnectingMessage = settings?.SendConnectingMessage ?? true;
+                SendConnectedMessage = settings?.SendConnectedMessage ?? true;
+                SendDisconnectedMessage = settings?.SendDisconnectedMessage ?? true;
             }
         }
         #endregion
@@ -1065,9 +1093,21 @@ namespace Oxide.Plugins
             [JsonProperty("Server State Channel ID")]
             public Snowflake ServerStateChannel { get; set; }
             
+            [JsonProperty("Send Booting Message")]
+            public bool SendBootingMessage { get; set; }
+            
+            [JsonProperty("Send Online Message")]
+            public bool SendOnlineMessage { get; set; }
+            
+            [JsonProperty("Send Shutdown Message")]
+            public bool SendShutdownMessage { get; set; }
+            
             public ServerStateSettings(ServerStateSettings settings)
             {
                 ServerStateChannel = settings?.ServerStateChannel ?? default(Snowflake);
+                SendBootingMessage = settings?.SendBootingMessage ?? true;
+                SendOnlineMessage = settings?.SendOnlineMessage ?? true;
+                SendShutdownMessage = settings?.SendShutdownMessage ?? true;
             }
         }
         #endregion

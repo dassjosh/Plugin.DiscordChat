@@ -26,6 +26,7 @@ namespace DiscordChatPlugin.Plugins
             Unsubscribe(nameof(OnUserChat));
 #endif
             
+            Unsubscribe(nameof(OnUserApproved));
             Unsubscribe(nameof(OnUserConnected));
             Unsubscribe(nameof(OnUserDisconnected));
             Unsubscribe(nameof(OnServerShutdown));
@@ -86,7 +87,7 @@ namespace DiscordChatPlugin.Plugins
             OnPluginLoaded(plugins.Find("TranslationAPI"));
             OnPluginLoaded(plugins.Find("UFilter"));
             
-            if (startup)
+            if (startup && _pluginConfig.ServerStateSettings.SendOnlineMessage)
             {
                 SendGlobalTemplateMessage(TemplateKeys.Server.Online, FindChannel(_pluginConfig.ServerStateSettings.ServerStateChannel));
             }
@@ -94,7 +95,10 @@ namespace DiscordChatPlugin.Plugins
 
         private void OnServerShutdown()
         {
-            SendGlobalTemplateMessage(TemplateKeys.Server.Shutdown, FindChannel(_pluginConfig.ServerStateSettings.ServerStateChannel));
+            if(_pluginConfig.ServerStateSettings.SendShutdownMessage)
+            {
+                SendGlobalTemplateMessage(TemplateKeys.Server.Shutdown, FindChannel(_pluginConfig.ServerStateSettings.ServerStateChannel));
+            }
         }
 
         private void Unload()
