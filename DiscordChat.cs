@@ -160,19 +160,16 @@ namespace Oxide.Plugins
             
             SetupChannel(guild, MessageSource.Discord, _pluginConfig.ChatSettings.ChatChannel, _pluginConfig.ChatSettings.UseBotToDisplayChat);
             
-            SetupChannel(guild, MessageSource.Connecting, _pluginConfig.PlayerStateSettings.PlayerStateChannel, false);
-            SetupChannel(guild, MessageSource.Connected, _pluginConfig.PlayerStateSettings.PlayerStateChannel, false);
-            SetupChannel(guild, MessageSource.Disconnected, _pluginConfig.PlayerStateSettings.PlayerStateChannel, false);
-            SetupChannel(guild, MessageSource.ServerBooting, _pluginConfig.ServerStateSettings.ServerStateChannel, false);
-            SetupChannel(guild, MessageSource.ServerOnline, _pluginConfig.ServerStateSettings.ServerStateChannel, false);
-            SetupChannel(guild, MessageSource.ServerShutdown, _pluginConfig.ServerStateSettings.ServerStateChannel, false);
+            SetupChannel(guild, MessageSource.Connecting, _pluginConfig.PlayerStateSettings.PlayerStateChannel);
+            SetupChannel(guild, MessageSource.Connected, _pluginConfig.PlayerStateSettings.PlayerStateChannel);
+            SetupChannel(guild, MessageSource.Disconnected, _pluginConfig.PlayerStateSettings.PlayerStateChannel);
             SetupChannel(guild, MessageSource.AdminChat, _pluginConfig.PluginSupport.AdminChat.ChatChannel, _pluginConfig.ChatSettings.UseBotToDisplayChat, HandleAdminChatDiscordMessage);
             SetupChannel(guild, MessageSource.Clan, _pluginConfig.PluginSupport.Clans.ClansChatChannel, _pluginConfig.ChatSettings.UseBotToDisplayChat);
             SetupChannel(guild, MessageSource.Alliance, _pluginConfig.PluginSupport.Clans.AllianceChatChannel, _pluginConfig.ChatSettings.UseBotToDisplayChat);
             
             #if RUST
-            SetupChannel(guild, MessageSource.Team, _pluginConfig.ChatSettings.TeamChannel, false);
-            SetupChannel(guild, MessageSource.Cards, _pluginConfig.ChatSettings.CardsChannel, false);
+            SetupChannel(guild, MessageSource.Team, _pluginConfig.ChatSettings.TeamChannel);
+            SetupChannel(guild, MessageSource.Cards, _pluginConfig.ChatSettings.CardsChannel);
             #endif
             
             if (_pluginConfig.ChatSettings.ChatChannel.IsValid()
@@ -210,11 +207,11 @@ namespace Oxide.Plugins
                 Subscribe(nameof(OnAllianceChat));
             }
             
-            timer.In(1f, () =>
+            timer.In(0.1f, () =>
             {
                 if (!_serverInitCalled)
                 {
-                    Sends[MessageSource.ServerBooting]?.SendTemplate(TemplateKeys.Server.Booting, GetDefault());
+                    SendGlobalTemplateMessage(TemplateKeys.Server.Booting, FindChannel(_pluginConfig.ServerStateSettings.ServerStateChannel));
                 }
             });
         }
@@ -332,6 +329,25 @@ namespace Oxide.Plugins
             }
             
             return MessageSource.Server;
+        }
+        
+        public DiscordChannel FindChannel(Snowflake channelId)
+        {
+            if (!channelId.IsValid())
+            {
+                return null;
+            }
+            
+            foreach (DiscordGuild guild in Client.Bot.Servers.Values)
+            {
+                DiscordChannel channel = guild.Channels[channelId];
+                if (channel != null)
+                {
+                    return channel;
+                }
+            }
+            
+            return null;
         }
         
         public bool IsPluginLoaded(Plugin plugin) => plugin != null && plugin.IsLoaded;
@@ -741,13 +757,13 @@ namespace Oxide.Plugins
             
             if (startup)
             {
-                Sends[MessageSource.ServerOnline]?.SendTemplate(TemplateKeys.Server.Online, GetDefault());
+                SendGlobalTemplateMessage(TemplateKeys.Server.Online, FindChannel(_pluginConfig.ServerStateSettings.ServerStateChannel));
             }
         }
         
         private void OnServerShutdown()
         {
-            Sends[MessageSource.ServerShutdown]?.SendTemplate(TemplateKeys.Server.Shutdown, GetDefault());
+            SendGlobalTemplateMessage(TemplateKeys.Server.Shutdown, FindChannel(_pluginConfig.ServerStateSettings.ServerStateChannel));
         }
         
         private void Unload()
@@ -834,11 +850,16 @@ namespace Oxide.Plugins
         
         public void SendGlobalTemplateMessage(string templateName, DiscordChannel channel, PlaceholderData placeholders = null)
         {
+            if (channel == null)
+            {
+                return;
+            }
+            
             MessageCreate create = new MessageCreate
             {
                 AllowedMentions = AllowedMentions.None
             };
-            channel?.CreateGlobalTemplateMessage(Client, templateName, create, placeholders);
+            channel.CreateGlobalTemplateMessage(Client, templateName, create, placeholders);
         }
         
         public string GetTemplateName(MessageSource source)
@@ -1078,9 +1099,6 @@ namespace Oxide.Plugins
             Connecting,
             Connected,
             Disconnected,
-            ServerBooting,
-            ServerOnline,
-            ServerShutdown,
             Server,
             Discord,
             Team,

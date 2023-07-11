@@ -92,11 +92,16 @@ namespace DiscordChatPlugin.Plugins
         
         public void SendGlobalTemplateMessage(string templateName, DiscordChannel channel, PlaceholderData placeholders = null)
         {
+            if (channel == null)
+            {
+                return;
+            }
+            
             MessageCreate create = new MessageCreate
             {
                 AllowedMentions = AllowedMentions.None
             };
-            channel?.CreateGlobalTemplateMessage(Client, templateName, create, placeholders);
+            channel.CreateGlobalTemplateMessage(Client, templateName, create, placeholders);
         }
 
         public string GetTemplateName(MessageSource source)

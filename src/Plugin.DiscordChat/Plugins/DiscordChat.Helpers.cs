@@ -1,6 +1,9 @@
 ﻿using DiscordChatPlugin.Enums;
 using Oxide.Core.Libraries.Covalence;
 using Oxide.Core.Plugins;
+using Oxide.Ext.Discord.Entities;
+using Oxide.Ext.Discord.Entities.Channels;
+using Oxide.Ext.Discord.Entities.Guilds;
 
 namespace DiscordChatPlugin.Plugins
 {
@@ -17,6 +20,25 @@ namespace DiscordChatPlugin.Plugins
             }
             
             return MessageSource.Server;
+        }
+
+        public DiscordChannel FindChannel(Snowflake channelId)
+        {
+            if (!channelId.IsValid())
+            {
+                return null;
+            }
+            
+            foreach (DiscordGuild guild in Client.Bot.Servers.Values)
+            {
+                DiscordChannel channel = guild.Channels[channelId];
+                if (channel != null)
+                {
+                    return channel;
+                }
+            }
+
+            return null;
         }
 
         public bool IsPluginLoaded(Plugin plugin) => plugin != null && plugin.IsLoaded;

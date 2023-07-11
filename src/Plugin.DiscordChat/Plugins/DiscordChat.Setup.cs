@@ -88,13 +88,13 @@ namespace DiscordChatPlugin.Plugins
             
             if (startup)
             {
-                Sends[MessageSource.ServerOnline]?.SendTemplate(TemplateKeys.Server.Online, GetDefault());
+                SendGlobalTemplateMessage(TemplateKeys.Server.Online, FindChannel(_pluginConfig.ServerStateSettings.ServerStateChannel));
             }
         }
 
         private void OnServerShutdown()
         {
-            Sends[MessageSource.ServerShutdown]?.SendTemplate(TemplateKeys.Server.Shutdown, GetDefault());
+            SendGlobalTemplateMessage(TemplateKeys.Server.Shutdown, FindChannel(_pluginConfig.ServerStateSettings.ServerStateChannel));
         }
 
         private void Unload()
