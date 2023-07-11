@@ -40,7 +40,6 @@ namespace DiscordChatPlugin.Plugins
         private bool _serverInitCalled;
         
         public readonly Hash<MessageSource, DiscordSendQueue> Sends = new Hash<MessageSource, DiscordSendQueue>();
-        private readonly Hash<string, string> _flagCache = new Hash<string, string>();
         private readonly List<IPluginHandler> _plugins = new List<IPluginHandler>();
 
         public static DiscordChat Instance;

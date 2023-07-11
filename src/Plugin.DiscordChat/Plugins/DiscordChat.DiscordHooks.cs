@@ -26,7 +26,6 @@ namespace DiscordChatPlugin.Plugins
             {
                 RegisterPlaceholders();
                 RegisterTemplates();
-                
                 Client.Connect(_discordSettings);
             }
         }
@@ -123,7 +122,7 @@ namespace DiscordChatPlugin.Plugins
             });
         }
 
-        public void SetupChannel(DiscordGuild guild, MessageSource source, Snowflake id, bool wipeNonBotMessages, Action<DiscordMessage> callback = null)
+        public void SetupChannel(DiscordGuild guild, MessageSource source, Snowflake id, bool wipeNonBotMessages = false, Action<DiscordMessage> callback = null)
         {
             if (!id.IsValid())
             {
@@ -159,7 +158,7 @@ namespace DiscordChatPlugin.Plugins
             }
 
             Snowflake[] messagesToDelete = messages
-                                           .Where(m => !CanSendMessage(m.Content, m.Author.Player, m.Author, MessageSource.Server, m))
+                                           .Where(m => !m.Author.IsBot && !CanSendMessage(m.Content, m.Author.Player, m.Author, MessageSource.Server, m))
                                            .Take(100).Select(m => m.Id)
                                            .ToArray();
 

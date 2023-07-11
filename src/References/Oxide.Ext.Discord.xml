@@ -146,6 +146,165 @@
             Attribute for setting <see cref="T:Oxide.Ext.Discord.Pooling.DiscordPluginPool"/> on a plugin
             </summary>
         </member>
+        <member name="T:Oxide.Ext.Discord.Builders.Ansi.AnsiBuilder">
+            <summary>
+            Builder for ANSI colored text
+            </summary>
+        </member>
+        <member name="M:Oxide.Ext.Discord.Builders.Ansi.AnsiBuilder.#ctor">
+            <summary>
+            Constructor
+            </summary>
+        </member>
+        <member name="M:Oxide.Ext.Discord.Builders.Ansi.AnsiBuilder.Append(System.String,Oxide.Ext.Discord.Builders.Ansi.TextColor,Oxide.Ext.Discord.Builders.Ansi.BackgroundColor,Oxide.Ext.Discord.Builders.Ansi.FontStyle)">
+            <summary>
+            Appends text with the given color, background, and font style
+            </summary>
+            <param name="text">Text to add</param>
+            <param name="color">Color of the text</param>
+            <param name="background">Background color of the text</param>
+            <param name="style">Font style of the text</param>
+        </member>
+        <member name="M:Oxide.Ext.Discord.Builders.Ansi.AnsiBuilder.AppendLine(System.String,Oxide.Ext.Discord.Builders.Ansi.TextColor,Oxide.Ext.Discord.Builders.Ansi.BackgroundColor,Oxide.Ext.Discord.Builders.Ansi.FontStyle)">
+            <summary>
+            Appends text with a line terminator with the given color, background, and font style
+            </summary>
+            <param name="text">Text to add</param>
+            <param name="color">Color of the text</param>
+            <param name="background">Background color of the text</param>
+            <param name="style">Font style of the text</param>
+        </member>
+        <member name="M:Oxide.Ext.Discord.Builders.Ansi.AnsiBuilder.AppendLine">
+            <summary>
+            Appends a line
+            </summary>
+        </member>
+        <member name="M:Oxide.Ext.Discord.Builders.Ansi.AnsiBuilder.Build">
+            <summary>
+            Returns the build Ansi Text
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Oxide.Ext.Discord.Builders.Ansi.BackgroundColor">
+            <summary>
+            Ansi Background colors
+            </summary>
+        </member>
+        <member name="F:Oxide.Ext.Discord.Builders.Ansi.BackgroundColor.Default">
+            <summary>
+            Default
+            </summary>
+        </member>
+        <member name="F:Oxide.Ext.Discord.Builders.Ansi.BackgroundColor.DarkBlue">
+            <summary>
+            Dark Blue
+            </summary>
+        </member>
+        <member name="F:Oxide.Ext.Discord.Builders.Ansi.BackgroundColor.Orange">
+            <summary>
+            Orange
+            </summary>
+        </member>
+        <member name="F:Oxide.Ext.Discord.Builders.Ansi.BackgroundColor.MarbleBlue">
+            <summary>
+            Marble Blue
+            </summary>
+        </member>
+        <member name="F:Oxide.Ext.Discord.Builders.Ansi.BackgroundColor.GreyTurquoise">
+            <summary>
+            Grey Turquoise
+            </summary>
+        </member>
+        <member name="F:Oxide.Ext.Discord.Builders.Ansi.BackgroundColor.Gray">
+            <summary>
+            Gray
+            </summary>
+        </member>
+        <member name="F:Oxide.Ext.Discord.Builders.Ansi.BackgroundColor.Indigo">
+            <summary>
+            Indigo
+            </summary>
+        </member>
+        <member name="F:Oxide.Ext.Discord.Builders.Ansi.BackgroundColor.LightGray">
+            <summary>
+            Light Gray
+            </summary>
+        </member>
+        <member name="F:Oxide.Ext.Discord.Builders.Ansi.BackgroundColor.White">
+            <summary>
+            White
+            </summary>
+        </member>
+        <member name="T:Oxide.Ext.Discord.Builders.Ansi.FontStyle">
+            <summary>
+            Font Styles for ANSI text
+            </summary>
+        </member>
+        <member name="F:Oxide.Ext.Discord.Builders.Ansi.FontStyle.Default">
+            <summary>
+            Default
+            </summary>
+        </member>
+        <member name="F:Oxide.Ext.Discord.Builders.Ansi.FontStyle.Bold">
+            <summary>
+            Bold
+            </summary>
+        </member>
+        <member name="F:Oxide.Ext.Discord.Builders.Ansi.FontStyle.Underline">
+            <summary>
+            Underline
+            </summary>
+        </member>
+        <member name="T:Oxide.Ext.Discord.Builders.Ansi.TextColor">
+            <summary>
+            Text Colors for Ansi Text
+            </summary>
+        </member>
+        <member name="F:Oxide.Ext.Discord.Builders.Ansi.TextColor.Default">
+            <summary>
+            Default
+            </summary>
+        </member>
+        <member name="F:Oxide.Ext.Discord.Builders.Ansi.TextColor.Gray">
+            <summary>
+            Gray
+            </summary>
+        </member>
+        <member name="F:Oxide.Ext.Discord.Builders.Ansi.TextColor.Red">
+            <summary>
+            Red
+            </summary>
+        </member>
+        <member name="F:Oxide.Ext.Discord.Builders.Ansi.TextColor.Green">
+            <summary>
+            Green
+            </summary>
+        </member>
+        <member name="F:Oxide.Ext.Discord.Builders.Ansi.TextColor.Yellow">
+            <summary>
+            Yellow
+            </summary>
+        </member>
+        <member name="F:Oxide.Ext.Discord.Builders.Ansi.TextColor.Blue">
+            <summary>
+            Blue
+            </summary>
+        </member>
+        <member name="F:Oxide.Ext.Discord.Builders.Ansi.TextColor.Pink">
+            <summary>
+            Pink
+            </summary>
+        </member>
+        <member name="F:Oxide.Ext.Discord.Builders.Ansi.TextColor.Cyan">
+            <summary>
+            Cyan
+            </summary>
+        </member>
+        <member name="F:Oxide.Ext.Discord.Builders.Ansi.TextColor.White">
+            <summary>
+            White
+            </summary>
+        </member>
         <member name="T:Oxide.Ext.Discord.Builders.ApplicationCommands.ApplicationCommandBuilder">
             <summary>
             Builder to use when building application commands
@@ -16644,6 +16803,16 @@
             Exception for Discord Templates
             </summary>
         </member>
+        <member name="T:Oxide.Ext.Discord.Exceptions.Libraries.Templates.DuplicateTemplateException">
+            <summary>
+            Thrown when duplicate templates have been registered for the same type, plugin, and name
+            </summary>
+        </member>
+        <member name="T:Oxide.Ext.Discord.Exceptions.Libraries.Templates.InvalidTemplateVersionException">
+            <summary>
+            Thrown when the minimum template version is higher than the current template version
+            </summary>
+        </member>
         <member name="T:Oxide.Ext.Discord.Exceptions.Pooling.InvalidPoolException">
             <summary>
             An exception when something is invalid with a pool
@@ -16925,6 +17094,15 @@
             Returns if the IPlayer is a <see cref="T:Oxide.Ext.Discord.Plugins.DiscordDummyPlayer"/>
             </summary>
             <param name="player"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Oxide.Ext.Discord.Extensions.PlayerExt.CreateDummyPlayer(System.String,System.String,System.String)">
+            <summary>
+            Allows plugins to create dummy IPlayers
+            </summary>
+            <param name="id">ID of the player</param>
+            <param name="name">Name of the player</param>
+            <param name="ip">IP of the player</param>
             <returns></returns>
         </member>
         <member name="T:Oxide.Ext.Discord.Extensions.PluginExt">
@@ -20125,6 +20303,13 @@
             Adds a <see cref="T:Oxide.Core.Plugins.Plugin"/>
             </summary>
             <param name="plugin">Plugin to add</param>
+            <returns>This</returns>
+        </member>
+        <member name="M:Oxide.Ext.Discord.Libraries.Placeholders.PlaceholderData.AddTimestamp(System.DateTimeOffset)">
+            <summary>
+            Adds a Unix Timestamp
+            </summary>
+            <param name="timestamp">Unix timestamp</param>
             <returns>This</returns>
         </member>
         <member name="M:Oxide.Ext.Discord.Libraries.Placeholders.PlaceholderData.AddTimestamp(System.Int64)">

@@ -1,4 +1,5 @@
 ﻿using DiscordChatPlugin.Configuration.Plugins;
+using DiscordChatPlugin.Enums;
 using DiscordChatPlugin.Localization;
 using DiscordChatPlugin.Placeholders;
 using DiscordChatPlugin.Plugins;
@@ -22,14 +23,14 @@ namespace DiscordChatPlugin.PluginHandlers
             _settings = settings;
         }
 
-        public override bool CanSendMessage(string message, IPlayer player, DiscordUser user, Enums.MessageSource source, DiscordMessage sourceMessage)
+        public override bool CanSendMessage(string message, IPlayer player, DiscordUser user, MessageSource source, DiscordMessage sourceMessage)
         {
-            return source == Enums.MessageSource.AdminChat ? !_settings.Enabled : !IsAdminChatMessage(player, message);
+            return source == MessageSource.AdminChat ? !_settings.Enabled : !IsAdminChatMessage(player, message);
         }
 
-        public override bool SendMessage(string message, IPlayer player, DiscordUser user, Enums.MessageSource source, DiscordMessage sourceMessage)
+        public override bool SendMessage(string message, IPlayer player, DiscordUser user, MessageSource source, DiscordMessage sourceMessage)
         {
-            if (source != Enums.MessageSource.AdminChat)
+            if (source != MessageSource.AdminChat)
             {
                 return false;
             }
