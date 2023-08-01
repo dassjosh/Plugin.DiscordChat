@@ -10,7 +10,8 @@
         Team,
         Cards,
         Clan,
-        Alliance,
-        AdminChat
+        PluginClan,
+        PluginAlliance,
+        PluginAdminChat
     }
 }

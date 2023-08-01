@@ -53,8 +53,8 @@ namespace DiscordChatPlugin.PluginHandlers
                     return _settings.TeamMessage;
                 case MessageSource.Cards:
                     return _settings.CardMessages;
-                case MessageSource.Clan:
-                case MessageSource.Alliance:
+                case MessageSource.PluginClan:
+                case MessageSource.PluginAlliance:
                     return _settings.PluginMessage;
             }
 

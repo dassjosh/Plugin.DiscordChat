@@ -10,9 +10,9 @@ namespace DiscordChatPlugin.Plugins
     {
         public void RegisterPlaceholders()
         {
-            _placeholders.RegisterPlaceholder<string>(this, PlaceholderKeys.Message, PlaceholderKeys.Data.Message);
-            _placeholders.RegisterPlaceholder<string>(this, PlaceholderKeys.PlayerMessage, PlaceholderKeys.Data.PlayerMessage);
-            _placeholders.RegisterPlaceholder<string>(this, PlaceholderKeys.DisconnectReason, PlaceholderKeys.Data.DisconnectReason);
+            _placeholders.RegisterPlaceholder<string>(this, PlaceholderKeys.Message, PlaceholderDataKeys.Message);
+            _placeholders.RegisterPlaceholder<string>(this, PlaceholderKeys.PlayerMessage, PlaceholderDataKeys.PlayerMessage);
+            _placeholders.RegisterPlaceholder<string>(this, PlaceholderKeys.DisconnectReason, PlaceholderDataKeys.DisconnectReason);
             _placeholders.RegisterPlaceholder<IPlayer, string>(this, PlaceholderKeys.PlayerName, GetPlayerName);
             _placeholders.RegisterPlaceholder(this, PlaceholderKeys.DiscordTag, _pluginConfig.ChatSettings.DiscordTag);
         }

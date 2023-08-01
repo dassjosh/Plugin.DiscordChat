@@ -25,17 +25,17 @@ namespace DiscordChatPlugin.PluginHandlers
 
         public override bool CanSendMessage(string message, IPlayer player, DiscordUser user, MessageSource source, DiscordMessage sourceMessage)
         {
-            return source == MessageSource.AdminChat ? !_settings.Enabled : !IsAdminChatMessage(player, message);
+            return source == MessageSource.PluginAdminChat ? !_settings.Enabled : !IsAdminChatMessage(player, message);
         }
 
         public override bool SendMessage(string message, IPlayer player, DiscordUser user, MessageSource source, DiscordMessage sourceMessage)
         {
-            if (source != MessageSource.AdminChat)
+            if (source != MessageSource.PluginAdminChat)
             {
                 return false;
             }
             
-            PlaceholderData placeholders = Chat.GetDefault().AddPlayer(player).Add(PlaceholderKeys.Data.PlayerMessage, message);
+            PlaceholderData placeholders = Chat.GetDefault().AddPlayer(player).Add(PlaceholderDataKeys.PlayerMessage, message);
             
             if (sourceMessage != null)
             {

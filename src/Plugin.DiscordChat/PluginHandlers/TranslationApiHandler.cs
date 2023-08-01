@@ -45,8 +45,8 @@ namespace DiscordChatPlugin.PluginHandlers
                 case MessageSource.Discord:
                     return _settings.DiscordMessage;
                 
-                case MessageSource.Clan:
-                case MessageSource.Alliance:
+                case MessageSource.PluginClan:
+                case MessageSource.PluginAlliance:
                     return _settings.PluginMessage;
 
 #if RUST

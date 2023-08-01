@@ -2,6 +2,7 @@
 using DiscordChatPlugin.Localization;
 using DiscordChatPlugin.Placeholders;
 using Oxide.Ext.Discord.Libraries.Placeholders;
+using Oxide.Ext.Discord.Libraries.Placeholders.Keys;
 
 namespace DiscordChatPlugin.Plugins
 {
@@ -18,21 +19,22 @@ namespace DiscordChatPlugin.Plugins
         {
             lang.RegisterMessages(new Dictionary<string, string>
             {
-                [LangKeys.Discord.Player.Connecting] = $":yellow_circle: {{timestamp.now.shorttime}} **{{{PlaceholderKeys.PlayerName}}}** is connecting",
-                [LangKeys.Discord.Player.Connected] = $":white_check_mark: {{timestamp.now.shorttime}} **{{{PlaceholderKeys.PlayerName}}}** {{player.country.emoji}} has joined.",
-                [LangKeys.Discord.Player.Disconnected] = $":x: {{timestamp.now.shorttime}} **{{{PlaceholderKeys.PlayerName}}}** has disconnected. ({{{PlaceholderKeys.DisconnectReason}}})",
-                [LangKeys.Discord.Chat.Server] = $":desktop: {{timestamp.now.shorttime}} **{{{PlaceholderKeys.PlayerName}}}**: {{{PlaceholderKeys.PlayerMessage}}}",
-                [LangKeys.Discord.Chat.LinkedMessage] = $":speech_left: {{timestamp.now.shorttime}} **{{{PlaceholderKeys.PlayerName}}}**: {{{PlaceholderKeys.PlayerMessage}}}",
-                [LangKeys.Discord.Chat.UnlinkedMessage] = $":chains: {{timestamp.now.shorttime}} {{user.mention}}: {{{PlaceholderKeys.PlayerMessage}}}",
-                [LangKeys.Discord.Chat.PlayerName] = "{player.name:clan}",
-                [LangKeys.Discord.Team.Message] = $":busts_in_silhouette: {{timestamp.now.shorttime}} **{{{PlaceholderKeys.PlayerName}}}**: {{{PlaceholderKeys.PlayerMessage}}}",
-                [LangKeys.Discord.Cards.Message] = $":black_joker: {{timestamp.now.shorttime}} **{{{PlaceholderKeys.PlayerName}}}**: {{{PlaceholderKeys.PlayerMessage}}}",
-                [LangKeys.Discord.AdminChat.ServerMessage] = $":mechanic: {{timestamp.now.shorttime}} **{{{PlaceholderKeys.PlayerName}}}**: {{{PlaceholderKeys.PlayerMessage}}}",
-                [LangKeys.Discord.AdminChat.DiscordMessage] = $":mechanic: {{timestamp.now.shorttime}} **{{{PlaceholderKeys.PlayerName}}}**: {{{PlaceholderKeys.PlayerMessage}}}",
-                [LangKeys.Discord.Clans.ClanMessage] = $"{{timestamp.now.shorttime}} [Clan] **{{{PlaceholderKeys.PlayerName}}}**: {{{PlaceholderKeys.PlayerMessage}}}",
-                [LangKeys.Discord.Clans.AllianceMessage] = $"{{timestamp.now.shorttime}} [Alliance] **{{{PlaceholderKeys.PlayerName}}}**: {{{PlaceholderKeys.PlayerMessage}}}",
-                [LangKeys.Server.UnlinkedMessage] = $"{{{PlaceholderKeys.DiscordTag}}} [#5f79d6]{{user.fullname}}[/#]: {{{PlaceholderKeys.PlayerMessage}}}",
-                [LangKeys.Server.LinkedMessage] = $"{{{PlaceholderKeys.DiscordTag}}} [#5f79d6]{{{PlaceholderKeys.PlayerName}}}[/#]: {{{PlaceholderKeys.PlayerMessage}}}"
+                [LangKeys.Discord.Player.Connecting] = $":yellow_circle: {DefaultKeys.TimestampNow.ShortTime} **{PlaceholderKeys.PlayerName}** is connecting",
+                [LangKeys.Discord.Player.Connected] = $":white_check_mark: {DefaultKeys.TimestampNow.ShortTime} {DefaultKeys.Player.CountryEmoji} **{PlaceholderKeys.PlayerName}** has joined.",
+                [LangKeys.Discord.Player.Disconnected] = $":x: {DefaultKeys.TimestampNow.ShortTime} **{PlaceholderKeys.PlayerName}** has disconnected. ({PlaceholderKeys.DisconnectReason})",
+                [LangKeys.Discord.Chat.Server] = $":desktop: {DefaultKeys.TimestampNow.ShortTime} **{PlaceholderKeys.PlayerName}**: {PlaceholderKeys.PlayerMessage}",
+                [LangKeys.Discord.Chat.LinkedMessage] = $":speech_left: {DefaultKeys.TimestampNow.ShortTime} **{PlaceholderKeys.PlayerName}**: {PlaceholderKeys.PlayerMessage}",
+                [LangKeys.Discord.Chat.UnlinkedMessage] = $":chains: {DefaultKeys.TimestampNow.ShortTime} {DefaultKeys.User.Mention}: {PlaceholderKeys.PlayerMessage}",
+                [LangKeys.Discord.Chat.PlayerName] = $"{DefaultKeys.Player.NameClan}",
+                [LangKeys.Discord.Team.Message] = $":busts_in_silhouette: {DefaultKeys.TimestampNow.ShortTime} **{PlaceholderKeys.PlayerName}**: {PlaceholderKeys.PlayerMessage}",
+                [LangKeys.Discord.Cards.Message] = $":black_joker: {DefaultKeys.TimestampNow.ShortTime} **{PlaceholderKeys.PlayerName}**: {PlaceholderKeys.PlayerMessage}",
+                [LangKeys.Discord.Clans.Message] = $":shield: {DefaultKeys.TimestampNow.ShortTime} **{PlaceholderKeys.PlayerName}**: {PlaceholderKeys.PlayerMessage}",
+                [LangKeys.Discord.AdminChat.ServerMessage] = $":mechanic: {DefaultKeys.TimestampNow.ShortTime} **{PlaceholderKeys.PlayerName}**: {PlaceholderKeys.PlayerMessage}",
+                [LangKeys.Discord.AdminChat.DiscordMessage] = $":mechanic: {DefaultKeys.TimestampNow.ShortTime} **{PlaceholderKeys.PlayerName}**: {PlaceholderKeys.PlayerMessage}",
+                [LangKeys.Discord.PluginClans.ClanMessage] = $"{DefaultKeys.TimestampNow.ShortTime} [Clan] **{PlaceholderKeys.PlayerName}**: {PlaceholderKeys.PlayerMessage}",
+                [LangKeys.Discord.PluginClans.AllianceMessage] = $"{DefaultKeys.TimestampNow.ShortTime} [Alliance] **{PlaceholderKeys.PlayerName}**: {PlaceholderKeys.PlayerMessage}",
+                [LangKeys.Server.UnlinkedMessage] = $"{PlaceholderKeys.DiscordTag} [#5f79d6]{DefaultKeys.Member.Name}[/#]: {PlaceholderKeys.PlayerMessage}",
+                [LangKeys.Server.LinkedMessage] = $"{PlaceholderKeys.DiscordTag} [#5f79d6]{PlaceholderKeys.PlayerName}[/#]: {PlaceholderKeys.PlayerMessage}"
             }, this);
         }
     }

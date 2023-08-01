@@ -15,6 +15,9 @@ namespace DiscordChatPlugin.Configuration
 
         [JsonProperty("Cards Channel ID")]
         public Snowflake CardsChannel { get; set; }
+        
+        [JsonProperty("Clans Channel ID")]
+        public Snowflake ClansChannel { get; set; }
 #endif
 
         [JsonProperty("Replace Discord User Message With Bot Message")]

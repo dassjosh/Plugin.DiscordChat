@@ -1,18 +1,14 @@
-﻿namespace DiscordChatPlugin.Placeholders
+﻿using DiscordChatPlugin.Plugins;
+using Oxide.Ext.Discord.Libraries.Placeholders;
+
+namespace DiscordChatPlugin.Placeholders
 {
     public class PlaceholderKeys
     {
-        public const string Message = "discordchat.message";
-        public const string PlayerMessage = "discordchat.player.message";
-        public const string DisconnectReason = "discordchat.disconnect.reason";
-        public const string PlayerName = "discordchat.player.name";
-        public const string DiscordTag = "discordchat.discord.tag";
-
-        public class Data
-        {
-            public const string Message = "message";
-            public const string PlayerMessage = "player.message";
-            public const string DisconnectReason = "reason";
-        }
+        public static readonly PlaceholderKey Message = new PlaceholderKey(nameof(DiscordChat), "message");
+        public static readonly PlaceholderKey PlayerMessage = new PlaceholderKey(nameof(DiscordChat), "player.message");
+        public static readonly PlaceholderKey DisconnectReason = new PlaceholderKey(nameof(DiscordChat), "disconnect.reason");
+        public static readonly PlaceholderKey PlayerName = new PlaceholderKey(nameof(DiscordChat), "player.name");
+        public static readonly PlaceholderKey DiscordTag = new PlaceholderKey(nameof(DiscordChat), "discord.tag");
     }
 }

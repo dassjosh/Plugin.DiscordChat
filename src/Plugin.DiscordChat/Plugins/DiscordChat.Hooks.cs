@@ -38,7 +38,7 @@ namespace DiscordChatPlugin.Plugins
         {
             if (_pluginConfig.PlayerStateSettings.ShowAdmins || !player.IsAdmin)
             {
-                PlaceholderData placeholders = GetDefault().AddPlayer(player).Add(PlaceholderKeys.Data.DisconnectReason, reason);
+                PlaceholderData placeholders = GetDefault().AddPlayer(player).Add(PlaceholderDataKeys.DisconnectReason, reason);
                 ProcessPlayerState(MessageSource.Disconnected, LangKeys.Discord.Player.Disconnected, placeholders);
             }
         }

@@ -17,6 +17,8 @@ namespace DiscordChatPlugin.Plugins
                     return MessageSource.Team;
                 case 3:
                     return MessageSource.Cards;
+                case 5:
+                    return MessageSource.Clan;
             }
             
             return MessageSource.Server;

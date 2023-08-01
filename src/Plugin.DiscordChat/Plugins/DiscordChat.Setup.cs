@@ -1,7 +1,6 @@
 ﻿using System;
 using DiscordChatPlugin.Configuration;
 using DiscordChatPlugin.Configuration.Plugins;
-using DiscordChatPlugin.Enums;
 using DiscordChatPlugin.PluginHandlers;
 using DiscordChatPlugin.Templates;
 using Oxide.Core;

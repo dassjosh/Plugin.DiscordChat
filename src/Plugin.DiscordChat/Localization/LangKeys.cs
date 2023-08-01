@@ -31,6 +31,13 @@
 
                 public const string Message = Base + nameof(Message);
             }
+            
+            public static class Clans
+            {
+                private const string Base = Discord.Base + nameof(Clans) + ".";
+
+                public const string Message = Base + nameof(Message);
+            }
 
             public static class Player
             {
@@ -49,9 +56,9 @@
                 public const string DiscordMessage = Base + nameof(DiscordMessage);
             }
                 
-            public static class Clans
+            public static class PluginClans
             {
-                private const string Base = Discord.Base + nameof(Clans) + ".";
+                private const string Base = Discord.Base + nameof(PluginClans) + ".";
 
                 public const string ClanMessage = Base + nameof(ClanMessage);
                 public const string AllianceMessage = Base + nameof(AllianceMessage);

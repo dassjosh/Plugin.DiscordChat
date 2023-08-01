@@ -27,6 +27,7 @@
             public const string General = Base + nameof(General);
             public const string Teams = Base + nameof(Teams);
             public const string Cards = Base + nameof(Cards);
+            public const string Clan = Base + nameof(Clan);
 
             public static class Clans
             {
