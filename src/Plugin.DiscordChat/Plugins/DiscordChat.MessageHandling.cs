@@ -46,13 +46,14 @@ namespace DiscordChatPlugin.Plugins
             {
                 foreach (KeyValuePair<Snowflake, DiscordUser> mention in message.Mentions)
                 {
-                    sb.Replace($"<@{mention.Key.ToString()}>", $"@{mention.Value.DisplayName}");
+                    GuildMember member = guild.Members[mention.Key];
+                    sb.Replace($"<@{mention.Key.ToString()}>", $"@{member?.DisplayName ?? mention.Value.DisplayName}");
                 }
             
                 foreach (KeyValuePair<Snowflake, DiscordUser> mention in message.Mentions)
                 {
                     GuildMember member = guild.Members[mention.Key];
-                    sb.Replace($"<@!{mention.Key.ToString()}>", $"@{member?.Nickname ?? mention.Value.DisplayName}");
+                    sb.Replace($"<@!{mention.Key.ToString()}>", $"@{member?.DisplayName ?? mention.Value.DisplayName}");
                 }
             }
             
