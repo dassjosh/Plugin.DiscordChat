@@ -24,6 +24,9 @@ namespace DiscordChatPlugin.Configuration.Plugins
 
         [JsonProperty("Use ChatTranslator On Card Messages")]
         public bool CardMessages { get; set; }
+        
+        [JsonProperty("Use ChatTranslator On Clan Messages")]
+        public bool ClanMessages { get; set; }
 #endif
 
         [JsonProperty("Discord Server Chat Language")]
@@ -37,6 +40,7 @@ namespace DiscordChatPlugin.Configuration.Plugins
 #if RUST
             TeamMessage = settings?.TeamMessage ?? false;
             CardMessages = settings?.CardMessages ?? false;
+            ClanMessages = settings?.ClanMessages ?? false;
 #endif
             DiscordServerLanguage = settings?.DiscordServerLanguage ?? Interface.Oxide.GetLibrary<Lang>().GetServerLanguage();
         }

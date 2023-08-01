@@ -22,6 +22,9 @@ namespace DiscordChatPlugin.Configuration.Plugins
 
         [JsonProperty("Use UFilter On Card Messages")]
         public bool CardMessage { get; set; }
+        
+        [JsonProperty("Use UFilter On Clan Messages")]
+        public bool ClanMessage { get; set; }
 #endif
 
         [JsonProperty("Replacement Character")]
@@ -36,6 +39,7 @@ namespace DiscordChatPlugin.Configuration.Plugins
 #if RUST
             TeamMessage = settings?.TeamMessage ?? false;
             CardMessage = settings?.CardMessage ?? false;
+            ClanMessage = settings?.ClanMessage ?? false;
 #endif
 
             ReplacementCharacter = settings?.ReplacementCharacter ?? '＊';

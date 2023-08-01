@@ -55,6 +55,9 @@ namespace DiscordChatPlugin.PluginHandlers
 
                 case MessageSource.Cards:
                     return _settings.CardMessages;
+                
+                case MessageSource.Clan:
+                    return _settings.ClanMessages;
 #endif
             }
 

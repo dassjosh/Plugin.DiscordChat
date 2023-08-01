@@ -22,6 +22,9 @@ namespace DiscordChatPlugin.Configuration.Plugins
 
         [JsonProperty("Use AntiSpam On Card Messages")]
         public bool CardMessages { get; set; }
+        
+        [JsonProperty("Use AntiSpam On Clan Messages")]
+        public bool ClanMessages { get; set; }
 #endif
 
         public AntiSpamSettings(AntiSpamSettings settings)
@@ -33,6 +36,7 @@ namespace DiscordChatPlugin.Configuration.Plugins
 #if RUST
             TeamMessage = settings?.TeamMessage ?? false;
             CardMessages = settings?.CardMessages ?? false;
+            ClanMessages = settings?.ClanMessages ?? false;
 #endif
         }
     }
