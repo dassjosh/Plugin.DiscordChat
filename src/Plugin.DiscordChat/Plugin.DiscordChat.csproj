@@ -17,6 +17,9 @@
       <Reference Include="Assembly-CSharp-firstpass">
         <HintPath>..\References\Assembly-CSharp-firstpass.dll</HintPath>
       </Reference>
+      <Reference Include="Facepunch.Console">
+        <HintPath>..\References\Facepunch.Console.dll</HintPath>
+      </Reference>
       <Reference Include="mscorlib">
         <HintPath>..\References\mscorlib.dll</HintPath>
       </Reference>

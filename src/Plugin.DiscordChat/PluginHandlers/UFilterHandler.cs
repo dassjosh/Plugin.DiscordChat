@@ -1,18 +1,18 @@
-﻿using System.Text;
+﻿using System.Collections.Generic;
+using System.Text;
 using DiscordChatPlugin.Configuration.Plugins;
 using DiscordChatPlugin.Enums;
 using DiscordChatPlugin.Plugins;
 using Oxide.Core.Libraries.Covalence;
 using Oxide.Core.Plugins;
 using Oxide.Ext.Discord.Entities.Users;
-using Oxide.Plugins;
 
 namespace DiscordChatPlugin.PluginHandlers
 {
     public class UFilterHandler : BasePluginHandler
     {
         private readonly UFilterSettings _settings;
-        private readonly Hash<int, string> _replacements = new Hash<int, string>();
+        private readonly List<string> _replacements = new List<string>();
 
         public UFilterHandler(DiscordChat chat, UFilterSettings settings, Plugin plugin) : base(chat, plugin)
         {
@@ -73,15 +73,13 @@ namespace DiscordChatPlugin.PluginHandlers
             {
                 return string.Empty;
             }
-            
-            string replacement = _replacements[profanity.Length];
-            if (replacement == null)
+
+            for (int i = _replacements.Count; i <= profanity.Length; i++)
             {
-                replacement = new string(_settings.ReplacementCharacter, profanity.Length);
-                _replacements[profanity.Length] = replacement;
+                _replacements.Add(new string(_settings.ReplacementCharacter, i));
             }
 
-            return replacement;
+            return _replacements[profanity.Length];
         }
     }
 }

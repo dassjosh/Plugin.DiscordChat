@@ -57,7 +57,7 @@ namespace DiscordChatPlugin.Helpers
                 _message.Length = 2000;
             }
 
-            PlaceholderData placeholders = DiscordChat.Instance.GetDefault().Add(PlaceholderDataKeys.Message, _message.ToString());
+            PlaceholderData placeholders = DiscordChat.Instance.GetDefault().Add(PlaceholderDataKeys.TemplateMessage, _message.ToString());
             _message.Length = 0;
             DiscordChat.Instance.SendGlobalTemplateMessage(_templateId, _channel, placeholders);
             _sendTimer?.Destroy();

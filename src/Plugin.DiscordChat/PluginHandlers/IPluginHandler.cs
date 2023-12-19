@@ -4,6 +4,7 @@ using DiscordChatPlugin.Enums;
 using Oxide.Core.Libraries.Covalence;
 using Oxide.Ext.Discord.Entities.Messages;
 using Oxide.Ext.Discord.Entities.Users;
+using Oxide.Ext.Discord.Libraries.Placeholders;
 
 namespace DiscordChatPlugin.PluginHandlers
 {
@@ -14,7 +15,7 @@ namespace DiscordChatPlugin.PluginHandlers
         bool HasCallbackMessage();
         void ProcessCallbackMessage(string message, IPlayer player, DiscordUser user, MessageSource source, Action<string> callback);
         void ProcessMessage(StringBuilder message, IPlayer player, DiscordUser user, MessageSource source);
-        bool SendMessage(string message, IPlayer player, DiscordUser user, MessageSource source, DiscordMessage sourceMessage);
+        bool SendMessage(string message, IPlayer player, DiscordUser user, MessageSource source, DiscordMessage sourceMessage, PlaceholderData data);
         string GetPluginName();
     }
 }

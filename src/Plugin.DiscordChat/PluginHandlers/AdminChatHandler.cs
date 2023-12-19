@@ -28,28 +28,26 @@ namespace DiscordChatPlugin.PluginHandlers
             return source == MessageSource.PluginAdminChat ? !_settings.Enabled : !IsAdminChatMessage(player, message);
         }
 
-        public override bool SendMessage(string message, IPlayer player, DiscordUser user, MessageSource source, DiscordMessage sourceMessage)
+        public override bool SendMessage(string message, IPlayer player, DiscordUser user, MessageSource source, DiscordMessage sourceMessage, PlaceholderData data)
         {
             if (source != MessageSource.PluginAdminChat)
             {
                 return false;
             }
-            
-            PlaceholderData placeholders = Chat.GetDefault().AddPlayer(player).Add(PlaceholderDataKeys.PlayerMessage, message);
-            
+
             if (sourceMessage != null)
             {
                 if (_settings.ReplaceWithBot)
                 {
                     sourceMessage.Delete(_client);
-                    Chat.Sends[source]?.QueueMessage(Chat.Lang(LangKeys.Discord.AdminChat.DiscordMessage, placeholders));
+                    Chat.Sends[source]?.QueueMessage(Chat.Lang(LangKeys.Discord.AdminChat.DiscordMessage, data));
                 }
                     
                 Plugin.Call("SendAdminMessage", player, message);
             }
             else
             {
-                Chat.Sends[source]?.QueueMessage(Chat.Lang(LangKeys.Discord.AdminChat.ServerMessage, placeholders));
+                Chat.Sends[source]?.QueueMessage(Chat.Lang(LangKeys.Discord.AdminChat.ServerMessage, data));
             }
 
             return true;

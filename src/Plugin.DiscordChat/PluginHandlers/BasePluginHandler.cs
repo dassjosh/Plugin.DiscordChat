@@ -6,6 +6,7 @@ using Oxide.Core.Libraries.Covalence;
 using Oxide.Core.Plugins;
 using Oxide.Ext.Discord.Entities.Messages;
 using Oxide.Ext.Discord.Entities.Users;
+using Oxide.Ext.Discord.Libraries.Placeholders;
 
 namespace DiscordChatPlugin.PluginHandlers
 {
@@ -32,7 +33,7 @@ namespace DiscordChatPlugin.PluginHandlers
 
         public virtual void ProcessMessage(StringBuilder message, IPlayer player, DiscordUser user, MessageSource source) { }
 
-        public virtual bool SendMessage(string message, IPlayer player, DiscordUser user, MessageSource source, DiscordMessage sourceMessage) => false;
+        public virtual bool SendMessage(string message, IPlayer player, DiscordUser user, MessageSource source, DiscordMessage sourceMessage, PlaceholderData data) => false;
 
         public string GetPluginName() => _pluginName;
     }

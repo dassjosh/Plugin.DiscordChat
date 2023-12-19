@@ -3,14 +3,17 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 using DiscordChatPlugin.Enums;
+using DiscordChatPlugin.Placeholders;
 using DiscordChatPlugin.PluginHandlers;
 using Oxide.Core.Libraries.Covalence;
+using Oxide.Ext.Discord.Cache.Emoji;
 using Oxide.Ext.Discord.Entities;
 using Oxide.Ext.Discord.Entities.Channels;
 using Oxide.Ext.Discord.Entities.Guilds;
 using Oxide.Ext.Discord.Entities.Messages;
 using Oxide.Ext.Discord.Entities.Permissions;
 using Oxide.Ext.Discord.Entities.Users;
+using Oxide.Ext.Discord.Libraries.Placeholders;
 
 namespace DiscordChatPlugin.Plugins
 {
@@ -25,17 +28,22 @@ namespace DiscordChatPlugin.Plugins
                 return;
             }
 
+#if RUST
+            content = EmojiCache.Instance.ReplaceEmojiWithText(content);
+            //Puts($"{content}");
+#endif
+            
             ProcessCallbackMessages(content, player, user, source, processedMessage =>
             {
-                StringBuilder messageBuilder = _pool.GetStringBuilder(processedMessage);
+                StringBuilder sb = _pool.GetStringBuilder(processedMessage);
 
                 if (sourceMessage != null)
                 {
-                    ProcessMentions(sourceMessage, messageBuilder);
+                    ProcessMentions(sourceMessage, sb);
                 }
                 
-                ProcessMessage(messageBuilder, player, user, source);
-                SendMessage(_pool.FreeStringBuilderToString(messageBuilder), player, user, source, sourceMessage);
+                ProcessMessage(sb, player, user, source);
+                SendMessage(_pool.FreeStringBuilderToString(sb), player, user, source, sourceMessage);
             });
         }
 
@@ -127,14 +135,29 @@ namespace DiscordChatPlugin.Plugins
 
         public void SendMessage(string message, IPlayer player, DiscordUser user, MessageSource source, DiscordMessage sourceMessage)
         {
-            for (int index = 0; index < _plugins.Count; index++)
+            using (PlaceholderData data = GetPlaceholders(message, player, user, sourceMessage))
             {
-                IPluginHandler plugin = _plugins[index];
-                if (plugin.SendMessage(message, player, user, source, sourceMessage))
+                data.ManualPool();
+                for (int index = 0; index < _plugins.Count; index++)
                 {
-                    return;
+                    IPluginHandler plugin = _plugins[index];
+                    if (plugin.SendMessage(message, player, user, source, sourceMessage, data))
+                    {
+                        return;
+                    }
                 }
             }
+        }
+        
+        private PlaceholderData GetPlaceholders(string message, IPlayer player, DiscordUser user, DiscordMessage sourceMessage)
+        {
+            PlaceholderData placeholders = GetDefault().AddPlayer(player).AddUser(user).AddMessage(sourceMessage).Add(PlaceholderDataKeys.PlayerMessage, message);
+            if (sourceMessage != null)
+            {
+                placeholders.AddGuildMember(Client.Bot.GetGuild(sourceMessage.GuildId)?.Members[sourceMessage.Author.Id]);
+            }
+
+            return placeholders;
         }
     }
 }

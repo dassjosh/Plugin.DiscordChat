@@ -38,6 +38,11 @@ namespace DiscordChatPlugin.Configuration
         [JsonProperty("Text Replacements")]
         public Hash<string, string> TextReplacements { get; set; }
 
+#if RUST
+        [JsonProperty("Replace Emoji with Emoji Text")]
+        public bool ReplaceEmojis { get; set; }
+#endif
+
         [JsonProperty("Unlinked Settings")]
         public UnlinkedSettings UnlinkedSettings { get; set; }
 

@@ -9,6 +9,7 @@ using Oxide.Core.Libraries.Covalence;
 using Oxide.Core.Plugins;
 using Oxide.Ext.Discord.Constants;
 using Oxide.Ext.Discord.Entities;
+using Oxide.Ext.Discord.Entities.Api;
 using Oxide.Ext.Discord.Entities.Applications;
 using Oxide.Ext.Discord.Entities.Channels;
 using Oxide.Ext.Discord.Entities.Gateway.Events;
@@ -150,40 +151,32 @@ namespace DiscordChatPlugin.Plugins
             {
                 _subscriptions.AddChannelSubscription(Client, id, callback);
             }
-
+            
             if (wipeNonBotMessages)
             {
-                channel.GetMessages(Client, new ChannelMessagesRequest{Limit = 100}).Then(messages => OnGetChannelMessages(messages, channel));
+                channel.GetMessages(Client, new ChannelMessagesRequest{Limit = 100})
+                       .Then(messages =>
+                       {
+                           OnGetChannelMessages(messages, callback);
+                       });
             }
 
             Sends[source] = new DiscordSendQueue(channel, GetTemplateName(source), timer);;
             Puts($"Setup Channel {source} With ID: {id}");
         }
 
-        private void OnGetChannelMessages(List<DiscordMessage> messages, DiscordChannel channel)
+        private void OnGetChannelMessages(List<DiscordMessage> messages, Action<DiscordMessage> callback)
         {
-            if (messages.Count == 0)
+            if (messages.Count == 0 || callback == null)
             {
                 return;
             }
 
-            Snowflake[] messagesToDelete = messages
-                                           .Where(m => !m.Author.IsBot && !CanSendMessage(m.Content, m.Author.Player, m.Author, MessageSource.Server, m))
-                                           .Take(100).Select(m => m.Id)
-                                           .ToArray();
-
-            if (messagesToDelete.Length == 0)
+            foreach (DiscordMessage message in messages
+                         .Where(m => !m.Author.IsBot && (DateTimeOffset.UtcNow - m.Id.GetCreationDate()).TotalDays < 14 && CanSendMessage(m.Content, m.Author.Player, m.Author, MessageSource.Discord, m)))
             {
-                return;
+                callback.Invoke(message);
             }
-
-            if (messagesToDelete.Length == 1)
-            {
-                new DiscordMessage { Id = messagesToDelete[0] }.Delete(Client);
-                return;
-            }
-
-            channel.BulkDeleteMessages(Client, messagesToDelete);
         }
 
         public void HandleDiscordChatMessage(DiscordMessage message)
