@@ -9,12 +9,6 @@ using Oxide.Core.Libraries.Covalence;
 using Oxide.Core.Plugins;
 using Oxide.Ext.Discord.Constants;
 using Oxide.Ext.Discord.Entities;
-using Oxide.Ext.Discord.Entities.Api;
-using Oxide.Ext.Discord.Entities.Applications;
-using Oxide.Ext.Discord.Entities.Channels;
-using Oxide.Ext.Discord.Entities.Gateway.Events;
-using Oxide.Ext.Discord.Entities.Guilds;
-using Oxide.Ext.Discord.Entities.Messages;
 
 namespace DiscordChatPlugin.Plugins
 {

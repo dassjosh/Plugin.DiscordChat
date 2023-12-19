@@ -2,7 +2,7 @@
 using DiscordChatPlugin.Localization;
 using DiscordChatPlugin.Placeholders;
 using Oxide.Core.Libraries.Covalence;
-using Oxide.Ext.Discord.Libraries.Placeholders;
+using Oxide.Ext.Discord.Libraries;
 
 namespace DiscordChatPlugin.Plugins
 {
@@ -26,7 +26,7 @@ namespace DiscordChatPlugin.Plugins
                 _plugins[index].ProcessPlayerName(sb, player);
             }
 
-            return _pool.FreeStringBuilderToString(sb);
+            return _pool.ToStringAndFree(sb);
         }
 
         public PlaceholderData GetDefault()

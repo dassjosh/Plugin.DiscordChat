@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 using DiscordChatPlugin.Localization;
 using DiscordChatPlugin.Placeholders;
-using Oxide.Ext.Discord.Libraries.Placeholders;
-using Oxide.Ext.Discord.Libraries.Placeholders.Keys;
+using Oxide.Ext.Discord.Libraries;
 
 namespace DiscordChatPlugin.Plugins
 {

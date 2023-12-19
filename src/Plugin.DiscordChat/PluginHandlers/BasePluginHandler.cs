@@ -4,9 +4,8 @@ using DiscordChatPlugin.Enums;
 using DiscordChatPlugin.Plugins;
 using Oxide.Core.Libraries.Covalence;
 using Oxide.Core.Plugins;
-using Oxide.Ext.Discord.Entities.Messages;
-using Oxide.Ext.Discord.Entities.Users;
-using Oxide.Ext.Discord.Libraries.Placeholders;
+using Oxide.Ext.Discord.Entities;
+using Oxide.Ext.Discord.Libraries;
 
 namespace DiscordChatPlugin.PluginHandlers
 {

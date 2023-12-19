@@ -1,5 +1,5 @@
 ﻿using DiscordChatPlugin.Plugins;
-using Oxide.Ext.Discord.Libraries.Placeholders;
+using Oxide.Ext.Discord.Libraries;
 
 namespace DiscordChatPlugin.Placeholders
 {

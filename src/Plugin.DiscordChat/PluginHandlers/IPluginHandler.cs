@@ -2,9 +2,8 @@
 using System.Text;
 using DiscordChatPlugin.Enums;
 using Oxide.Core.Libraries.Covalence;
-using Oxide.Ext.Discord.Entities.Messages;
-using Oxide.Ext.Discord.Entities.Users;
-using Oxide.Ext.Discord.Libraries.Placeholders;
+using Oxide.Ext.Discord.Entities;
+using Oxide.Ext.Discord.Libraries;
 
 namespace DiscordChatPlugin.PluginHandlers
 {

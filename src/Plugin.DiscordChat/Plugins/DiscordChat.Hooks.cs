@@ -7,9 +7,9 @@ using DiscordChatPlugin.PluginHandlers;
 using Oxide.Core;
 using Oxide.Core.Libraries.Covalence;
 using Oxide.Core.Plugins;
-using Oxide.Ext.Discord.Entities.Users;
+using Oxide.Ext.Discord.Entities;
 using Oxide.Ext.Discord.Extensions;
-using Oxide.Ext.Discord.Libraries.Placeholders;
+using Oxide.Ext.Discord.Libraries;
 
 namespace DiscordChatPlugin.Plugins
 {

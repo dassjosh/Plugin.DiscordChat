@@ -1,9 +1,6 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 using Oxide.Ext.Discord.Entities;
-using Oxide.Ext.Discord.Entities.Guilds;
-using Oxide.Ext.Discord.Entities.Messages;
-using Oxide.Ext.Discord.Entities.Users;
 
 namespace DiscordChatPlugin.Configuration
 {

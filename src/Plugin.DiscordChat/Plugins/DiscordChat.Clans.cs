@@ -2,7 +2,7 @@
 using DiscordChatPlugin.Localization;
 using DiscordChatPlugin.Placeholders;
 using Oxide.Core.Libraries.Covalence;
-using Oxide.Ext.Discord.Libraries.Placeholders;
+using Oxide.Ext.Discord.Libraries;
 
 namespace DiscordChatPlugin.Plugins
 {

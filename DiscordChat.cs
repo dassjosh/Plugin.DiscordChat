@@ -6,31 +6,17 @@ using Oxide.Core;
 using Oxide.Core.Libraries;
 using Oxide.Core.Libraries.Covalence;
 using Oxide.Core.Plugins;
-using Oxide.Ext.Discord.Attributes.Pooling;
-using Oxide.Ext.Discord.Cache.Emoji;
+using Oxide.Ext.Discord.Attributes;
+using Oxide.Ext.Discord.Cache;
 using Oxide.Ext.Discord.Clients;
 using Oxide.Ext.Discord.Connections;
 using Oxide.Ext.Discord.Constants;
 using Oxide.Ext.Discord.Entities;
-using Oxide.Ext.Discord.Entities.Api;
-using Oxide.Ext.Discord.Entities.Applications;
-using Oxide.Ext.Discord.Entities.Channels;
-using Oxide.Ext.Discord.Entities.Gateway;
-using Oxide.Ext.Discord.Entities.Gateway.Events;
-using Oxide.Ext.Discord.Entities.Guilds;
-using Oxide.Ext.Discord.Entities.Messages;
-using Oxide.Ext.Discord.Entities.Permissions;
-using Oxide.Ext.Discord.Entities.Users;
 using Oxide.Ext.Discord.Extensions;
 using Oxide.Ext.Discord.Interfaces;
-using Oxide.Ext.Discord.Libraries.Placeholders;
-using Oxide.Ext.Discord.Libraries.Placeholders.Keys;
-using Oxide.Ext.Discord.Libraries.Subscription;
-using Oxide.Ext.Discord.Libraries.Templates;
-using Oxide.Ext.Discord.Libraries.Templates.Embeds;
-using Oxide.Ext.Discord.Libraries.Templates.Messages;
+using Oxide.Ext.Discord.Libraries;
 using Oxide.Ext.Discord.Logging;
-using Oxide.Ext.Discord.Pooling;
+using Oxide.Ext.Discord.Types;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -566,7 +552,7 @@ namespace Oxide.Plugins
                 }
                 
                 ProcessMessage(sb, player, user, source);
-                SendMessage(_pool.FreeStringBuilderToString(sb), player, user, source, sourceMessage);
+                SendMessage(_pool.ToStringAndFree(sb), player, user, source, sourceMessage);
             });
         }
         
@@ -703,7 +689,7 @@ namespace Oxide.Plugins
                 _plugins[index].ProcessPlayerName(sb, player);
             }
             
-            return _pool.FreeStringBuilderToString(sb);
+            return _pool.ToStringAndFree(sb);
         }
         
         public PlaceholderData GetDefault()

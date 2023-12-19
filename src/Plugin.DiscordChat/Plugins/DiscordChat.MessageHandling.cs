@@ -6,14 +6,9 @@ using DiscordChatPlugin.Enums;
 using DiscordChatPlugin.Placeholders;
 using DiscordChatPlugin.PluginHandlers;
 using Oxide.Core.Libraries.Covalence;
-using Oxide.Ext.Discord.Cache.Emoji;
+using Oxide.Ext.Discord.Cache;
 using Oxide.Ext.Discord.Entities;
-using Oxide.Ext.Discord.Entities.Channels;
-using Oxide.Ext.Discord.Entities.Guilds;
-using Oxide.Ext.Discord.Entities.Messages;
-using Oxide.Ext.Discord.Entities.Permissions;
-using Oxide.Ext.Discord.Entities.Users;
-using Oxide.Ext.Discord.Libraries.Placeholders;
+using Oxide.Ext.Discord.Libraries;
 
 namespace DiscordChatPlugin.Plugins
 {
@@ -43,7 +38,7 @@ namespace DiscordChatPlugin.Plugins
                 }
                 
                 ProcessMessage(sb, player, user, source);
-                SendMessage(_pool.FreeStringBuilderToString(sb), player, user, source, sourceMessage);
+                SendMessage(_pool.ToStringAndFree(sb), player, user, source, sourceMessage);
             });
         }
 

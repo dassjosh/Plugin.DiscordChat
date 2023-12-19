@@ -4,14 +4,12 @@ using DiscordChatPlugin.Enums;
 using DiscordChatPlugin.Helpers;
 using DiscordChatPlugin.PluginHandlers;
 using Oxide.Core.Plugins;
-using Oxide.Ext.Discord.Attributes.Pooling;
+using Oxide.Ext.Discord.Attributes;
 using Oxide.Ext.Discord.Clients;
 using Oxide.Ext.Discord.Connections;
-using Oxide.Ext.Discord.Entities.Gateway;
-using Oxide.Ext.Discord.Libraries.Placeholders;
-using Oxide.Ext.Discord.Libraries.Subscription;
-using Oxide.Ext.Discord.Libraries.Templates.Messages;
-using Oxide.Ext.Discord.Pooling;
+using Oxide.Ext.Discord.Entities;
+using Oxide.Ext.Discord.Libraries;
+using Oxide.Ext.Discord.Types;
 using Oxide.Plugins;
 
 namespace DiscordChatPlugin.Plugins
