@@ -29,7 +29,7 @@ namespace Oxide.Plugins
 {
     [Info("Discord Chat", "MJSU", "3.0.0")]
     [Description("Allows chatting between discord and game server")]
-    public partial class DiscordChat : CovalencePlugin, IDiscordPlugin
+    public partial class DiscordChat : CovalencePlugin, IDiscordPlugin, IDiscordPool
     {
         #region Plugins\DiscordChat.AdminChat.cs
         private AdminChatSettings _adminChatSettings;
@@ -287,6 +287,7 @@ namespace Oxide.Plugins
         private Plugin BetterChat;
         
         public DiscordClient Client { get; set; }
+        public DiscordPluginPool Pool { get; set; }
         
         private PluginConfig _pluginConfig;
         
@@ -298,9 +299,6 @@ namespace Oxide.Plugins
         private readonly DiscordSubscriptions _subscriptions = GetLibrary<DiscordSubscriptions>();
         private readonly DiscordPlaceholders _placeholders = GetLibrary<DiscordPlaceholders>();
         private readonly DiscordMessageTemplates _templates = GetLibrary<DiscordMessageTemplates>();
-        
-        [DiscordPool]
-        private DiscordPluginPool _pool;
         
         private bool _serverInitCalled;
         
@@ -544,7 +542,7 @@ namespace Oxide.Plugins
             
             ProcessCallbackMessages(content, player, user, source, processedMessage =>
             {
-                StringBuilder sb = _pool.GetStringBuilder(processedMessage);
+                StringBuilder sb = Pool.GetStringBuilder(processedMessage);
                 
                 if (sourceMessage != null)
                 {
@@ -552,7 +550,7 @@ namespace Oxide.Plugins
                 }
                 
                 ProcessMessage(sb, player, user, source);
-                SendMessage(_pool.ToStringAndFree(sb), player, user, source, sourceMessage);
+                SendMessage(Pool.ToStringAndFree(sb), player, user, source, sourceMessage);
             });
         }
         
@@ -683,13 +681,13 @@ namespace Oxide.Plugins
         public string GetPlayerName(IPlayer player)
         {
             string name = Lang(LangKeys.Discord.Chat.PlayerName, GetDefault().AddPlayer(player));
-            StringBuilder sb = _pool.GetStringBuilder(name);
+            StringBuilder sb = Pool.GetStringBuilder(name);
             for (int index = 0; index < _plugins.Count; index++)
             {
                 _plugins[index].ProcessPlayerName(sb, player);
             }
             
-            return _pool.ToStringAndFree(sb);
+            return Pool.ToStringAndFree(sb);
         }
         
         public PlaceholderData GetDefault()
@@ -1529,7 +1527,6 @@ namespace Oxide.Plugins
             
             public override bool SendMessage(string message, IPlayer player, DiscordUser user, MessageSource source, DiscordMessage sourceMessage, PlaceholderData data)
             {
-                DiscordChat.Instance.Puts($"DEBUG: {message}");
                 switch (source)
                 {
                     case MessageSource.Discord:

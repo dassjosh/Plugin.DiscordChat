@@ -30,7 +30,7 @@ namespace DiscordChatPlugin.Plugins
             
             ProcessCallbackMessages(content, player, user, source, processedMessage =>
             {
-                StringBuilder sb = _pool.GetStringBuilder(processedMessage);
+                StringBuilder sb = Pool.GetStringBuilder(processedMessage);
 
                 if (sourceMessage != null)
                 {
@@ -38,7 +38,7 @@ namespace DiscordChatPlugin.Plugins
                 }
                 
                 ProcessMessage(sb, player, user, source);
-                SendMessage(_pool.ToStringAndFree(sb), player, user, source, sourceMessage);
+                SendMessage(Pool.ToStringAndFree(sb), player, user, source, sourceMessage);
             });
         }
 

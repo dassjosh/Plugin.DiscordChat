@@ -51,7 +51,6 @@ namespace DiscordChatPlugin.PluginHandlers
 
         public override bool SendMessage(string message, IPlayer player, DiscordUser user, MessageSource source, DiscordMessage sourceMessage, PlaceholderData data)
         {
-            DiscordChat.Instance.Puts($"DEBUG: {message}");
             switch (source)
             {
                 case MessageSource.Discord:

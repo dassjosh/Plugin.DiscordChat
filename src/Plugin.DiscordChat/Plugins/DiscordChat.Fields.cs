@@ -20,6 +20,7 @@ namespace DiscordChatPlugin.Plugins
         private Plugin BetterChat;
         
         public DiscordClient Client { get; set; }
+        public DiscordPluginPool Pool { get; set; }
 
         private PluginConfig _pluginConfig;
         
@@ -31,9 +32,6 @@ namespace DiscordChatPlugin.Plugins
         private readonly DiscordSubscriptions _subscriptions = GetLibrary<DiscordSubscriptions>();
         private readonly DiscordPlaceholders _placeholders = GetLibrary<DiscordPlaceholders>();
         private readonly DiscordMessageTemplates _templates = GetLibrary<DiscordMessageTemplates>();
-        
-        [DiscordPool]
-        private DiscordPluginPool _pool;
 
         private bool _serverInitCalled;
         

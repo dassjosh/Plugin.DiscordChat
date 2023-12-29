@@ -20,13 +20,13 @@ namespace DiscordChatPlugin.Plugins
         public string GetPlayerName(IPlayer player)
         {
             string name = Lang(LangKeys.Discord.Chat.PlayerName, GetDefault().AddPlayer(player));
-            StringBuilder sb = _pool.GetStringBuilder(name);
+            StringBuilder sb = Pool.GetStringBuilder(name);
             for (int index = 0; index < _plugins.Count; index++)
             {
                 _plugins[index].ProcessPlayerName(sb, player);
             }
 
-            return _pool.ToStringAndFree(sb);
+            return Pool.ToStringAndFree(sb);
         }
 
         public PlaceholderData GetDefault()
