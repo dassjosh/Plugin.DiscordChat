@@ -3,64 +3,63 @@ using Oxide.Core.Libraries.Covalence;
 using Oxide.Core.Plugins;
 using Oxide.Ext.Discord.Entities;
 
-namespace DiscordChatPlugin.Plugins
+namespace DiscordChatPlugin.Plugins;
+
+public partial class DiscordChat
 {
-    public partial class DiscordChat
+    public MessageSource GetSourceFromServerChannel(int channel)
     {
-        public MessageSource GetSourceFromServerChannel(int channel)
+        switch (channel)
         {
-            switch (channel)
-            {
-                case 1:
-                    return MessageSource.Team;
-                case 3:
-                    return MessageSource.Cards;
-                case 5:
-                    return MessageSource.Clan;
-            }
-            
-            return MessageSource.Server;
+            case 1:
+                return MessageSource.Team;
+            case 3:
+                return MessageSource.Cards;
+            case 5:
+                return MessageSource.Clan;
         }
-
-        public DiscordChannel FindChannel(Snowflake channelId)
-        {
-            if (!channelId.IsValid())
-            {
-                return null;
-            }
             
-            foreach (DiscordGuild guild in Client.Bot.Servers.Values)
-            {
-                DiscordChannel channel = guild.Channels[channelId];
-                if (channel != null)
-                {
-                    return channel;
-                }
-            }
+        return MessageSource.Server;
+    }
 
+    public DiscordChannel FindChannel(Snowflake channelId)
+    {
+        if (!channelId.IsValid())
+        {
             return null;
         }
-
-        public bool IsPluginLoaded(Plugin plugin) => plugin != null && plugin.IsLoaded;
-
-        public string GetBetterChatTag(IPlayer player)
+            
+        foreach (DiscordGuild guild in Client.Bot.Servers.Values)
         {
-            return player.IsConnected ? null : _pluginConfig.ChatSettings.DiscordTag;
+            DiscordChannel channel = guild.Channels[channelId];
+            if (channel != null)
+            {
+                return channel;
+            }
         }
 
-        public new void Subscribe(string hook)
-        {
-            base.Subscribe(hook);
-        }
+        return null;
+    }
+
+    public bool IsPluginLoaded(Plugin plugin) => plugin != null && plugin.IsLoaded;
+
+    public string GetBetterChatTag(IPlayer player)
+    {
+        return player.IsConnected ? null : _pluginConfig.ChatSettings.DiscordTag;
+    }
+
+    public new void Subscribe(string hook)
+    {
+        base.Subscribe(hook);
+    }
         
-        public new void Unsubscribe(string hook)
-        {
-            base.Unsubscribe(hook);
-        }
+    public new void Unsubscribe(string hook)
+    {
+        base.Unsubscribe(hook);
+    }
         
-        public void Puts(string message)
-        {
-            base.Puts(message);
-        }
+    public void Puts(string message)
+    {
+        base.Puts(message);
     }
 }

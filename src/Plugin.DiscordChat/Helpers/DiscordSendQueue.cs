@@ -6,62 +6,61 @@ using Oxide.Ext.Discord.Entities;
 using Oxide.Ext.Discord.Libraries;
 using Oxide.Plugins;
 
-namespace DiscordChatPlugin.Helpers
+namespace DiscordChatPlugin.Helpers;
+
+public class DiscordSendQueue
 {
-    public class DiscordSendQueue
+    private readonly StringBuilder _message = new StringBuilder();
+    private Timer _sendTimer;
+    private readonly DiscordChannel _channel;
+    private readonly TemplateKey _templateId;
+    private readonly Action _callback;
+    private readonly PluginTimers _timer;
+
+    public DiscordSendQueue(DiscordChannel channel, TemplateKey templateId, PluginTimers timers)
     {
-        private readonly StringBuilder _message = new StringBuilder();
-        private Timer _sendTimer;
-        private readonly DiscordChannel _channel;
-        private readonly TemplateKey _templateId;
-        private readonly Action _callback;
-        private readonly PluginTimers _timer;
+        _channel = channel;
+        _templateId = templateId;
+        _callback = Send;
+        _timer = timers;
+    }
 
-        public DiscordSendQueue(DiscordChannel channel, TemplateKey templateId, PluginTimers timers)
+    public void QueueMessage(string message)
+    {
+        if (string.IsNullOrWhiteSpace(message))
         {
-            _channel = channel;
-            _templateId = templateId;
-            _callback = Send;
-            _timer = timers;
+            return;
         }
-
-        public void QueueMessage(string message)
-        {
-            if (string.IsNullOrWhiteSpace(message))
-            {
-                return;
-            }
                 
-            if (_message.Length + message.Length > 2000)
-            {
-                Send();
-            }
-
-            if (_sendTimer == null)
-            {
-                _sendTimer = _timer.In(1f, _callback);
-            }
-
-            _message.AppendLine(message);
-        }
-
-        public void SendTemplate(TemplateKey templateId, PlaceholderData data)
+        if (_message.Length + message.Length > 2000)
         {
-            DiscordChat.Instance.SendGlobalTemplateMessage(templateId, _channel, data);
+            Send();
         }
+
+        if (_sendTimer == null)
+        {
+            _sendTimer = _timer.In(1f, _callback);
+        }
+
+        _message.AppendLine(message);
+    }
+
+    public void SendTemplate(TemplateKey templateId, PlaceholderData data)
+    {
+        DiscordChat.Instance.SendGlobalTemplateMessage(templateId, _channel, data);
+    }
         
-        public void Send()
+    public void Send()
+    {
+        if (_message.Length > 2000)
         {
-            if (_message.Length > 2000)
-            {
-                _message.Length = 2000;
-            }
-
-            PlaceholderData placeholders = DiscordChat.Instance.GetDefault().Add(PlaceholderDataKeys.TemplateMessage, _message.ToString());
-            _message.Length = 0;
-            DiscordChat.Instance.SendGlobalTemplateMessage(_templateId, _channel, placeholders);
-            _sendTimer?.Destroy();
-            _sendTimer = null;
+            _message.Length = 2000;
         }
+
+        PlaceholderData placeholders = DiscordChat.Instance.GetDefault().Add(PlaceholderDataKeys.TemplateMessage, _message.ToString());
+        _message.Length = 0;
+        DiscordChat.Instance.SendGlobalTemplateMessage(_templateId, _channel, placeholders);
+        _sendTimer?.Destroy();
+        _sendTimer = null;
     }
 }

@@ -6,103 +6,102 @@ using DiscordChatPlugin.Templates;
 using Oxide.Core;
 using Oxide.Core.Libraries.Covalence;
 
-namespace DiscordChatPlugin.Plugins
+namespace DiscordChatPlugin.Plugins;
+
+public partial class DiscordChat
 {
-    public partial class DiscordChat
+    private void Init()
     {
-         private void Init()
-        {
-            Instance = this;
+        Instance = this;
 
-            _discordSettings.ApiToken = _pluginConfig.DiscordApiKey;
-            _discordSettings.LogLevel = _pluginConfig.ExtensionDebugging;
+        _discordSettings.ApiToken = _pluginConfig.DiscordApiKey;
+        _discordSettings.LogLevel = _pluginConfig.ExtensionDebugging;
 
-            _adminChatSettings = _pluginConfig.PluginSupport.AdminChat;
+        _adminChatSettings = _pluginConfig.PluginSupport.AdminChat;
             
 #if RUST
-            Unsubscribe(nameof(OnPlayerChat));
+        Unsubscribe(nameof(OnPlayerChat));
 #else
             Unsubscribe(nameof(OnUserChat));
 #endif
             
-            Unsubscribe(nameof(OnUserApproved));
-            Unsubscribe(nameof(OnUserConnected));
-            Unsubscribe(nameof(OnUserDisconnected));
-            Unsubscribe(nameof(OnServerShutdown));
-            Unsubscribe(nameof(OnClanChat));
-            Unsubscribe(nameof(OnAllianceChat));
+        Unsubscribe(nameof(OnUserApproved));
+        Unsubscribe(nameof(OnUserConnected));
+        Unsubscribe(nameof(OnUserDisconnected));
+        Unsubscribe(nameof(OnServerShutdown));
+        Unsubscribe(nameof(OnClanChat));
+        Unsubscribe(nameof(OnAllianceChat));
             
-            _plugins.Add(new DiscordChatHandler(this, _pluginConfig.ChatSettings, this, server));
-        }
+        _plugins.Add(new DiscordChatHandler(this, _pluginConfig.ChatSettings, this, server));
+    }
 
-         protected override void LoadDefaultConfig()
-        {
-            PrintWarning("Loading Default Config");
-        }
+    protected override void LoadDefaultConfig()
+    {
+        PrintWarning("Loading Default Config");
+    }
 
-        protected override void LoadConfig()
-        {
-            base.LoadConfig();
-            _pluginConfig = AdditionalConfig(Config.ReadObject<PluginConfig>());
-            Config.WriteObject(_pluginConfig);
-        }
+    protected override void LoadConfig()
+    {
+        base.LoadConfig();
+        _pluginConfig = AdditionalConfig(Config.ReadObject<PluginConfig>());
+        Config.WriteObject(_pluginConfig);
+    }
 
-        private PluginConfig AdditionalConfig(PluginConfig config)
-        {
-            config.ChatSettings = new ChatSettings(config.ChatSettings);
-            config.PlayerStateSettings = new PlayerStateSettings(config.PlayerStateSettings);
-            config.ServerStateSettings = new ServerStateSettings(config.ServerStateSettings);
-            config.PluginSupport = new PluginSupport(config.PluginSupport);
-            return config;
-        }
+    private PluginConfig AdditionalConfig(PluginConfig config)
+    {
+        config.ChatSettings = new ChatSettings(config.ChatSettings);
+        config.PlayerStateSettings = new PlayerStateSettings(config.PlayerStateSettings);
+        config.ServerStateSettings = new ServerStateSettings(config.ServerStateSettings);
+        config.PluginSupport = new PluginSupport(config.PluginSupport);
+        return config;
+    }
 
-        private void OnServerInitialized(bool startup)
+    private void OnServerInitialized(bool startup)
+    {
+        _serverInitCalled = true;
+        if (IsPluginLoaded(BetterChat))
         {
-            _serverInitCalled = true;
-            if (IsPluginLoaded(BetterChat))
+            if (BetterChat.Version < new VersionNumber(5, 2, 7))
             {
-                if (BetterChat.Version < new VersionNumber(5, 2, 7))
-                {
-                    PrintWarning("Please update your version of BetterChat to version >= 5.2.7");
-                }
-
-                if (!string.IsNullOrEmpty(_pluginConfig.ChatSettings.DiscordTag))
-                {
-                    BetterChat.Call("API_RegisterThirdPartyTitle", this, new Func<IPlayer, string>(GetBetterChatTag));
-                }
+                PrintWarning("Please update your version of BetterChat to version >= 5.2.7");
             }
 
-            if (string.IsNullOrEmpty(_pluginConfig.DiscordApiKey))
+            if (!string.IsNullOrEmpty(_pluginConfig.ChatSettings.DiscordTag))
             {
-                PrintWarning("Please set the Discord Bot Token and reload the plugin");
-                return;
+                BetterChat.Call("API_RegisterThirdPartyTitle", this, new Func<IPlayer, string>(GetBetterChatTag));
             }
+        }
 
-            OnPluginLoaded(plugins.Find("AdminChat"));
-            OnPluginLoaded(plugins.Find("AdminDeepCover"));
-            OnPluginLoaded(plugins.Find("AntiSpam"));
-            OnPluginLoaded(plugins.Find("BetterChatMute"));
-            OnPluginLoaded(plugins.Find("Clans"));
-            OnPluginLoaded(plugins.Find("TranslationAPI"));
-            OnPluginLoaded(plugins.Find("UFilter"));
+        if (string.IsNullOrEmpty(_pluginConfig.DiscordApiKey))
+        {
+            PrintWarning("Please set the Discord Bot Token and reload the plugin");
+            return;
+        }
+
+        OnPluginLoaded(plugins.Find("AdminChat"));
+        OnPluginLoaded(plugins.Find("AdminDeepCover"));
+        OnPluginLoaded(plugins.Find("AntiSpam"));
+        OnPluginLoaded(plugins.Find("BetterChatMute"));
+        OnPluginLoaded(plugins.Find("Clans"));
+        OnPluginLoaded(plugins.Find("TranslationAPI"));
+        OnPluginLoaded(plugins.Find("UFilter"));
             
-            if (startup && _pluginConfig.ServerStateSettings.SendOnlineMessage)
-            {
-                SendGlobalTemplateMessage(TemplateKeys.Server.Online, FindChannel(_pluginConfig.ServerStateSettings.ServerStateChannel));
-            }
-        }
-
-        private void OnServerShutdown()
+        if (startup && _pluginConfig.ServerStateSettings.SendOnlineMessage)
         {
-            if(_pluginConfig.ServerStateSettings.SendShutdownMessage)
-            {
-                SendGlobalTemplateMessage(TemplateKeys.Server.Shutdown, FindChannel(_pluginConfig.ServerStateSettings.ServerStateChannel));
-            }
+            SendGlobalTemplateMessage(TemplateKeys.Server.Online, FindChannel(_pluginConfig.ServerStateSettings.ServerStateChannel));
         }
+    }
 
-        private void Unload()
+    private void OnServerShutdown()
+    {
+        if(_pluginConfig.ServerStateSettings.SendShutdownMessage)
         {
-            Instance = null;
+            SendGlobalTemplateMessage(TemplateKeys.Server.Shutdown, FindChannel(_pluginConfig.ServerStateSettings.ServerStateChannel));
         }
+    }
+
+    private void Unload()
+    {
+        Instance = null;
     }
 }

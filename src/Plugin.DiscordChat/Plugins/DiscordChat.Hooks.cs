@@ -11,113 +11,113 @@ using Oxide.Ext.Discord.Entities;
 using Oxide.Ext.Discord.Extensions;
 using Oxide.Ext.Discord.Libraries;
 
-namespace DiscordChatPlugin.Plugins
+namespace DiscordChatPlugin.Plugins;
+
+public partial class DiscordChat
 {
-    public partial class DiscordChat
+    private void OnUserApproved(string name, string id, string ip)
     {
-        private void OnUserApproved(string name, string id, string ip)
+        IPlayer player = players.FindPlayerById(id) ?? PlayerExt.CreateDummyPlayer(id, name, ip);
+        if (_pluginConfig.PlayerStateSettings.ShowAdmins || !player.IsAdmin)
         {
-            IPlayer player = players.FindPlayerById(id) ?? PlayerExt.CreateDummyPlayer(id, name, ip);
-            if (_pluginConfig.PlayerStateSettings.ShowAdmins || !player.IsAdmin)
-            {
-                PlaceholderData placeholders = GetDefault().AddPlayer(player);
-                ProcessPlayerState(MessageSource.Connecting, LangKeys.Discord.Player.Connecting, placeholders);
-            }
+            PlaceholderData placeholders = GetDefault().AddPlayer(player);
+            ProcessPlayerState(MessageSource.Connecting, LangKeys.Discord.Player.Connecting, placeholders);
         }
+    }
         
-        private void OnUserConnected(IPlayer player)
+    private void OnUserConnected(IPlayer player)
+    {
+        if (_pluginConfig.PlayerStateSettings.ShowAdmins || !player.IsAdmin)
         {
-            if (_pluginConfig.PlayerStateSettings.ShowAdmins || !player.IsAdmin)
-            {
-                PlaceholderData placeholders = GetDefault().AddPlayer(player);
-                ProcessPlayerState(MessageSource.Connected, LangKeys.Discord.Player.Connected, placeholders);
-            }
+            PlaceholderData placeholders = GetDefault().AddPlayer(player);
+            ProcessPlayerState(MessageSource.Connected, LangKeys.Discord.Player.Connected, placeholders);
+        }
+    }
+
+    private void OnUserDisconnected(IPlayer player, string reason)
+    {
+        if (_pluginConfig.PlayerStateSettings.ShowAdmins || !player.IsAdmin)
+        {
+            PlaceholderData placeholders = GetDefault().AddPlayer(player).Add(PlaceholderDataKeys.DisconnectReason, reason);
+            ProcessPlayerState(MessageSource.Disconnected, LangKeys.Discord.Player.Disconnected, placeholders);
+        }
+    }
+
+    public void ProcessPlayerState(MessageSource source, string langKey, PlaceholderData data)
+    {
+        string message = Lang(langKey, data);
+        Sends[source]?.QueueMessage(message);
+    }
+
+    private void OnPluginLoaded(Plugin plugin)
+    {
+        if (plugin == null)
+        {
+            return;
         }
 
-        private void OnUserDisconnected(IPlayer player, string reason)
-        {
-            if (_pluginConfig.PlayerStateSettings.ShowAdmins || !player.IsAdmin)
-            {
-                PlaceholderData placeholders = GetDefault().AddPlayer(player).Add(PlaceholderDataKeys.DisconnectReason, reason);
-                ProcessPlayerState(MessageSource.Disconnected, LangKeys.Discord.Player.Disconnected, placeholders);
-            }
-        }
-
-        public void ProcessPlayerState(MessageSource source, string langKey, PlaceholderData data)
-        {
-            string message = Lang(langKey, data);
-            Sends[source]?.QueueMessage(message);
-        }
-
-        private void OnPluginLoaded(Plugin plugin)
-        {
-            if (plugin == null)
-            {
-                return;
-            }
-
-            OnPluginUnloaded(plugin);
+        OnPluginUnloaded(plugin);
             
-            switch (plugin.Name)
-            {
-                case "AdminChat":
-                    AddHandler(new AdminChatHandler(Client, this, _pluginConfig.PluginSupport.AdminChat, plugin));
-                    break;
+        switch (plugin.Name)
+        {
+            case "AdminChat":
+                AddHandler(new AdminChatHandler(Client, this, _pluginConfig.PluginSupport.AdminChat, plugin));
+                break;
                 
-                case "AdminDeepCover":
-                    AddHandler(new AdminDeepCoverHandler(this, plugin));
-                    break;
+            case "AdminDeepCover":
+                AddHandler(new AdminDeepCoverHandler(this, plugin));
+                break;
                 
-                case "AntiSpam":
-                    if (plugin.Version < new VersionNumber(2, 0, 0))
-                    {
-                        PrintError("AntiSpam plugin must be version 2.0.0 or higher");
-                        break;
-                    }
+            case "AntiSpam":
+                if (plugin.Version < new VersionNumber(2, 0, 0))
+                {
+                    PrintError("AntiSpam plugin must be version 2.0.0 or higher");
+                    break;
+                }
                     
-                    AddHandler(new AntiSpamHandler(this, _pluginConfig.PluginSupport.AntiSpam, plugin));
-                    break;
+                AddHandler(new AntiSpamHandler(this, _pluginConfig.PluginSupport.AntiSpam, plugin));
+                break;
 
-                case "BetterChatMute":
-                    BetterChatMuteSettings muteSettings = _pluginConfig.PluginSupport.BetterChatMute;
-                    if (muteSettings.IgnoreMuted)
-                    {
-                        AddHandler(new BetterChatMuteHandler(this, muteSettings, plugin));
-                    }
-                    break;
+            case "BetterChatMute":
+                BetterChatMuteSettings muteSettings = _pluginConfig.PluginSupport.BetterChatMute;
+                if (muteSettings.IgnoreMuted)
+                {
+                    AddHandler(new BetterChatMuteHandler(this, muteSettings, plugin));
+                }
+                break;
                 
-                // case "Clans":
-                //     AddHandler(new ClansHandler(this, _pluginConfig.PluginSupport.Clans, plugin));
-                //     break;
+            // case "Clans":
+            //     AddHandler(new ClansHandler(this, _pluginConfig.PluginSupport.Clans, plugin));
+            //     break;
 
-                case "TranslationAPI":
-                    AddHandler(new TranslationApiHandler(this, _pluginConfig.PluginSupport.ChatTranslator, plugin));
-                    break;
+            case "TranslationAPI":
+                AddHandler(new TranslationApiHandler(this, _pluginConfig.PluginSupport.ChatTranslator, plugin));
+                break;
                 
-                case "UFilter":
-                    AddHandler(new UFilterHandler(this, _pluginConfig.PluginSupport.UFilter, plugin));
-                    break;
-            }
+            case "UFilter":
+                AddHandler(new UFilterHandler(this, _pluginConfig.PluginSupport.UFilter, plugin));
+                break;
         }
+    }
 
-        public void AddHandler(IPluginHandler handler)
-        {
-            _plugins.Insert(_plugins.Count - 1, handler);
-        }
+    public void AddHandler(IPluginHandler handler)
+    {
+        _plugins.Insert(_plugins.Count - 1, handler);
+    }
 
-        private void OnPluginUnloaded(Plugin plugin)
+    private void OnPluginUnloaded(Plugin plugin)
+    {
+        if (plugin.Name != Name)
         {
-            if (plugin.Name != Name)
-            {
-                _plugins.RemoveAll(h => h.GetPluginName() == plugin.Name);
-            }
+            _plugins.RemoveAll(h => h.GetPluginName() == plugin.Name);
         }
+    }
         
 #if RUST
-        private void OnPlayerChat(BasePlayer rustPlayer, string message, Chat.ChatChannel chatChannel)
-        {
-            HandleChat(rustPlayer.IPlayer, message, (int)chatChannel);
-        }
+    private void OnPlayerChat(BasePlayer rustPlayer, string message, Chat.ChatChannel chatChannel)
+    {
+        HandleChat(rustPlayer.IPlayer, message, (int)chatChannel);
+    }
 #else
         private void OnUserChat(IPlayer player, string message)
         {
@@ -125,17 +125,16 @@ namespace DiscordChatPlugin.Plugins
         }
 #endif
 
-        public void HandleChat(IPlayer player, string message, int channel)
-        {
-            DiscordUser user = player.GetDiscordUser();
-            MessageSource source = GetSourceFromServerChannel(channel);
+    public void HandleChat(IPlayer player, string message, int channel)
+    {
+        DiscordUser user = player.GetDiscordUser();
+        MessageSource source = GetSourceFromServerChannel(channel);
 
-            if (!Sends.ContainsKey(source))
-            {
-                return;
-            }
-            
-            HandleMessage(message, player, user, source, null);
+        if (!Sends.ContainsKey(source))
+        {
+            return;
         }
+            
+        HandleMessage(message, player, user, source, null);
     }
 }

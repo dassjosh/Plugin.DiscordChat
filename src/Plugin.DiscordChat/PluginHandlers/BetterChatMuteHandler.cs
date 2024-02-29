@@ -5,20 +5,19 @@ using Oxide.Core.Libraries.Covalence;
 using Oxide.Core.Plugins;
 using Oxide.Ext.Discord.Entities;
 
-namespace DiscordChatPlugin.PluginHandlers
+namespace DiscordChatPlugin.PluginHandlers;
+
+public class BetterChatMuteHandler : BasePluginHandler
 {
-    public class BetterChatMuteHandler : BasePluginHandler
+    private readonly BetterChatMuteSettings _settings;
+
+    public BetterChatMuteHandler(DiscordChat chat, BetterChatMuteSettings settings, Plugin plugin) : base(chat, plugin)
     {
-        private readonly BetterChatMuteSettings _settings;
+        _settings = settings;
+    }
 
-        public BetterChatMuteHandler(DiscordChat chat, BetterChatMuteSettings settings, Plugin plugin) : base(chat, plugin)
-        {
-            _settings = settings;
-        }
-
-        public override bool CanSendMessage(string message, IPlayer player, DiscordUser user, MessageSource source, DiscordMessage sourceMessage)
-        {
-            return player != null && !Plugin.Call<bool>("API_IsMuted", player);
-        }
+    public override bool CanSendMessage(string message, IPlayer player, DiscordUser user, MessageSource source, DiscordMessage sourceMessage)
+    {
+        return player != null && !Plugin.Call<bool>("API_IsMuted", player);
     }
 }

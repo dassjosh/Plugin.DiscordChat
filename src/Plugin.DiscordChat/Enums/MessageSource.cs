@@ -1,17 +1,16 @@
-﻿namespace DiscordChatPlugin.Enums
+﻿namespace DiscordChatPlugin.Enums;
+
+public enum MessageSource : byte
 {
-    public enum MessageSource : byte
-    {
-        Connecting,
-        Connected,
-        Disconnected,
-        Server,
-        Discord,
-        Team,
-        Cards,
-        Clan,
-        PluginClan,
-        PluginAlliance,
-        PluginAdminChat
-    }
+    Connecting,
+    Connected,
+    Disconnected,
+    Server,
+    Discord,
+    Team,
+    Cards,
+    Clan,
+    PluginClan,
+    PluginAlliance,
+    PluginAdminChat
 }
