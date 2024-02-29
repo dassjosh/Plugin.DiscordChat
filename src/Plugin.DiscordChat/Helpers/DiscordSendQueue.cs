@@ -13,11 +13,11 @@ namespace DiscordChatPlugin.Helpers
         private readonly StringBuilder _message = new StringBuilder();
         private Timer _sendTimer;
         private readonly DiscordChannel _channel;
-        private readonly string _templateId;
+        private readonly TemplateKey _templateId;
         private readonly Action _callback;
         private readonly PluginTimers _timer;
 
-        public DiscordSendQueue(DiscordChannel channel, string templateId, PluginTimers timers)
+        public DiscordSendQueue(DiscordChannel channel, TemplateKey templateId, PluginTimers timers)
         {
             _channel = channel;
             _templateId = templateId;
@@ -45,7 +45,7 @@ namespace DiscordChatPlugin.Helpers
             _message.AppendLine(message);
         }
 
-        public void SendTemplate(string templateId, PlaceholderData data)
+        public void SendTemplate(TemplateKey templateId, PlaceholderData data)
         {
             DiscordChat.Instance.SendGlobalTemplateMessage(templateId, _channel, data);
         }

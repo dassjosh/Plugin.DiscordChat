@@ -88,7 +88,7 @@ namespace DiscordChatPlugin.Plugins
             };
         }
         
-        public void SendGlobalTemplateMessage(string templateName, DiscordChannel channel, PlaceholderData placeholders = null)
+        public void SendGlobalTemplateMessage(TemplateKey templateName, DiscordChannel channel, PlaceholderData placeholders = null)
         {
             if (channel == null)
             {
@@ -102,7 +102,7 @@ namespace DiscordChatPlugin.Plugins
             channel.CreateGlobalTemplateMessage(Client, templateName, create, placeholders);
         }
 
-        public string GetTemplateName(MessageSource source)
+        public TemplateKey GetTemplateName(MessageSource source)
         {
             switch (source)
             {
@@ -129,7 +129,7 @@ namespace DiscordChatPlugin.Plugins
                     return TemplateKeys.Chat.Clans.Alliance;
             }
 
-            return null;
+            return default;
         }
     }
 }

@@ -24,7 +24,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
-//DiscordChat created with PluginMerge v(1.0.5.0) by MJSU @ https://github.com/dassjosh/Plugin.Merge
+//DiscordChat created with PluginMerge v(1.0.7.0) by MJSU @ https://github.com/dassjosh/Plugin.Merge
 namespace Oxide.Plugins
 {
     [Info("Discord Chat", "MJSU", "3.0.0")]
@@ -872,7 +872,7 @@ namespace Oxide.Plugins
             };
         }
         
-        public void SendGlobalTemplateMessage(string templateName, DiscordChannel channel, PlaceholderData placeholders = null)
+        public void SendGlobalTemplateMessage(TemplateKey templateName, DiscordChannel channel, PlaceholderData placeholders = null)
         {
             if (channel == null)
             {
@@ -886,7 +886,7 @@ namespace Oxide.Plugins
             channel.CreateGlobalTemplateMessage(Client, templateName, create, placeholders);
         }
         
-        public string GetTemplateName(MessageSource source)
+        public TemplateKey GetTemplateName(MessageSource source)
         {
             switch (source)
             {
@@ -913,7 +913,7 @@ namespace Oxide.Plugins
                 return TemplateKeys.Chat.Clans.Alliance;
             }
             
-            return null;
+            return default;
         }
         #endregion
 
@@ -1174,11 +1174,11 @@ namespace Oxide.Plugins
             private readonly StringBuilder _message = new StringBuilder();
             private Timer _sendTimer;
             private readonly DiscordChannel _channel;
-            private readonly string _templateId;
+            private readonly TemplateKey _templateId;
             private readonly Action _callback;
             private readonly PluginTimers _timer;
             
-            public DiscordSendQueue(DiscordChannel channel, string templateId, PluginTimers timers)
+            public DiscordSendQueue(DiscordChannel channel, TemplateKey templateId, PluginTimers timers)
             {
                 _channel = channel;
                 _templateId = templateId;
@@ -1206,7 +1206,7 @@ namespace Oxide.Plugins
                 _message.AppendLine(message);
             }
             
-            public void SendTemplate(string templateId, PlaceholderData data)
+            public void SendTemplate(TemplateKey templateId, PlaceholderData data)
             {
                 DiscordChat.Instance.SendGlobalTemplateMessage(templateId, _channel, data);
             }
@@ -1793,42 +1793,42 @@ namespace Oxide.Plugins
             {
                 private const string Base = nameof(Player) + ".";
                 
-                public const string Connecting = Base + nameof(Connecting);
-                public const string Connected = Base + nameof(Connected);
-                public const string Disconnected = Base + nameof(Disconnected);
+                public static readonly TemplateKey Connecting = new(Base + nameof(Connecting));
+                public static readonly TemplateKey Connected = new(Base + nameof(Connected));
+                public static readonly TemplateKey Disconnected = new(Base + nameof(Disconnected));
             }
             
             public static class Server
             {
                 private const string Base = nameof(Server) + ".";
                 
-                public const string Online = Base + nameof(Online);
-                public const string Shutdown = Base + nameof(Shutdown);
-                public const string Booting = Base + nameof(Booting);
+                public static readonly TemplateKey Online = new(Base + nameof(Online));
+                public static readonly TemplateKey Shutdown = new(Base + nameof(Shutdown));
+                public static readonly TemplateKey Booting = new(Base + nameof(Booting));
             }
             
             public static class Chat
             {
                 private const string Base = nameof(Chat) + ".";
                 
-                public const string General = Base + nameof(General);
-                public const string Teams = Base + nameof(Teams);
-                public const string Cards = Base + nameof(Cards);
-                public const string Clan = Base + nameof(Clan);
+                public static readonly TemplateKey General = new(Base + nameof(General));
+                public static readonly TemplateKey Teams = new(Base + nameof(Teams));
+                public static readonly TemplateKey Cards = new(Base + nameof(Cards));
+                public static readonly TemplateKey Clan = new(Base + nameof(Clan));
                 
                 public static class Clans
                 {
                     private const string Base = Chat.Base + nameof(Clans) + ".";
                     
-                    public const string Clan = Base + nameof(Clan);
-                    public const string Alliance = Base + nameof(Alliance);
+                    public static readonly TemplateKey Clan = new(Base + nameof(Clan));
+                    public static readonly TemplateKey Alliance = new(Base + nameof(Alliance));
                 }
                 
                 public static class AdminChat
                 {
                     private const string Base = Chat.Base + nameof(AdminChat) + ".";
                     
-                    public const string Message = Base + nameof(Message);
+                    public static readonly TemplateKey Message = new(Base + nameof(Message));
                 }
             }
             
@@ -1836,14 +1836,14 @@ namespace Oxide.Plugins
             {
                 private const string Base = nameof(Error) + ".";
                 
-                public const string NotLinked = Base + nameof(NotLinked);
+                public static readonly TemplateKey NotLinked = new(Base + nameof(NotLinked));
                 
                 public static class AdminChat
                 {
                     private const string Base = Error.Base + nameof(AdminChat) + ".";
                     
-                    public const string NotLinked = Base + nameof(NotLinked);
-                    public const string NoPermission = Base + nameof(NoPermission);
+                    public static readonly TemplateKey NotLinked = new(Base + nameof(NotLinked));
+                    public static readonly TemplateKey NoPermission = new(Base + nameof(NoPermission));
                 }
             }
         }
