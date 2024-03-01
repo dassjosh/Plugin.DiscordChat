@@ -167,7 +167,9 @@ public partial class DiscordChat
         }
 
         foreach (DiscordMessage message in messages
-                     .Where(m => !m.Author.IsBot && (DateTimeOffset.UtcNow - m.Id.GetCreationDate()).TotalDays < 14 && CanSendMessage(m.Content, m.Author.Player, m.Author, MessageSource.Discord, m)))
+                     .Where(m => !m.Author.IsBot 
+                                 && (DateTimeOffset.UtcNow - m.Id.GetCreationDate()).TotalDays < 14 
+                                 && CanSendMessage(m.Content, m.Author.Player, m.Author, MessageSource.Discord, m)))
         {
             callback.Invoke(message);
         }

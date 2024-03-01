@@ -20,7 +20,7 @@ public partial class DiscordChat
         IPlayer player = players.FindPlayerById(id) ?? PlayerExt.CreateDummyPlayer(id, name, ip);
         if (_pluginConfig.PlayerStateSettings.ShowAdmins || !player.IsAdmin)
         {
-            PlaceholderData placeholders = GetDefault().AddPlayer(player);
+            PlaceholderData placeholders = GetDefault().AddPlayer(player).AddIp(ip);
             ProcessPlayerState(MessageSource.Connecting, LangKeys.Discord.Player.Connecting, placeholders);
         }
     }

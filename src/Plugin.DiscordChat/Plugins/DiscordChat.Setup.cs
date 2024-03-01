@@ -22,7 +22,7 @@ public partial class DiscordChat
 #if RUST
         Unsubscribe(nameof(OnPlayerChat));
 #else
-            Unsubscribe(nameof(OnUserChat));
+        Unsubscribe(nameof(OnUserChat));
 #endif
             
         Unsubscribe(nameof(OnUserApproved));

@@ -23,7 +23,7 @@ public partial class DiscordChat
 
     private PluginConfig _pluginConfig;
         
-    private readonly BotConnection _discordSettings = new BotConnection
+    private readonly BotConnection _discordSettings = new()
     {
         Intents = GatewayIntents.Guilds | GatewayIntents.GuildMembers | GatewayIntents.GuildMessages | GatewayIntents.MessageContent
     };
@@ -34,8 +34,8 @@ public partial class DiscordChat
 
     private bool _serverInitCalled;
         
-    public readonly Hash<MessageSource, DiscordSendQueue> Sends = new Hash<MessageSource, DiscordSendQueue>();
-    private readonly List<IPluginHandler> _plugins = new List<IPluginHandler>();
+    public readonly Hash<MessageSource, DiscordSendQueue> Sends = new();
+    private readonly List<IPluginHandler> _plugins = new();
 
     public static DiscordChat Instance;
 

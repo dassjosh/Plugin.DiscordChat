@@ -6,7 +6,6 @@ using Oxide.Core;
 using Oxide.Core.Libraries;
 using Oxide.Core.Libraries.Covalence;
 using Oxide.Core.Plugins;
-using Oxide.Ext.Discord.Attributes;
 using Oxide.Ext.Discord.Cache;
 using Oxide.Ext.Discord.Clients;
 using Oxide.Ext.Discord.Connections;
@@ -374,7 +373,7 @@ namespace Oxide.Plugins
             IPlayer player = players.FindPlayerById(id) ?? PlayerExt.CreateDummyPlayer(id, name, ip);
             if (_pluginConfig.PlayerStateSettings.ShowAdmins || !player.IsAdmin)
             {
-                PlaceholderData placeholders = GetDefault().AddPlayer(player);
+                PlaceholderData placeholders = GetDefault().AddPlayer(player).AddIp(ip);
                 ProcessPlayerState(MessageSource.Connecting, LangKeys.Discord.Player.Connecting, placeholders);
             }
         }
@@ -505,7 +504,7 @@ namespace Oxide.Plugins
         {
             lang.RegisterMessages(new Dictionary<string, string>
             {
-                [LangKeys.Discord.Player.Connecting] = $":yellow_circle: {DefaultKeys.TimestampNow.ShortTime} **{PlaceholderKeys.PlayerName}** is connecting",
+                [LangKeys.Discord.Player.Connecting] = $":yellow_circle: {DefaultKeys.TimestampNow.ShortTime} {DefaultKeys.Ip.CountryEmoji} **{PlaceholderKeys.PlayerName}** is connecting",
                 [LangKeys.Discord.Player.Connected] = $":white_check_mark: {DefaultKeys.TimestampNow.ShortTime} {DefaultKeys.Player.CountryEmoji} **{PlaceholderKeys.PlayerName}** has joined.",
                 [LangKeys.Discord.Player.Disconnected] = $":x: {DefaultKeys.TimestampNow.ShortTime} **{PlaceholderKeys.PlayerName}** has disconnected. ({PlaceholderKeys.DisconnectReason})",
                 [LangKeys.Discord.Chat.Server] = $":desktop: {DefaultKeys.TimestampNow.ShortTime} **{PlaceholderKeys.PlayerName}**: {PlaceholderKeys.PlayerMessage}",
@@ -805,13 +804,13 @@ namespace Oxide.Plugins
             DiscordMessageTemplate disconnected = CreateTemplateEmbed($"{PlaceholderKeys.TemplateMessage}",  DiscordColor.Danger);
             _templates.RegisterGlobalTemplateAsync(this, TemplateKeys.Player.Disconnected, disconnected, new TemplateVersion(1, 0, 0), new TemplateVersion(1, 0, 0));
             
-            DiscordMessageTemplate online = CreateTemplateEmbed(":green_circle: The server is now online", DiscordColor.Success);
+            DiscordMessageTemplate online = CreateTemplateEmbed($":green_circle: {DefaultKeys.TimestampNow.ShortTime} The server is now online", DiscordColor.Success);
             _templates.RegisterGlobalTemplateAsync(this, TemplateKeys.Server.Online, online, new TemplateVersion(1, 0, 0), new TemplateVersion(1, 0, 0));
             
-            DiscordMessageTemplate shutdown = CreateTemplateEmbed(":red_circle: The server has shutdown", DiscordColor.Danger);
+            DiscordMessageTemplate shutdown = CreateTemplateEmbed($":red_circle: {DefaultKeys.TimestampNow.ShortTime} The server has shutdown", DiscordColor.Danger);
             _templates.RegisterGlobalTemplateAsync(this, TemplateKeys.Server.Shutdown, shutdown, new TemplateVersion(1, 0, 0), new TemplateVersion(1, 0, 0));
             
-            DiscordMessageTemplate booting = CreateTemplateEmbed(":yellow_circle: The server is now booting", DiscordColor.Warning);
+            DiscordMessageTemplate booting = CreateTemplateEmbed($":yellow_circle: {DefaultKeys.TimestampNow.ShortTime} The server is now booting", DiscordColor.Warning);
             _templates.RegisterGlobalTemplateAsync(this, TemplateKeys.Server.Booting, booting, new TemplateVersion(1, 0, 0), new TemplateVersion(1, 0, 0));
             
             DiscordMessageTemplate serverChat = CreateTemplateEmbed($"{PlaceholderKeys.TemplateMessage}", DiscordColor.Blurple);

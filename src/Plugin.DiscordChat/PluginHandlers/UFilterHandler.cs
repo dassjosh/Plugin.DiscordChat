@@ -12,7 +12,7 @@ namespace DiscordChatPlugin.PluginHandlers;
 public class UFilterHandler : BasePluginHandler
 {
     private readonly UFilterSettings _settings;
-    private readonly List<string> _replacements = new List<string>();
+    private readonly List<string> _replacements = new();
 
     public UFilterHandler(DiscordChat chat, UFilterSettings settings, Plugin plugin) : base(chat, plugin)
     {

@@ -20,13 +20,13 @@ public partial class DiscordChat
         DiscordMessageTemplate disconnected = CreateTemplateEmbed($"{PlaceholderKeys.TemplateMessage}",  DiscordColor.Danger);
         _templates.RegisterGlobalTemplateAsync(this, TemplateKeys.Player.Disconnected, disconnected, new TemplateVersion(1, 0, 0), new TemplateVersion(1, 0, 0));
 
-        DiscordMessageTemplate online = CreateTemplateEmbed(":green_circle: The server is now online", DiscordColor.Success);
+        DiscordMessageTemplate online = CreateTemplateEmbed($":green_circle: {DefaultKeys.TimestampNow.ShortTime} The server is now online", DiscordColor.Success);
         _templates.RegisterGlobalTemplateAsync(this, TemplateKeys.Server.Online, online, new TemplateVersion(1, 0, 0), new TemplateVersion(1, 0, 0));
             
-        DiscordMessageTemplate shutdown = CreateTemplateEmbed(":red_circle: The server has shutdown", DiscordColor.Danger);
+        DiscordMessageTemplate shutdown = CreateTemplateEmbed($":red_circle: {DefaultKeys.TimestampNow.ShortTime} The server has shutdown", DiscordColor.Danger);
         _templates.RegisterGlobalTemplateAsync(this, TemplateKeys.Server.Shutdown, shutdown, new TemplateVersion(1, 0, 0), new TemplateVersion(1, 0, 0));
             
-        DiscordMessageTemplate booting = CreateTemplateEmbed(":yellow_circle: The server is now booting", DiscordColor.Warning);
+        DiscordMessageTemplate booting = CreateTemplateEmbed($":yellow_circle: {DefaultKeys.TimestampNow.ShortTime} The server is now booting", DiscordColor.Warning);
         _templates.RegisterGlobalTemplateAsync(this, TemplateKeys.Server.Booting, booting, new TemplateVersion(1, 0, 0), new TemplateVersion(1, 0, 0));
             
         DiscordMessageTemplate serverChat = CreateTemplateEmbed($"{PlaceholderKeys.TemplateMessage}", DiscordColor.Blurple);
@@ -63,7 +63,7 @@ public partial class DiscordChat
         {
             Embeds = new List<DiscordEmbedTemplate>
             {
-                new DiscordEmbedTemplate
+                new()
                 {
                     Description = description,
                     Color = color.ToHex()
@@ -78,7 +78,7 @@ public partial class DiscordChat
         {
             Embeds = new List<DiscordEmbedTemplate>
             {
-                new DiscordEmbedTemplate
+                new()
                 {
                     Description = $"[{{plugin.title}}] {description}",
                     Color = color.ToHex()
@@ -94,7 +94,7 @@ public partial class DiscordChat
             return;
         }
             
-        MessageCreate create = new MessageCreate
+        MessageCreate create = new()
         {
             AllowedMentions = AllowedMentions.None
         };

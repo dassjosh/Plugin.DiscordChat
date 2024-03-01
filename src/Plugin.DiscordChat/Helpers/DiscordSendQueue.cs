@@ -10,7 +10,7 @@ namespace DiscordChatPlugin.Helpers;
 
 public class DiscordSendQueue
 {
-    private readonly StringBuilder _message = new StringBuilder();
+    private readonly StringBuilder _message = new();
     private Timer _sendTimer;
     private readonly DiscordChannel _channel;
     private readonly TemplateKey _templateId;

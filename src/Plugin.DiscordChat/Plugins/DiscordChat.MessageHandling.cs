@@ -14,7 +14,7 @@ namespace DiscordChatPlugin.Plugins;
 
 public partial class DiscordChat
 {
-    private readonly Regex _channelMention = new Regex(@"(<#\d+>)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+    private readonly Regex _channelMention = new(@"(<#\d+>)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
         
     public void HandleMessage(string content, IPlayer player, DiscordUser user, MessageSource source, DiscordMessage sourceMessage)
     {
@@ -71,7 +71,7 @@ public partial class DiscordChat
         foreach (Match match in _channelMention.Matches(message.Content))
         {
             string value = match.Value;
-            Snowflake id = new Snowflake(value.Substring(2, value.Length - 3));
+            Snowflake id = new(value.Substring(2, value.Length - 3));
             DiscordChannel channel = guild.Channels[id];
             if (channel != null)
             {

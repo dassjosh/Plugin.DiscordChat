@@ -18,7 +18,7 @@ public partial class DiscordChat
     {
         lang.RegisterMessages(new Dictionary<string, string>
         {
-            [LangKeys.Discord.Player.Connecting] = $":yellow_circle: {DefaultKeys.TimestampNow.ShortTime} **{PlaceholderKeys.PlayerName}** is connecting",
+            [LangKeys.Discord.Player.Connecting] = $":yellow_circle: {DefaultKeys.TimestampNow.ShortTime} {DefaultKeys.Ip.CountryEmoji} **{PlaceholderKeys.PlayerName}** is connecting",
             [LangKeys.Discord.Player.Connected] = $":white_check_mark: {DefaultKeys.TimestampNow.ShortTime} {DefaultKeys.Player.CountryEmoji} **{PlaceholderKeys.PlayerName}** has joined.",
             [LangKeys.Discord.Player.Disconnected] = $":x: {DefaultKeys.TimestampNow.ShortTime} **{PlaceholderKeys.PlayerName}** has disconnected. ({PlaceholderKeys.DisconnectReason})",
             [LangKeys.Discord.Chat.Server] = $":desktop: {DefaultKeys.TimestampNow.ShortTime} **{PlaceholderKeys.PlayerName}**: {PlaceholderKeys.PlayerMessage}",
