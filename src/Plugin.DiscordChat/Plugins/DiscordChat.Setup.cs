@@ -1,10 +1,8 @@
-﻿using System;
-using DiscordChatPlugin.Configuration;
+﻿using DiscordChatPlugin.Configuration;
 using DiscordChatPlugin.Configuration.Plugins;
 using DiscordChatPlugin.PluginHandlers;
 using DiscordChatPlugin.Templates;
 using Oxide.Core;
-using Oxide.Core.Libraries.Covalence;
 
 namespace DiscordChatPlugin.Plugins;
 
@@ -13,9 +11,6 @@ public partial class DiscordChat
     private void Init()
     {
         Instance = this;
-
-        _discordSettings.ApiToken = _pluginConfig.DiscordApiKey;
-        _discordSettings.LogLevel = _pluginConfig.ExtensionDebugging;
 
         _adminChatSettings = _pluginConfig.PluginSupport.AdminChat;
             
@@ -65,11 +60,6 @@ public partial class DiscordChat
             {
                 PrintWarning("Please update your version of BetterChat to version >= 5.2.7");
             }
-
-            if (!string.IsNullOrEmpty(_pluginConfig.ChatSettings.DiscordTag))
-            {
-                BetterChat.Call("API_RegisterThirdPartyTitle", this, new Func<IPlayer, string>(GetBetterChatTag));
-            }
         }
 
         if (string.IsNullOrEmpty(_pluginConfig.DiscordApiKey))
@@ -82,7 +72,6 @@ public partial class DiscordChat
         OnPluginLoaded(plugins.Find("AdminDeepCover"));
         OnPluginLoaded(plugins.Find("AntiSpam"));
         OnPluginLoaded(plugins.Find("BetterChatMute"));
-        OnPluginLoaded(plugins.Find("Clans"));
         OnPluginLoaded(plugins.Find("TranslationAPI"));
         OnPluginLoaded(plugins.Find("UFilter"));
             

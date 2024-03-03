@@ -37,17 +37,9 @@ public class DiscordSendQueue
             Send();
         }
 
-        if (_sendTimer == null)
-        {
-            _sendTimer = _timer.In(1f, _callback);
-        }
+        _sendTimer ??= _timer.In(1f, _callback);
 
         _message.AppendLine(message);
-    }
-
-    public void SendTemplate(TemplateKey templateId, PlaceholderData data)
-    {
-        DiscordChat.Instance.SendGlobalTemplateMessage(templateId, _channel, data);
     }
         
     public void Send()

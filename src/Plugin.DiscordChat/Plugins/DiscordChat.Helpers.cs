@@ -1,5 +1,4 @@
 ﻿using DiscordChatPlugin.Enums;
-using Oxide.Core.Libraries.Covalence;
 using Oxide.Core.Plugins;
 using Oxide.Ext.Discord.Entities;
 
@@ -42,11 +41,6 @@ public partial class DiscordChat
     }
 
     public bool IsPluginLoaded(Plugin plugin) => plugin != null && plugin.IsLoaded;
-
-    public string GetBetterChatTag(IPlayer player)
-    {
-        return player.IsConnected ? null : _pluginConfig.ChatSettings.DiscordTag;
-    }
 
     public new void Subscribe(string hook)
     {

@@ -10,6 +10,9 @@ public class PluginSupport
     [JsonProperty("AntiSpam Settings")]
     public AntiSpamSettings AntiSpam { get; set; }
 
+    [JsonProperty("BetterChat Settings")]
+    public BetterChatSettings BetterChat { get; set; }
+    
     [JsonProperty("BetterChatMute Settings")]
     public BetterChatMuteSettings BetterChatMute { get; set; }
 
@@ -25,10 +28,11 @@ public class PluginSupport
     public PluginSupport(PluginSupport settings)
     {
         AdminChat = new AdminChatSettings(settings?.AdminChat);
+        AntiSpam = new AntiSpamSettings(settings?.AntiSpam);
+        BetterChat = new BetterChatSettings(settings?.BetterChat);
         BetterChatMute = new BetterChatMuteSettings(settings?.BetterChatMute);
         ChatTranslator = new ChatTranslatorSettings(settings?.ChatTranslator);
         Clans = new ClansSettings(settings?.Clans);
-        AntiSpam = new AntiSpamSettings(settings?.AntiSpam);
         UFilter = new UFilterSettings(settings?.UFilter);
     }
 }

@@ -68,7 +68,7 @@ public class DiscordChatHandler : BasePluginHandler
 
                 if (player.IsLinked())
                 {
-                    SendLinkedToServer(player, message, data);
+                    SendLinkedToServer(player, message, data, source);
                 }
                 else
                 {
@@ -103,10 +103,15 @@ public class DiscordChatHandler : BasePluginHandler
         return false;
     }
 
-    public void SendLinkedToServer(IPlayer player, string message, PlaceholderData placeholders)
+    public void SendLinkedToServer(IPlayer player, string message, PlaceholderData placeholders, MessageSource source)
     {
         if (_settings.AllowPluginProcessing)
         {
+            if (Chat.SendBetterChatMessage(player, message, source))
+            {
+                return;
+            }
+            
             bool playerReturn = false;
 #if RUST
             //Let other chat plugins process first
@@ -127,11 +132,6 @@ public class DiscordChatHandler : BasePluginHandler
             {
                 return;
             }
-                
-            if (Chat.SendBetterChatMessage(player, message))
-            {
-                return;
-            }
         }
             
         message = Chat.Lang(LangKeys.Server.LinkedMessage, placeholders);
@@ -146,7 +146,7 @@ public class DiscordChatHandler : BasePluginHandler
         _unlinkedArgs[2] = Formatter.ToUnity(serverMessage);
         ConsoleNetwork.BroadcastToAllClients("chat.add", _unlinkedArgs);
 #else
-            _server.Broadcast(serverMessage);
+        _server.Broadcast(serverMessage);
 #endif
             
         Chat.Puts(Formatter.ToPlaintext(serverMessage));

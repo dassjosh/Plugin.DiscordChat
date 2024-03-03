@@ -7,6 +7,7 @@ using DiscordChatPlugin.Templates;
 using Oxide.Core;
 using Oxide.Core.Libraries.Covalence;
 using Oxide.Core.Plugins;
+using Oxide.Ext.Discord.Connections;
 using Oxide.Ext.Discord.Constants;
 using Oxide.Ext.Discord.Entities;
 
@@ -21,7 +22,12 @@ public partial class DiscordChat
         {
             RegisterPlaceholders();
             RegisterTemplates();
-            Client.Connect(_discordSettings);
+            Client.Connect(new BotConnection
+            {
+                Intents = GatewayIntents.Guilds | GatewayIntents.GuildMembers | GatewayIntents.GuildMessages | GatewayIntents.MessageContent,
+                ApiToken = _pluginConfig.DiscordApiKey,
+                LogLevel = _pluginConfig.ExtensionDebugging
+            });
         }
     }
         

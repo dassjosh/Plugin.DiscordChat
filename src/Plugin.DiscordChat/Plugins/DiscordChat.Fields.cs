@@ -5,8 +5,6 @@ using DiscordChatPlugin.Helpers;
 using DiscordChatPlugin.PluginHandlers;
 using Oxide.Core.Plugins;
 using Oxide.Ext.Discord.Clients;
-using Oxide.Ext.Discord.Connections;
-using Oxide.Ext.Discord.Entities;
 using Oxide.Ext.Discord.Libraries;
 using Oxide.Ext.Discord.Types;
 using Oxide.Plugins;
@@ -22,11 +20,6 @@ public partial class DiscordChat
     public DiscordPluginPool Pool { get; set; }
 
     private PluginConfig _pluginConfig;
-        
-    private readonly BotConnection _discordSettings = new()
-    {
-        Intents = GatewayIntents.Guilds | GatewayIntents.GuildMembers | GatewayIntents.GuildMessages | GatewayIntents.MessageContent
-    };
 
     private readonly DiscordSubscriptions _subscriptions = GetLibrary<DiscordSubscriptions>();
     private readonly DiscordPlaceholders _placeholders = GetLibrary<DiscordPlaceholders>();

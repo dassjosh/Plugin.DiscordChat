@@ -68,7 +68,7 @@ public partial class DiscordChat
                     Description = description,
                     Color = color.ToHex()
                 }
-            },
+            }
         };
     }
         
@@ -80,10 +80,10 @@ public partial class DiscordChat
             {
                 new()
                 {
-                    Description = $"[{{plugin.title}}] {description}",
+                    Description = $"[{DefaultKeys.Plugin.Name}] {description}",
                     Color = color.ToHex()
                 }
-            },
+            }
         };
     }
         

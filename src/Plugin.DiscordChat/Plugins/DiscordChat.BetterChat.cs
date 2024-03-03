@@ -1,24 +1,33 @@
 ﻿using System.Collections.Generic;
+using DiscordChatPlugin.Configuration.Plugins;
+using DiscordChatPlugin.Enums;
 using Oxide.Core.Libraries.Covalence;
 
 namespace DiscordChatPlugin.Plugins;
 
 public partial class DiscordChat
 {
-    public bool SendBetterChatMessage(IPlayer player, string message)
+    public bool SendBetterChatMessage(IPlayer player, string message, MessageSource source)
     {
-        if (IsPluginLoaded(BetterChat))
+        if (!IsPluginLoaded(BetterChat))
         {
-            Dictionary<string, object> data = BetterChat.Call<Dictionary<string, object>>("API_GetMessageData", player, message);
-            BetterChat.Call("API_SendMessage", data);
-            return true;
+            return false;
         }
-
-        return false;
+        
+        Dictionary<string, object> data = BetterChat.Call<Dictionary<string, object>>("API_GetMessageData", player, message);
+        if (source == MessageSource.Discord && !string.IsNullOrEmpty(_pluginConfig.ChatSettings.DiscordTag))
+        {
+            BetterChatSettings settings = _pluginConfig.PluginSupport.BetterChat;
+            if (data["Titles"] is List<string> titles)
+            {
+                titles.Add(_pluginConfig.ChatSettings.DiscordTag);
+                while (titles.Count > settings.MaxTags)
+                {
+                    titles.RemoveAt(titles.Count - 1);
+                }
+            }
+        }
+        BetterChat.Call("API_SendMessage", data);
+        return true;
     }
-
-    // public string GetBetterChatConsoleMessage(IPlayer player, string message)
-    // {
-    //     return BetterChat.Call<string>("API_GetFormattedMessage", player, message, _true);
-    // }
 }

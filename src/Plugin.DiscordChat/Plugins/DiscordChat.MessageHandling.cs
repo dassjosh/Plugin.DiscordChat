@@ -25,9 +25,8 @@ public partial class DiscordChat
 
 #if RUST
         content = EmojiCache.Instance.ReplaceEmojiWithText(content);
-        //Puts($"{content}");
 #endif
-            
+        
         ProcessCallbackMessages(content, player, user, source, processedMessage =>
         {
             StringBuilder sb = Pool.GetStringBuilder(processedMessage);
@@ -130,16 +129,14 @@ public partial class DiscordChat
 
     public void SendMessage(string message, IPlayer player, DiscordUser user, MessageSource source, DiscordMessage sourceMessage)
     {
-        using (PlaceholderData data = GetPlaceholders(message, player, user, sourceMessage))
+        using PlaceholderData data = GetPlaceholders(message, player, user, sourceMessage);
+        data.ManualPool();
+        for (int index = 0; index < _plugins.Count; index++)
         {
-            data.ManualPool();
-            for (int index = 0; index < _plugins.Count; index++)
+            IPluginHandler plugin = _plugins[index];
+            if (plugin.SendMessage(message, player, user, source, sourceMessage, data))
             {
-                IPluginHandler plugin = _plugins[index];
-                if (plugin.SendMessage(message, player, user, source, sourceMessage, data))
-                {
-                    return;
-                }
+                return;
             }
         }
     }

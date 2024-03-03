@@ -85,10 +85,6 @@ public partial class DiscordChat
                     AddHandler(new BetterChatMuteHandler(this, muteSettings, plugin));
                 }
                 break;
-                
-            // case "Clans":
-            //     AddHandler(new ClansHandler(this, _pluginConfig.PluginSupport.Clans, plugin));
-            //     break;
 
             case "TranslationAPI":
                 AddHandler(new TranslationApiHandler(this, _pluginConfig.PluginSupport.ChatTranslator, plugin));
@@ -102,7 +98,7 @@ public partial class DiscordChat
 
     public void AddHandler(IPluginHandler handler)
     {
-        _plugins.Insert(_plugins.Count - 1, handler);
+        _plugins.Add(handler);
     }
 
     private void OnPluginUnloaded(Plugin plugin)
@@ -119,10 +115,10 @@ public partial class DiscordChat
         HandleChat(rustPlayer.IPlayer, message, (int)chatChannel);
     }
 #else
-        private void OnUserChat(IPlayer player, string message)
-        {
-            HandleChat(player, message, 0);
-        }
+    private void OnUserChat(IPlayer player, string message)
+    {
+        HandleChat(player, message, 0);
+    }
 #endif
 
     public void HandleChat(IPlayer player, string message, int channel)
@@ -130,11 +126,9 @@ public partial class DiscordChat
         DiscordUser user = player.GetDiscordUser();
         MessageSource source = GetSourceFromServerChannel(channel);
 
-        if (!Sends.ContainsKey(source))
+        if (Sends.ContainsKey(source))
         {
-            return;
+            HandleMessage(message, player, user, source, null);
         }
-            
-        HandleMessage(message, player, user, source, null);
     }
 }
