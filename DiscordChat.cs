@@ -23,7 +23,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
-//DiscordChat created with PluginMerge v(1.0.7.0) by MJSU @ https://github.com/dassjosh/Plugin.Merge
+//DiscordChat created with PluginMerge v(1.0.8.0) by MJSU @ https://github.com/dassjosh/Plugin.Merge
 namespace Oxide.Plugins
 {
     [Info("Discord Chat", "MJSU", "3.0.0")]
@@ -85,7 +85,7 @@ namespace Oxide.Plugins
                     titles.Add(_pluginConfig.ChatSettings.DiscordTag);
                     while (titles.Count > settings.MaxTags)
                     {
-                        titles.RemoveAt(titles.Count - 1);
+                        titles.RemoveAt(0);
                     }
                 }
             }
@@ -579,7 +579,7 @@ namespace Oxide.Plugins
             foreach (Match match in _channelMention.Matches(message.Content))
             {
                 string value = match.Value;
-                Snowflake id = new(value.Substring(2, value.Length - 3));
+                Snowflake id = new(value.AsReadOnlySpan().Slice(2, value.Length - 3));
                 DiscordChannel channel = guild.Channels[id];
                 if (channel != null)
                 {
@@ -936,11 +936,6 @@ namespace Oxide.Plugins
             
             [JsonProperty("Text Replacements")]
             public Hash<string, string> TextReplacements { get; set; }
-            
-            #if RUST
-            [JsonProperty("Replace Emoji with Emoji Text")]
-            public bool ReplaceEmojis { get; set; }
-            #endif
             
             [JsonProperty("Unlinked Settings")]
             public UnlinkedSettings UnlinkedSettings { get; set; }

@@ -23,7 +23,7 @@ public partial class DiscordChat
                 titles.Add(_pluginConfig.ChatSettings.DiscordTag);
                 while (titles.Count > settings.MaxTags)
                 {
-                    titles.RemoveAt(titles.Count - 1);
+                    titles.RemoveAt(0);
                 }
             }
         }
