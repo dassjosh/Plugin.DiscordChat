@@ -70,7 +70,7 @@ public partial class DiscordChat
         foreach (Match match in _channelMention.Matches(message.Content))
         {
             string value = match.Value;
-            Snowflake id = new(value.AsReadOnlySpan().Slice(2, value.Length - 3));
+            Snowflake id = new(value.AsSpan().Slice(2, value.Length - 3));
             DiscordChannel channel = guild.Channels[id];
             if (channel != null)
             {

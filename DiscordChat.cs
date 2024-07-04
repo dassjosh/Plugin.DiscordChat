@@ -1,4 +1,3 @@
-#define RUST
 using ConVar;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -23,7 +22,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
-//DiscordChat created with PluginMerge v(1.0.8.0) by MJSU @ https://github.com/dassjosh/Plugin.Merge
+//DiscordChat created with PluginMerge v(1.0.9.0) by MJSU @ https://github.com/dassjosh/Plugin.Merge
 namespace Oxide.Plugins
 {
     [Info("Discord Chat", "MJSU", "3.0.0")]
@@ -579,7 +578,7 @@ namespace Oxide.Plugins
             foreach (Match match in _channelMention.Matches(message.Content))
             {
                 string value = match.Value;
-                Snowflake id = new(value.AsReadOnlySpan().Slice(2, value.Length - 3));
+                Snowflake id = new(value.AsSpan().Slice(2, value.Length - 3));
                 DiscordChannel channel = guild.Channels[id];
                 if (channel != null)
                 {

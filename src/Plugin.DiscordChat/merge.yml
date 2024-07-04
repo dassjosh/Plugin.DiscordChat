@@ -17,8 +17,7 @@ Merge Settings:
   # Oxide //References: definitions
   Reference Definitions: []
   # #define definitions
-  Define Definitions:
-  - RUST
+  Define Definitions: []
   # Paths to be ignored when searching for source code relative to merge config
   Ignore Paths: []
   # Files to be ignored when searching for source code relative to merge config
