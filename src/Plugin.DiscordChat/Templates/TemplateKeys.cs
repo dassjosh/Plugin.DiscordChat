@@ -60,5 +60,12 @@ public static class TemplateKeys
             public static readonly TemplateKey NotLinked = new(Base + nameof(NotLinked));
             public static readonly TemplateKey NoPermission = new(Base + nameof(NoPermission));
         }
+
+        public static class BetterChatMute
+        {
+            private const string Base = Error.Base + nameof(BetterChatMute) + "."; 
+            
+            public static readonly TemplateKey Muted = new(Base + nameof(Muted));
+        }
     }
 }

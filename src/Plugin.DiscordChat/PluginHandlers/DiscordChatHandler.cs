@@ -17,14 +17,18 @@ public class DiscordChatHandler : BasePluginHandler
 {
     private readonly ChatSettings _settings;
     private readonly IServer _server;
+#if RUST
     private readonly object[] _unlinkedArgs = new object[3];
+#endif
 
     public DiscordChatHandler(DiscordChat chat, ChatSettings settings, Plugin plugin, IServer server) : base(chat, plugin)
     {
         _settings = settings;
         _server = server;
+#if RUST
         _unlinkedArgs[0] = 2;
         _unlinkedArgs[1] = settings.UnlinkedSettings.SteamIcon;
+#endif
     }
 
     public override bool CanSendMessage(string message, IPlayer player, DiscordUser user, MessageSource source, DiscordMessage sourceMessage)

@@ -55,6 +55,9 @@ public partial class DiscordChat
             
         DiscordMessageTemplate errorAdminChatNotPermission = CreatePrefixedTemplateEmbed(":no_entry: You're not allowed to use admin chat channel because you do not have permission.", DiscordColor.Danger);
         _templates.RegisterGlobalTemplateAsync(this, TemplateKeys.Error.AdminChat.NoPermission, errorAdminChatNotPermission, new TemplateVersion(1, 0, 0), new TemplateVersion(1, 0, 0));
+        
+        DiscordMessageTemplate errorBetterChatMuteMuted = CreatePrefixedTemplateEmbed(":no_entry: You're not allowed to chat with the server because you are muted.", DiscordColor.Danger);
+        _templates.RegisterGlobalTemplateAsync(this, TemplateKeys.Error.BetterChatMute.Muted, errorBetterChatMuteMuted, new TemplateVersion(1, 0, 0), new TemplateVersion(1, 0, 0));
     }
         
     public DiscordMessageTemplate CreateTemplateEmbed(string description, DiscordColor color)

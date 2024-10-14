@@ -49,12 +49,14 @@ public class AntiSpamHandler : BasePluginHandler
                 return _settings.DiscordMessage;
             case MessageSource.Server:
                 return _settings.ServerMessage;
+#if RUST
             case MessageSource.Team:
                 return _settings.TeamMessage;
             case MessageSource.Cards:
                 return _settings.CardMessages;
             case MessageSource.Clan:
                 return _settings.ClanMessages;
+#endif
             case MessageSource.PluginClan:
             case MessageSource.PluginAlliance:
                 return _settings.PluginMessage;

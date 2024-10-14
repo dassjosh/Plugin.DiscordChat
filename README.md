@@ -101,6 +101,9 @@ This plugin supports Discord Link provided by the Discord Extension. This plugin
 }
 ```
 
+## Server Emojis
+Discord Chat supports server emojis. If you wish to install a pre-made collection of emojis you can find them [Here](https://github.com/dassjosh/Plugin.DiscordChat/raw/refs/heads/main/serveremoji.zip). To learn how to install server emojis check out the [Server Emoji Documentation](https://wiki.facepunch.com/rust/server-custom-emojis)
+
 ### Note:
 To disable channel sending functionality leave that channel blank.
 

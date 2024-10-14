@@ -25,7 +25,7 @@ using System.Text.RegularExpressions;
 //DiscordChat created with PluginMerge v(1.0.9.0) by MJSU @ https://github.com/dassjosh/Plugin.Merge
 namespace Oxide.Plugins
 {
-    [Info("Discord Chat", "MJSU", "3.0.0")]
+    [Info("Discord Chat", "MJSU", "3.0.1")]
     [Description("Allows chatting between discord and game server")]
     public partial class DiscordChat : CovalencePlugin, IDiscordPlugin, IDiscordPool
     {
@@ -824,6 +824,9 @@ namespace Oxide.Plugins
             
             DiscordMessageTemplate errorAdminChatNotPermission = CreatePrefixedTemplateEmbed(":no_entry: You're not allowed to use admin chat channel because you do not have permission.", DiscordColor.Danger);
             _templates.RegisterGlobalTemplateAsync(this, TemplateKeys.Error.AdminChat.NoPermission, errorAdminChatNotPermission, new TemplateVersion(1, 0, 0), new TemplateVersion(1, 0, 0));
+            
+            DiscordMessageTemplate errorBetterChatMuteMuted = CreatePrefixedTemplateEmbed(":no_entry: You're not allowed to chat with the server because you are muted.", DiscordColor.Danger);
+            _templates.RegisterGlobalTemplateAsync(this, TemplateKeys.Error.BetterChatMute.Muted, errorBetterChatMuteMuted, new TemplateVersion(1, 0, 0), new TemplateVersion(1, 0, 0));
         }
         
         public DiscordMessageTemplate CreateTemplateEmbed(string description, DiscordColor color)
@@ -1396,12 +1399,14 @@ namespace Oxide.Plugins
                     return _settings.DiscordMessage;
                     case MessageSource.Server:
                     return _settings.ServerMessage;
+                    #if RUST
                     case MessageSource.Team:
                     return _settings.TeamMessage;
                     case MessageSource.Cards:
                     return _settings.CardMessages;
                     case MessageSource.Clan:
                     return _settings.ClanMessages;
+                    #endif
                     case MessageSource.PluginClan:
                     case MessageSource.PluginAlliance:
                     return _settings.PluginMessage;
@@ -1454,7 +1459,27 @@ namespace Oxide.Plugins
             
             public override bool CanSendMessage(string message, IPlayer player, DiscordUser user, MessageSource source, DiscordMessage sourceMessage)
             {
-                return player != null && !Plugin.Call<bool>("API_IsMuted", player);
+                if (player == null)
+                {
+                    return true;
+                }
+                
+                if (!_settings.IgnoreMuted)
+                {
+                    return true;
+                }
+                
+                if (Plugin.Call("API_IsMuted", player) is false)
+                {
+                    return true;
+                }
+                
+                if (_settings.SendMutedNotification)
+                {
+                    sourceMessage?.Author.SendTemplateDirectMessage(Chat.Client, TemplateKeys.Error.BetterChatMute.Muted);
+                }
+                
+                return false;
             }
         }
         #endregion
@@ -1464,14 +1489,18 @@ namespace Oxide.Plugins
         {
             private readonly ChatSettings _settings;
             private readonly IServer _server;
+            #if RUST
             private readonly object[] _unlinkedArgs = new object[3];
+            #endif
             
             public DiscordChatHandler(DiscordChat chat, ChatSettings settings, Plugin plugin, IServer server) : base(chat, plugin)
             {
                 _settings = settings;
                 _server = server;
+                #if RUST
                 _unlinkedArgs[0] = 2;
                 _unlinkedArgs[1] = settings.UnlinkedSettings.SteamIcon;
+                #endif
             }
             
             public override bool CanSendMessage(string message, IPlayer player, DiscordUser user, MessageSource source, DiscordMessage sourceMessage)
@@ -1716,12 +1745,14 @@ namespace Oxide.Plugins
                     return _settings.DiscordMessages;
                     case MessageSource.Server:
                     return _settings.ServerMessage;
+                    #if RUST
                     case MessageSource.Team:
                     return _settings.TeamMessage;
                     case MessageSource.Cards:
                     return _settings.CardMessage;
                     case MessageSource.Clan:
                     return _settings.ClanMessage;
+                    #endif
                     case MessageSource.PluginClan:
                     case MessageSource.PluginAlliance:
                     return _settings.PluginMessages;
@@ -1816,6 +1847,13 @@ namespace Oxide.Plugins
                     public static readonly TemplateKey NotLinked = new(Base + nameof(NotLinked));
                     public static readonly TemplateKey NoPermission = new(Base + nameof(NoPermission));
                 }
+                
+                public static class BetterChatMute
+                {
+                    private const string Base = Error.Base + nameof(BetterChatMute) + ".";
+                    
+                    public static readonly TemplateKey Muted = new(Base + nameof(Muted));
+                }
             }
         }
         #endregion
@@ -1892,9 +1930,13 @@ namespace Oxide.Plugins
             [JsonProperty("Ignore Muted Players")]
             public bool IgnoreMuted { get; set; }
             
+            [JsonProperty("Send Muted Notification")]
+            public bool SendMutedNotification { get; set; }
+            
             public BetterChatMuteSettings(BetterChatMuteSettings settings)
             {
                 IgnoreMuted = settings?.IgnoreMuted ?? true;
+                SendMutedNotification = settings?.SendMutedNotification ?? true;
             }
         }
         #endregion
