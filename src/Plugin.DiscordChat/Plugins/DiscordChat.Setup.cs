@@ -74,6 +74,7 @@ public partial class DiscordChat
         OnPluginLoaded(plugins.Find("BetterChatMute"));
         OnPluginLoaded(plugins.Find("TranslationAPI"));
         OnPluginLoaded(plugins.Find("UFilter"));
+        OnPluginLoaded(plugins.Find("BetterChat"));
             
         if (startup && _pluginConfig.ServerStateSettings.SendOnlineMessage)
         {

@@ -85,6 +85,10 @@ public partial class DiscordChat
                     AddHandler(new BetterChatMuteHandler(this, muteSettings, plugin));
                 }
                 break;
+            
+            case "BetterChat": 
+                AddHandler(new BetterChatHandler(this, _pluginConfig.PluginSupport.BetterChat, plugin));
+                break;
 
             case "TranslationAPI":
                 AddHandler(new TranslationApiHandler(this, _pluginConfig.PluginSupport.ChatTranslator, plugin));

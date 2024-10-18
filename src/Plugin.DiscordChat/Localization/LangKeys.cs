@@ -15,7 +15,7 @@ public static class LangKeys
             public const string Server = Base + nameof(Server);
             public const string LinkedMessage = Base + nameof(LinkedMessage);
             public const string UnlinkedMessage = Base + nameof(UnlinkedMessage);
-            public const string PlayerName = Base + nameof(PlayerName);
+            public const string PlayerName = Base + nameof(PlayerName) + ".V1";
         }
 
         public static class Team

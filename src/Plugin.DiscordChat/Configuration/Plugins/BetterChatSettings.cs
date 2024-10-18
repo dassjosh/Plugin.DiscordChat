@@ -5,10 +5,14 @@ namespace DiscordChatPlugin.Configuration.Plugins;
 public class BetterChatSettings
 {
     [JsonProperty("Max BetterChat Tags To Show When Sent From Discord")]
-    public byte MaxTags { get; set; }
+    public byte ServerMaxTags { get; set; }
+    
+    [JsonProperty("Max BetterChat Tags To Show When Sent From Server")]
+    public byte DiscordMaxTags { get; set; }
 
     public BetterChatSettings(BetterChatSettings settings)
     {
-        MaxTags = settings?.MaxTags ?? 3;
+        ServerMaxTags = settings?.ServerMaxTags ?? 10;
+        DiscordMaxTags = settings?.DiscordMaxTags ?? 10;
     }
 }

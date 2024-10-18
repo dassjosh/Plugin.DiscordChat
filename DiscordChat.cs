@@ -25,7 +25,7 @@ using System.Text.RegularExpressions;
 //DiscordChat created with PluginMerge v(1.0.9.0) by MJSU @ https://github.com/dassjosh/Plugin.Merge
 namespace Oxide.Plugins
 {
-    [Info("Discord Chat", "MJSU", "3.0.1")]
+    [Info("Discord Chat", "MJSU", "3.0.2")]
     [Description("Allows chatting between discord and game server")]
     public partial class DiscordChat : CovalencePlugin, IDiscordPlugin, IDiscordPool
     {
@@ -75,14 +75,15 @@ namespace Oxide.Plugins
                 return false;
             }
             
-            Dictionary<string, object> data = BetterChat.Call<Dictionary<string, object>>("API_GetMessageData", player, message);
+            Dictionary<string, object> data = GetBetterChatMessageData(player, message);
             if (source == MessageSource.Discord && !string.IsNullOrEmpty(_pluginConfig.ChatSettings.DiscordTag))
             {
                 BetterChatSettings settings = _pluginConfig.PluginSupport.BetterChat;
-                if (data["Titles"] is List<string> titles)
+                List<string> titles = GetBetterChatTags(data);
+                if (titles != null)
                 {
                     titles.Add(_pluginConfig.ChatSettings.DiscordTag);
-                    while (titles.Count > settings.MaxTags)
+                    while (titles.Count > settings.ServerMaxTags)
                     {
                         titles.RemoveAt(0);
                     }
@@ -90,6 +91,27 @@ namespace Oxide.Plugins
             }
             BetterChat.Call("API_SendMessage", data);
             return true;
+        }
+        
+        public Dictionary<string, object> GetBetterChatMessageData(IPlayer player, string message)
+        {
+            return BetterChat.Call<Dictionary<string, object>>("API_GetMessageData", player, message);
+        }
+        
+        public List<string> GetBetterChatTags(Dictionary<string, object> data)
+        {
+            if (data["Titles"] is List<string> titles)
+            {
+                titles.RemoveAll(string.IsNullOrWhiteSpace);
+                for (int index = 0; index < titles.Count; index++)
+                {
+                    string title = titles[index];
+                }
+                
+                return titles;
+            }
+            
+            return null;
         }
         #endregion
 
@@ -442,6 +464,10 @@ namespace Oxide.Plugins
                 }
                 break;
                 
+                case "BetterChat":
+                AddHandler(new BetterChatHandler(this, _pluginConfig.PluginSupport.BetterChat, plugin));
+                break;
+                
                 case "TranslationAPI":
                 AddHandler(new TranslationApiHandler(this, _pluginConfig.PluginSupport.ChatTranslator, plugin));
                 break;
@@ -507,7 +533,7 @@ namespace Oxide.Plugins
                 [LangKeys.Discord.Chat.Server] = $":desktop: {DefaultKeys.TimestampNow.ShortTime} **{PlaceholderKeys.PlayerName}**: {PlaceholderKeys.PlayerMessage}",
                 [LangKeys.Discord.Chat.LinkedMessage] = $":speech_left: {DefaultKeys.TimestampNow.ShortTime} **{PlaceholderKeys.PlayerName}**: {PlaceholderKeys.PlayerMessage}",
                 [LangKeys.Discord.Chat.UnlinkedMessage] = $":chains: {DefaultKeys.TimestampNow.ShortTime} {DefaultKeys.User.Mention}: {PlaceholderKeys.PlayerMessage}",
-                [LangKeys.Discord.Chat.PlayerName] = $"{DefaultKeys.Player.NameClan}",
+                [LangKeys.Discord.Chat.PlayerName] = $"{DefaultKeys.Player.Name}",
                 [LangKeys.Discord.Team.Message] = $":busts_in_silhouette: {DefaultKeys.TimestampNow.ShortTime} **{PlaceholderKeys.PlayerName}**: {PlaceholderKeys.PlayerMessage}",
                 [LangKeys.Discord.Cards.Message] = $":black_joker: {DefaultKeys.TimestampNow.ShortTime} **{PlaceholderKeys.PlayerName}**: {PlaceholderKeys.PlayerMessage}",
                 [LangKeys.Discord.Clans.Message] = $":shield: {DefaultKeys.TimestampNow.ShortTime} **{PlaceholderKeys.PlayerName}**: {PlaceholderKeys.PlayerMessage}",
@@ -756,6 +782,7 @@ namespace Oxide.Plugins
             OnPluginLoaded(plugins.Find("BetterChatMute"));
             OnPluginLoaded(plugins.Find("TranslationAPI"));
             OnPluginLoaded(plugins.Find("UFilter"));
+            OnPluginLoaded(plugins.Find("BetterChat"));
             
             if (startup && _pluginConfig.ServerStateSettings.SendOnlineMessage)
             {
@@ -1217,7 +1244,7 @@ namespace Oxide.Plugins
                     public const string Server = Base + nameof(Server);
                     public const string LinkedMessage = Base + nameof(LinkedMessage);
                     public const string UnlinkedMessage = Base + nameof(UnlinkedMessage);
-                    public const string PlayerName = Base + nameof(PlayerName);
+                    public const string PlayerName = Base + nameof(PlayerName) + ".V1";
                 }
                 
                 public static class Team
@@ -1444,6 +1471,38 @@ namespace Oxide.Plugins
             public virtual bool SendMessage(string message, IPlayer player, DiscordUser user, MessageSource source, DiscordMessage sourceMessage, PlaceholderData data) => false;
             
             public string GetPluginName() => _pluginName;
+        }
+        #endregion
+
+        #region PluginHandlers\BetterChatHandler.cs
+        public class BetterChatHandler : BasePluginHandler
+        {
+            private readonly BetterChatSettings _settings;
+            
+            public BetterChatHandler(DiscordChat chat, BetterChatSettings settings, Plugin plugin) : base(chat, plugin)
+            {
+                _settings = settings;
+            }
+            
+            public override void ProcessPlayerName(StringBuilder name, IPlayer player)
+            {
+                Dictionary<string, object> data = Chat.GetBetterChatMessageData(player, string.Empty);
+                List<string> titles = Chat.GetBetterChatTags(data);
+                
+                int addedTitles = 0;
+                for (int i = titles.Count - 1; i >= 0; i--)
+                {
+                    if (addedTitles >= _settings.DiscordMaxTags)
+                    {
+                        return;
+                    }
+                    
+                    string title = titles[i];
+                    
+                    name.Insert(0, $"{Formatter.ToPlaintext(title)} ");
+                    addedTitles++;
+                }
+            }
         }
         #endregion
 
@@ -1945,11 +2004,15 @@ namespace Oxide.Plugins
         public class BetterChatSettings
         {
             [JsonProperty("Max BetterChat Tags To Show When Sent From Discord")]
-            public byte MaxTags { get; set; }
+            public byte ServerMaxTags { get; set; }
+            
+            [JsonProperty("Max BetterChat Tags To Show When Sent From Server")]
+            public byte DiscordMaxTags { get; set; }
             
             public BetterChatSettings(BetterChatSettings settings)
             {
-                MaxTags = settings?.MaxTags ?? 3;
+                ServerMaxTags = settings?.ServerMaxTags ?? 10;
+                DiscordMaxTags = settings?.DiscordMaxTags ?? 10;
             }
         }
         #endregion

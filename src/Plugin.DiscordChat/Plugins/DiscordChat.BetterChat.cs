@@ -14,14 +14,15 @@ public partial class DiscordChat
             return false;
         }
         
-        Dictionary<string, object> data = BetterChat.Call<Dictionary<string, object>>("API_GetMessageData", player, message);
+        Dictionary<string, object> data = GetBetterChatMessageData(player, message);
         if (source == MessageSource.Discord && !string.IsNullOrEmpty(_pluginConfig.ChatSettings.DiscordTag))
         {
             BetterChatSettings settings = _pluginConfig.PluginSupport.BetterChat;
-            if (data["Titles"] is List<string> titles)
+            List<string> titles = GetBetterChatTags(data);
+            if (titles != null)
             {
                 titles.Add(_pluginConfig.ChatSettings.DiscordTag);
-                while (titles.Count > settings.MaxTags)
+                while (titles.Count > settings.ServerMaxTags)
                 {
                     titles.RemoveAt(0);
                 }
@@ -29,5 +30,26 @@ public partial class DiscordChat
         }
         BetterChat.Call("API_SendMessage", data);
         return true;
+    }
+    
+    public Dictionary<string, object> GetBetterChatMessageData(IPlayer player, string message)
+    {
+        return BetterChat.Call<Dictionary<string, object>>("API_GetMessageData", player, message);
+    }
+
+    public List<string> GetBetterChatTags(Dictionary<string, object> data)
+    {
+        if (data["Titles"] is List<string> titles)
+        {
+            titles.RemoveAll(string.IsNullOrWhiteSpace);
+            for (int index = 0; index < titles.Count; index++)
+            {
+                string title = titles[index];
+            }
+
+            return titles;
+        }
+        
+        return null;
     }
 }

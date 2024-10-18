@@ -24,7 +24,7 @@ public partial class DiscordChat
             [LangKeys.Discord.Chat.Server] = $":desktop: {DefaultKeys.TimestampNow.ShortTime} **{PlaceholderKeys.PlayerName}**: {PlaceholderKeys.PlayerMessage}",
             [LangKeys.Discord.Chat.LinkedMessage] = $":speech_left: {DefaultKeys.TimestampNow.ShortTime} **{PlaceholderKeys.PlayerName}**: {PlaceholderKeys.PlayerMessage}",
             [LangKeys.Discord.Chat.UnlinkedMessage] = $":chains: {DefaultKeys.TimestampNow.ShortTime} {DefaultKeys.User.Mention}: {PlaceholderKeys.PlayerMessage}",
-            [LangKeys.Discord.Chat.PlayerName] = $"{DefaultKeys.Player.NameClan}",
+            [LangKeys.Discord.Chat.PlayerName] = $"{DefaultKeys.Player.Name}",
             [LangKeys.Discord.Team.Message] = $":busts_in_silhouette: {DefaultKeys.TimestampNow.ShortTime} **{PlaceholderKeys.PlayerName}**: {PlaceholderKeys.PlayerMessage}",
             [LangKeys.Discord.Cards.Message] = $":black_joker: {DefaultKeys.TimestampNow.ShortTime} **{PlaceholderKeys.PlayerName}**: {PlaceholderKeys.PlayerMessage}",
             [LangKeys.Discord.Clans.Message] = $":shield: {DefaultKeys.TimestampNow.ShortTime} **{PlaceholderKeys.PlayerName}**: {PlaceholderKeys.PlayerMessage}",
