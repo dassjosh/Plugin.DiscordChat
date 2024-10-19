@@ -128,7 +128,7 @@ public partial class DiscordChat
         {
             if (!_serverInitCalled && _pluginConfig.ServerStateSettings.SendBootingMessage)
             {
-                SendGlobalTemplateMessage(TemplateKeys.Server.Booting, FindChannel(_pluginConfig.ServerStateSettings.ServerStateChannel));
+                SendGlobalTemplateMessage(TemplateKeys.Server.Booting, FindChannel(_pluginConfig.ServerStateSettings.ServerStateChannel), GetDefault());
             }
         });
     }

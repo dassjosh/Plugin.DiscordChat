@@ -78,7 +78,7 @@ public partial class DiscordChat
             
         if (startup && _pluginConfig.ServerStateSettings.SendOnlineMessage)
         {
-            SendGlobalTemplateMessage(TemplateKeys.Server.Online, FindChannel(_pluginConfig.ServerStateSettings.ServerStateChannel));
+            SendGlobalTemplateMessage(TemplateKeys.Server.Online, FindChannel(_pluginConfig.ServerStateSettings.ServerStateChannel), GetDefault());
         }
     }
 
@@ -86,7 +86,7 @@ public partial class DiscordChat
     {
         if(_pluginConfig.ServerStateSettings.SendShutdownMessage)
         {
-            SendGlobalTemplateMessage(TemplateKeys.Server.Shutdown, FindChannel(_pluginConfig.ServerStateSettings.ServerStateChannel));
+            SendGlobalTemplateMessage(TemplateKeys.Server.Shutdown, FindChannel(_pluginConfig.ServerStateSettings.ServerStateChannel), GetDefault());
         }
     }
 

@@ -25,7 +25,7 @@ using System.Text.RegularExpressions;
 //DiscordChat created with PluginMerge v(1.0.9.0) by MJSU @ https://github.com/dassjosh/Plugin.Merge
 namespace Oxide.Plugins
 {
-    [Info("Discord Chat", "MJSU", "3.0.2")]
+    [Info("Discord Chat", "MJSU", "3.0.3")]
     [Description("Allows chatting between discord and game server")]
     public partial class DiscordChat : CovalencePlugin, IDiscordPlugin, IDiscordPool
     {
@@ -246,7 +246,7 @@ namespace Oxide.Plugins
             {
                 if (!_serverInitCalled && _pluginConfig.ServerStateSettings.SendBootingMessage)
                 {
-                    SendGlobalTemplateMessage(TemplateKeys.Server.Booting, FindChannel(_pluginConfig.ServerStateSettings.ServerStateChannel));
+                    SendGlobalTemplateMessage(TemplateKeys.Server.Booting, FindChannel(_pluginConfig.ServerStateSettings.ServerStateChannel), GetDefault());
                 }
             });
         }
@@ -786,7 +786,7 @@ namespace Oxide.Plugins
             
             if (startup && _pluginConfig.ServerStateSettings.SendOnlineMessage)
             {
-                SendGlobalTemplateMessage(TemplateKeys.Server.Online, FindChannel(_pluginConfig.ServerStateSettings.ServerStateChannel));
+                SendGlobalTemplateMessage(TemplateKeys.Server.Online, FindChannel(_pluginConfig.ServerStateSettings.ServerStateChannel), GetDefault());
             }
         }
         
@@ -794,7 +794,7 @@ namespace Oxide.Plugins
         {
             if(_pluginConfig.ServerStateSettings.SendShutdownMessage)
             {
-                SendGlobalTemplateMessage(TemplateKeys.Server.Shutdown, FindChannel(_pluginConfig.ServerStateSettings.ServerStateChannel));
+                SendGlobalTemplateMessage(TemplateKeys.Server.Shutdown, FindChannel(_pluginConfig.ServerStateSettings.ServerStateChannel), GetDefault());
             }
         }
         
@@ -886,7 +886,7 @@ namespace Oxide.Plugins
             };
         }
         
-        public void SendGlobalTemplateMessage(TemplateKey templateName, DiscordChannel channel, PlaceholderData placeholders = null)
+        public void SendGlobalTemplateMessage(TemplateKey templateName, DiscordChannel channel, PlaceholderData placeholders)
         {
             if (channel == null)
             {
@@ -1479,6 +1479,8 @@ namespace Oxide.Plugins
         {
             private readonly BetterChatSettings _settings;
             
+            private readonly Regex _rustRegex = new(@"<b>|<\/b>|<i>|<\/i>|<\/size>|<\/color>|<color=.+?>|<size=.+?>", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+            
             public BetterChatHandler(DiscordChat chat, BetterChatSettings settings, Plugin plugin) : base(chat, plugin)
             {
                 _settings = settings;
@@ -1498,8 +1500,12 @@ namespace Oxide.Plugins
                     }
                     
                     string title = titles[i];
-                    
-                    name.Insert(0, $"{Formatter.ToPlaintext(title)} ");
+                    title = Formatter.ToPlaintext(title);
+                    #if RUST
+                    title = _rustRegex.Replace(title, string.Empty);
+                    #endif
+                    name.Insert(0, ' ');
+                    name.Insert(0, title);
                     addedTitles++;
                 }
             }

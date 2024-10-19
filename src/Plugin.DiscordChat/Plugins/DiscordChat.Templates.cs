@@ -90,7 +90,7 @@ public partial class DiscordChat
         };
     }
         
-    public void SendGlobalTemplateMessage(TemplateKey templateName, DiscordChannel channel, PlaceholderData placeholders = null)
+    public void SendGlobalTemplateMessage(TemplateKey templateName, DiscordChannel channel, PlaceholderData placeholders)
     {
         if (channel == null)
         {

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using System.Text.RegularExpressions;
 using DiscordChatPlugin.Configuration.Plugins;
 using DiscordChatPlugin.Plugins;
 using Oxide.Core.Libraries.Covalence;
@@ -11,6 +12,8 @@ public class BetterChatHandler : BasePluginHandler
 {
     private readonly BetterChatSettings _settings;
 
+    private readonly Regex _rustRegex = new(@"<b>|<\/b>|<i>|<\/i>|<\/size>|<\/color>|<color=.+?>|<size=.+?>", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+    
     public BetterChatHandler(DiscordChat chat, BetterChatSettings settings, Plugin plugin) : base(chat, plugin)
     {
         _settings = settings;
@@ -30,8 +33,12 @@ public class BetterChatHandler : BasePluginHandler
             }
             
             string title = titles[i];
-            
-            name.Insert(0, $"{Formatter.ToPlaintext(title)} ");
+            title = Formatter.ToPlaintext(title);
+#if RUST
+            title = _rustRegex.Replace(title, string.Empty);
+#endif
+            name.Insert(0, ' ');
+            name.Insert(0, title);
             addedTitles++;
         }
     }
